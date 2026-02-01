@@ -1,0 +1,9 @@
+{
+  "name": "@ativo-real-monorepo/web",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.93.3",
+    "ol": "^10.7.0"
+  }
+}

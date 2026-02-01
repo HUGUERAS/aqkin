@@ -101,7 +101,7 @@ cat .vercel/project.json
 **Importante:** Todos os 12 secrets devem ser configurados!
 
 #### Como Adicionar Secrets
-1. Ir para https://github.com/HUGUERAS/aqkin
+1. Ir para o repositório no GitHub (Settings)
 2. Clicar em **Settings**
 3. Clicar em **Secrets and variables** → **Actions**
 4. Clicar em **New repository secret**

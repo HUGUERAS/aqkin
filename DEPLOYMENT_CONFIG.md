@@ -210,7 +210,7 @@ You can trigger deployments manually:
 
 ## 📚 Additional Resources
 
-- [Azure Functions Python Guide](https://docs.microsoft.com/azure/azure-functions/functions-reference-python)
+- [Azure Functions Python Guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
 - [Vercel Deployment Documentation](https://vercel.com/docs/deployments/overview)
 - [Supabase Database Connection](https://supabase.com/docs/guides/database/connecting-to-postgres)
 - [GitHub Actions Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets)

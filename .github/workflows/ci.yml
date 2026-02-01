@@ -56,8 +56,8 @@ jobs:
       - name: Check Python code quality
         working-directory: apps/api
         run: |
-          # Install linting tools
-          pip install flake8 black
+          # Install linting tools with pinned versions
+          pip install flake8==7.0.0 black==24.3.0
           # Run black to check formatting
           black --check .
           # Run flake8 for linting

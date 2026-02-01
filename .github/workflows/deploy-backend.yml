@@ -1,0 +1,111 @@
+name: Deploy Backend to Azure Functions
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/api/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        working-directory: apps/api
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Create deployment package
+        working-directory: apps/api
+        run: |
+          # Create host.json for Azure Functions
+          cat > host.json << 'EOF'
+          {
+            "version": "2.0",
+            "logging": {
+              "applicationInsights": {
+                "samplingSettings": {
+                  "isEnabled": true,
+                  "maxTelemetryItemsPerSecond": 20
+                }
+              }
+            },
+            "extensionBundle": {
+              "id": "Microsoft.Azure.Functions.ExtensionBundle",
+              "version": "[4.*, 5.0.0)"
+            }
+          }
+          EOF
+          
+          # Create function_app.py wrapper for Azure Functions
+          cat > function_app.py << 'EOF'
+          import azure.functions as func
+          from main import app as fastapi_app
+          import logging
+
+          app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
+
+          @app.function_name(name="HttpTrigger")
+          @app.route(route="{*route}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
+          async def main(req: func.HttpRequest) -> func.HttpResponse:
+              logging.info('Python HTTP trigger function processed a request.')
+              
+              # Forward all requests to FastAPI
+              from asgiref.sync import async_to_sync
+              scope = {
+                  "type": "http",
+                  "method": req.method,
+                  "path": req.url.replace(req.url.split("/api")[0] + "/api", ""),
+                  "query_string": req.url.split("?")[1].encode() if "?" in req.url else b"",
+                  "headers": [(k.encode(), v.encode()) for k, v in req.headers.items()],
+              }
+              
+              async def receive():
+                  return {"type": "http.request", "body": req.get_body()}
+              
+              responses = []
+              async def send(message):
+                  responses.append(message)
+              
+              await fastapi_app(scope, receive, send)
+              
+              response = responses[0]
+              return func.HttpResponse(
+                  body=response.get("body", b""),
+                  status_code=response.get("status", 200),
+                  headers=dict(response.get("headers", []))
+              )
+          EOF
+
+      - name: Deploy to Azure Functions
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ secrets.AZURE_FUNCTION_APP_NAME }}
+          package: apps/api
+          publish-profile: ${{ secrets.AZURE_FUNCTION_APP_PUBLISH_PROFILE }}
+
+      - name: Configure Azure Function Settings
+        uses: azure/CLI@v1
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az functionapp config appsettings set \
+              --name ${{ secrets.AZURE_FUNCTION_APP_NAME }} \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --settings \
+                DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+                JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+                SUPABASE_URL="${{ secrets.SUPABASE_URL }}" \
+                SUPABASE_SERVICE_KEY="${{ secrets.SUPABASE_SERVICE_KEY }}"

@@ -1,0 +1,68 @@
+name: Deploy Backend to Railway/Render (Alternative)
+
+# This is an alternative deployment workflow for Railway or Render
+# Uncomment and configure if you prefer these platforms over Azure Functions
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/api/**'
+  workflow_dispatch:
+
+jobs:
+  deploy-railway:
+    # Uncomment to enable Railway deployment
+    if: false  # Set to true to enable
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
+
+      - name: Deploy to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          cd apps/api
+          railway up --service backend
+
+  deploy-render:
+    # Uncomment to enable Render deployment
+    if: false  # Set to true to enable
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Trigger Render Deploy Hook
+        run: |
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+
+      - name: Wait for deployment
+        run: |
+          echo "Deployment triggered. Check Render dashboard for status."
+          echo "URL: https://dashboard.render.com/"
+
+# Configuration Instructions:
+#
+# For Railway:
+# 1. Install Railway CLI: npm i -g @railway/cli
+# 2. Login: railway login
+# 3. Create project: railway init
+# 4. Get token: railway whoami --token
+# 5. Add RAILWAY_TOKEN to GitHub Secrets
+# 6. Set if: true for deploy-railway job
+#
+# For Render:
+# 1. Create Web Service on Render.com
+# 2. Connect your GitHub repo
+# 3. Set Build Command: pip install -r requirements.txt
+# 4. Set Start Command: uvicorn main:app --host 0.0.0.0 --port $PORT
+# 5. Add environment variables in Render dashboard
+# 6. Get Deploy Hook URL from Settings → Deploy Hook
+# 7. Add RENDER_DEPLOY_HOOK_URL to GitHub Secrets
+# 8. Set if: true for deploy-render job

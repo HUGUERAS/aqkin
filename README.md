@@ -4,6 +4,19 @@
 
 ✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
 
+## 🚀 Quick Deployment
+
+**Ready to deploy?** See [DEPLOYMENT_QUICKSTART.md](./DEPLOYMENT_QUICKSTART.md) for automated CI/CD setup.
+
+**Need detailed configuration?** Check [DEPLOYMENT_CONFIG.md](./DEPLOYMENT_CONFIG.md) for step-by-step instructions.
+
+## 📋 Key Features
+
+- **Backend**: Python FastAPI with PostgreSQL/PostGIS
+- **Frontend**: React with OpenLayers for mapping
+- **Database**: Supabase with PostGIS extension
+- **Deployment**: Automated via GitHub Actions to Azure Functions + Vercel
+
 [Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/react-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
 
 ## Run tasks

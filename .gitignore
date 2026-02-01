@@ -44,3 +44,24 @@ Thumbs.db
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
 test-output
+
+# Environment variables and secrets
+.env.local
+.env.*.local
+
+# Vercel
+.vercel
+
+# Azure
+.azure
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv

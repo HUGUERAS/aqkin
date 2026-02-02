@@ -2,9 +2,19 @@ const osmLayer = new ol.layer.Tile({
   source: new ol.source.OSM(),
 });
 
-const API_BASE = window.APP_API_BASE || 'http://localhost:8000/api';
+const API_BASE = (() => {
+  if (window.APP_API_BASE) {
+    return window.APP_API_BASE;
+  }
+  if (window.location && window.location.origin && window.location.origin !== 'null') {
+    return `${window.location.origin}/api`;
+  }
+  return 'http://localhost:8000/api';
+})();
 const AUTH_BASE = API_BASE.replace(/\/api\/?$/, '') + '/api/auth';
 const TOKEN_KEY = 'ativo_real_token';
+const TOKEN_STORAGE =
+  window.APP_TOKEN_STORAGE === 'local' ? window.localStorage : window.sessionStorage;
 
 const satelliteLayer = new ol.layer.Tile({
   source: new ol.source.XYZ({
@@ -175,15 +185,32 @@ function setProjectStatus(text) {
 }
 
 function getToken() {
-  return localStorage.getItem(TOKEN_KEY);
+  return TOKEN_STORAGE.getItem(TOKEN_KEY);
 }
 
 function setToken(token) {
   if (token) {
-    localStorage.setItem(TOKEN_KEY, token);
+    TOKEN_STORAGE.setItem(TOKEN_KEY, token);
   } else {
-    localStorage.removeItem(TOKEN_KEY);
+    TOKEN_STORAGE.removeItem(TOKEN_KEY);
   }
+}
+
+function clearElement(element) {
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
+}
+
+function createElement(tag, className, text) {
+  const element = document.createElement(tag);
+  if (className) {
+    element.className = className;
+  }
+  if (text !== undefined && text !== null) {
+    element.textContent = text;
+  }
+  return element;
 }
 
 async function login(username, password) {
@@ -203,33 +230,30 @@ async function login(username, password) {
 }
 
 function renderProjects(projects) {
+  clearElement(projectList);
   if (!projects.length) {
-    projectList.innerHTML = `
-      <div class="list-item">
-        <div class="list-title">Sem projetos</div>
-        <div class="list-meta">Crie o primeiro no backend</div>
-      </div>
-    `;
+    const item = createElement('div', 'list-item');
+    item.appendChild(createElement('div', 'list-title', 'Sem projetos'));
+    item.appendChild(createElement('div', 'list-meta', 'Crie o primeiro no backend'));
+    projectList.appendChild(item);
     return;
   }
 
-  projectList.innerHTML = projects
-    .map((project) => {
-      const status = project.status || 'draft';
-      const statusLabel = {
-        draft: 'Rascunho',
-        in_progress: 'Em andamento',
-        done: 'Concluido',
-      }[status] || status;
-      const selected = currentProject && currentProject.id === project.id;
-      return `
-        <div class="list-item ${selected ? 'selected' : ''}" data-project-id="${project.id}" data-project-status="${status}">
-          <div class="list-title">${project.title}</div>
-          <div class="list-meta">${statusLabel}</div>
-        </div>
-      `;
-    })
-    .join('');
+  projects.forEach((project) => {
+    const status = project.status || 'draft';
+    const statusLabel = {
+      draft: 'Rascunho',
+      in_progress: 'Em andamento',
+      done: 'Concluido',
+    }[status] || status;
+    const selected = currentProject && currentProject.id === project.id;
+    const item = createElement('div', `list-item${selected ? ' selected' : ''}`);
+    item.dataset.projectId = project.id;
+    item.dataset.projectStatus = status;
+    item.appendChild(createElement('div', 'list-title', project.title || 'Sem titulo'));
+    item.appendChild(createElement('div', 'list-meta', statusLabel));
+    projectList.appendChild(item);
+  });
 }
 
 function setActiveProject(project) {
@@ -292,33 +316,35 @@ function addParcelMarkers(features) {
 }
 
 function renderParcels(parcels) {
+  clearElement(parcelList);
   if (!parcels.length) {
-    parcelList.innerHTML = `
-      <div class="doc-item">
-        <div>Nenhum perimetro</div>
-        <span class="doc-status">---</span>
-      </div>
-    `;
+    const item = createElement('div', 'doc-item');
+    item.appendChild(createElement('div', null, 'Nenhum perimetro'));
+    item.appendChild(createElement('span', 'doc-status', '---'));
+    parcelList.appendChild(item);
     return;
   }
 
-  parcelList.innerHTML = parcels
-    .map((parcel) => {
-      const selected = currentParcel && currentParcel.id === parcel.id;
-      return `
-        <div class="parcel-item ${selected ? 'selected' : ''}" data-parcel-id="${parcel.id}">
-          <div>
-            <div>${parcel.name}</div>
-            <div class="parcel-meta">${Math.round(parcel.area_sq_m || 0)} m2</div>
-          </div>
-          <div class="parcel-actions">
-            <button class="btn soft" data-action="zoom">Zoom</button>
-            <button class="btn outline" data-action="delete">Excluir</button>
-          </div>
-        </div>
-      `;
-    })
-    .join('');
+  parcels.forEach((parcel) => {
+    const selected = currentParcel && currentParcel.id === parcel.id;
+    const item = createElement('div', `parcel-item${selected ? ' selected' : ''}`);
+    item.dataset.parcelId = parcel.id;
+    const info = createElement('div');
+    info.appendChild(createElement('div', null, parcel.name || 'Sem nome'));
+    info.appendChild(createElement('div', 'parcel-meta', `${Math.round(parcel.area_sq_m || 0)} m2`));
+    const actions = createElement('div', 'parcel-actions');
+    const zoomBtn = createElement('button', 'btn soft', 'Zoom');
+    zoomBtn.type = 'button';
+    zoomBtn.dataset.action = 'zoom';
+    const deleteBtn = createElement('button', 'btn outline', 'Excluir');
+    deleteBtn.type = 'button';
+    deleteBtn.dataset.action = 'delete';
+    actions.appendChild(zoomBtn);
+    actions.appendChild(deleteBtn);
+    item.appendChild(info);
+    item.appendChild(actions);
+    parcelList.appendChild(item);
+  });
 }
 
 async function loadParcels(projectId) {
@@ -388,31 +414,37 @@ async function loadDashboard(projectId) {
 }
 
 function renderDocuments(documents) {
+  clearElement(docList);
   if (!documents.length) {
-    docList.innerHTML = `
-      <div class="doc-item">
-        <div>Nenhum documento</div>
-        <span class="doc-status">---</span>
-      </div>
-    `;
+    const item = createElement('div', 'doc-item');
+    item.appendChild(createElement('div', null, 'Nenhum documento'));
+    item.appendChild(createElement('span', 'doc-status', '---'));
+    docList.appendChild(item);
     return;
   }
 
-  docList.innerHTML = documents
-    .map((doc) => {
-      return `
-        <div class="doc-item" data-doc-id="${doc.id}">
-          <div>${doc.doc_type.toUpperCase()}</div>
-          <span class="doc-status">${doc.status}</span>
-          <div class="doc-actions">
-            <button class="btn soft" data-action="submit">Enviar</button>
-            <button class="btn soft" data-action="approve">Aprovar</button>
-            <button class="btn outline" data-action="reset">Resetar</button>
-          </div>
-        </div>
-      `;
-    })
-    .join('');
+  documents.forEach((doc) => {
+    const item = createElement('div', 'doc-item');
+    item.dataset.docId = doc.id;
+    const docType = (doc.doc_type || '').toString().toUpperCase() || 'DOCUMENTO';
+    item.appendChild(createElement('div', null, docType));
+    item.appendChild(createElement('span', 'doc-status', doc.status || '---'));
+    const actions = createElement('div', 'doc-actions');
+    const submitBtn = createElement('button', 'btn soft', 'Enviar');
+    submitBtn.type = 'button';
+    submitBtn.dataset.action = 'submit';
+    const approveBtn = createElement('button', 'btn soft', 'Aprovar');
+    approveBtn.type = 'button';
+    approveBtn.dataset.action = 'approve';
+    const resetBtn = createElement('button', 'btn outline', 'Resetar');
+    resetBtn.type = 'button';
+    resetBtn.dataset.action = 'reset';
+    actions.appendChild(submitBtn);
+    actions.appendChild(approveBtn);
+    actions.appendChild(resetBtn);
+    item.appendChild(actions);
+    docList.appendChild(item);
+  });
 }
 
 async function loadDocuments(projectId) {

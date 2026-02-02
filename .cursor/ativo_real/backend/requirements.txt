@@ -5,3 +5,4 @@ django-filter>=23.5
 django-cors-headers>=4.3
 djangorestframework-simplejwt>=5.3
 djangorestframework-gis>=1.1
+gunicorn>=21.2

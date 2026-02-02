@@ -3,9 +3,27 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-insecure-key')
-DEBUG = os.environ.get('DJANGO_DEBUG', '1') == '1'
-ALLOWED_HOSTS = ['*']
+def env_bool(name, default=False):
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {'1', 'true', 'yes', 'on'}
+
+def env_list(name, default=None):
+    value = os.environ.get(name)
+    if value is None:
+        return default or []
+    return [item.strip() for item in value.split(',') if item.strip()]
+
+DEBUG = env_bool('DJANGO_DEBUG', False)
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = 'dev-insecure-key'
+    else:
+        raise RuntimeError('DJANGO_SECRET_KEY must be set in production.')
+
+ALLOWED_HOSTS = env_list('DJANGO_ALLOWED_HOSTS', ['localhost', '127.0.0.1'])
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -62,8 +80,13 @@ DATABASES = {
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'ativo_real'),
         'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
         'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+        'OPTIONS': {},
     }
 }
+
+_db_sslmode = os.environ.get('POSTGRES_SSLMODE')
+if _db_sslmode:
+    DATABASES['default']['OPTIONS']['sslmode'] = _db_sslmode
 
 GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
 GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
@@ -81,20 +104,39 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'core.User'
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = env_bool('CORS_ALLOW_ALL_ORIGINS', False)
+CORS_ALLOWED_ORIGINS = env_list('CORS_ALLOWED_ORIGINS', [])
+CSRF_TRUSTED_ORIGINS = env_list('CSRF_TRUSTED_ORIGINS', [])
+
+SECURE_SSL_REDIRECT = env_bool('DJANGO_SECURE_SSL_REDIRECT', False)
+SESSION_COOKIE_SECURE = SECURE_SSL_REDIRECT
+CSRF_COOKIE_SECURE = SECURE_SSL_REDIRECT
+SECURE_HSTS_SECONDS = int(os.environ.get('DJANGO_HSTS_SECONDS', '0'))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool('DJANGO_HSTS_INCLUDE_SUBDOMAINS', False)
+SECURE_HSTS_PRELOAD = env_bool('DJANGO_HSTS_PRELOAD', False)
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = 'same-origin'
+X_FRAME_OPTIONS = 'DENY'
+if env_bool('DJANGO_SECURE_PROXY_SSL_HEADER', False):
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+_authentication_classes = [
+    'rest_framework_simplejwt.authentication.JWTAuthentication',
+]
+if env_bool('DJANGO_ENABLE_SESSION_AUTH', False):
+    _authentication_classes.append('rest_framework.authentication.SessionAuthentication')
+if env_bool('DJANGO_ENABLE_BASIC_AUTH', False):
+    _authentication_classes.append('rest_framework.authentication.BasicAuthentication')
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': _authentication_classes,
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
@@ -102,6 +144,14 @@ REST_FRAMEWORK = {
         'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework.filters.OrderingFilter',
     ],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': os.environ.get('DRF_THROTTLE_ANON', '30/min'),
+        'user': os.environ.get('DRF_THROTTLE_USER', '120/min'),
+    },
 }
 
 SIMPLE_JWT = {

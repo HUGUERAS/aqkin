@@ -18,11 +18,18 @@ async function runMigration() {
   try {
     console.log('🚀 Iniciando migração SQL...');
     
-    // Lê o arquivo SQL
-    const sqlPath = path.join(__dirname, '..', 'database', 'init', '01_schema.sql');
-    let sqlContent = fs.readFileSync(sqlPath, 'utf8');
+    // Lê os arquivos SQL (01_schema + 02_extensions)
+    const basePath = path.join(__dirname, '..', 'database', 'init');
+    const files = ['01_schema.sql', '02_extensions.sql'];
+    let sqlContent = files
+      .map((f) => {
+        const p = path.join(basePath, f);
+        return fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : '';
+      })
+      .filter(Boolean)
+      .join('\n\n');
     
-    console.log('📄 SQL carregado:', sqlPath);
+    console.log('📄 SQL carregado: 01_schema + 02_extensions');
     
     // Remove comentários e divide em statements individuais
     const statements = sqlContent

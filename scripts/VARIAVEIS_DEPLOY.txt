@@ -1,0 +1,9 @@
+# Variáveis para deploy não-interativo
+# Copie e cole no terminal do VPS ANTES de rodar deploy-completo.sh
+
+export SUPABASE_URL="https://xntxtdximacsdnldouxa.supabase.co"
+export SUPABASE_SERVICE_KEY="COLE_SUA_SERVICE_KEY_AQUI"
+export JWT_SECRET="COLE_SEU_JWT_SECRET_AQUI"
+
+# Depois rode:
+# bash /root/deploy-completo.sh

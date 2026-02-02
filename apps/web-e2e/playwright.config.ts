@@ -2,8 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 import { nxE2EPreset } from '@nx/playwright/preset';
 import { workspaceRoot } from '@nx/devkit';
 
-// For CI, you may want to set BASE_URL to the deployed application.
-const baseURL = process.env['BASE_URL'] || 'http://localhost:4300';
+// Obrigatório: BASE_URL do app (deploy ou tunnel). Nunca localhost nem mock.
+const baseURL = process.env['BASE_URL'] ?? 'http://0.0.0.0:4300';
 
 /**
  * Read environment variables from file.
@@ -23,12 +23,14 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   /* Run your local dev server before starting the tests */
-  webServer: {
-    command: 'npx nx run @ativo-real-monorepo/web:preview',
-    url: 'http://localhost:4300',
-    reuseExistingServer: true,
-    cwd: workspaceRoot,
-  },
+  webServer: process.env['BASE_URL']
+    ? undefined
+    : {
+        command: 'npx nx run @ativo-real-monorepo/web:preview',
+        url: baseURL,
+        reuseExistingServer: true,
+        cwd: workspaceRoot,
+      },
   projects: [
     {
       name: 'chromium',

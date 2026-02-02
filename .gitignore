@@ -24,6 +24,11 @@ node_modules
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# env e artefatos de deploy
+.env
+.env.local
+*.tar.gz
+
 # misc
 /.sass-cache
 /connect.lock

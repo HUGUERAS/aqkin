@@ -1,5 +1,7 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useState } from 'react';
+import { supabase } from '../../lib/supabase';
+import apiClient from '../../services/api';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -9,17 +11,51 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'cliente' | 'topografo'>(roleParam as any);
+  const [erro, setErro] = useState('');
+  const [carregando, setCarregando] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErro('');
+    setCarregando(true);
 
-    // TODO: Implementar autenticação real com backend Django
-    // Por enquanto, apenas redireciona baseado no role
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
 
-    if (role === 'cliente') {
-      navigate('/cliente');
-    } else {
-      navigate('/topografo');
+      const token = data.session?.access_token;
+      if (!token) throw new Error('Sessão inválida');
+
+      apiClient.setToken(token);
+
+      // Verificar se usuário já tem perfil definido
+      const perfilResponse = await apiClient.getPerfilMe();
+
+      if (perfilResponse.error || !perfilResponse.data) {
+        // Primeiro acesso: definir role no backend
+        const roleApi = role === 'topografo' ? 'topografo' : 'proprietario';
+        await apiClient.setPerfilRole(roleApi);
+
+        // Redirecionar baseado no role selecionado
+        if (role === 'cliente') {
+          navigate('/cliente');
+        } else {
+          navigate('/topografo');
+        }
+      } else {
+        // Usuário já tem perfil: redirecionar baseado no perfil existente
+        const perfilExistente = perfilResponse.data.role;
+        if (perfilExistente === 'topografo') {
+          navigate('/topografo');
+        } else {
+          navigate('/cliente');
+        }
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Erro ao entrar';
+      setErro(msg);
+    } finally {
+      setCarregando(false);
     }
   };
 
@@ -43,6 +79,11 @@ export default function Login() {
           {role === 'cliente' ? '📱 Portal do Proprietário' : '🗺️ Portal do Topógrafo'}
         </h2>
 
+        {erro && (
+          <div style={{ padding: '0.75rem', background: '#fee', color: '#c00', borderRadius: '6px', fontSize: '0.9rem' }}>
+            {erro}
+          </div>
+        )}
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
@@ -104,6 +145,7 @@ export default function Login() {
 
           <button
             type="submit"
+            disabled={carregando}
             style={{
               padding: '1rem',
               background: '#667eea',
@@ -116,7 +158,7 @@ export default function Login() {
               marginTop: '1rem'
             }}
           >
-            Entrar
+            {carregando ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
 

@@ -1,34 +1,43 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Map from 'ol/Map';
 import View from 'ol/View';
-import TileLayer from 'ol/layer/Tile';
-import OSM from 'ol/source/OSM';
 import VectorLayer from 'ol/layer/Vector';
+import { getBasemapLayer, BASEMAP_OPTIONS, type BasemapId } from '../../lib/basemaps';
 import VectorSource from 'ol/source/Vector';
 import Draw from 'ol/interaction/Draw';
 import Modify from 'ol/interaction/Modify';
 import Snap from 'ol/interaction/Snap';
 import { Style, Fill, Stroke } from 'ol/style';
 import { fromLonLat } from 'ol/proj';
+import type { Feature } from 'ol/Feature';
+import type { Geometry } from 'ol/geom';
+import { readKML, writeKML, kmlFirstPolygonToWKT, downloadKML } from '../../lib/kml';
 import 'ol/ol.css';
 
 interface DrawMapProps {
   onGeometryChange?: (wkt: string) => void;
   initialCenter?: [number, number]; // [lon, lat]
   initialZoom?: number;
+  /** Basemap: OSM (padrão) ou Esri (street, topo, satellite) */
+  basemap?: BasemapId;
 }
 
 export default function DrawMap({
   onGeometryChange,
   initialCenter = [-47.9292, -15.7801], // Brasília como padrão
-  initialZoom = 15
+  initialZoom = 15,
+  basemap = 'osm',
 }: DrawMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<Map | null>(null);
   const vectorSourceRef = useRef<VectorSource | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [currentBasemap, setCurrentBasemap] = useState<BasemapId>(basemap);
 
   useEffect(() => {
     if (!mapRef.current) return;
+
+    const basemapLayer = getBasemapLayer(currentBasemap);
 
     // Vector source para desenhos do usuário
     const vectorSource = new VectorSource();
@@ -51,9 +60,7 @@ export default function DrawMap({
     const map = new Map({
       target: mapRef.current,
       layers: [
-        new TileLayer({
-          source: new OSM()
-        }),
+        basemapLayer,
         vectorLayer
       ],
       view: new View({
@@ -100,7 +107,7 @@ export default function DrawMap({
     return () => {
       map.setTarget(undefined);
     };
-  }, [initialCenter, initialZoom, onGeometryChange]);
+  }, [initialCenter, initialZoom, onGeometryChange, currentBasemap]);
 
   const handleClear = () => {
     if (vectorSourceRef.current) {
@@ -109,6 +116,42 @@ export default function DrawMap({
         onGeometryChange('');
       }
     }
+  };
+
+  const handleImportKML = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !vectorSourceRef.current) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = reader.result as string;
+      try {
+        const features = readKML(text) as Feature<Geometry>[];
+        if (features.length === 0) {
+          alert('Nenhum polígono encontrado no arquivo KML.');
+          return;
+        }
+        vectorSourceRef.current!.clear();
+        features.forEach((f) => vectorSourceRef.current!.addFeature(f));
+        const wkt = kmlFirstPolygonToWKT(text);
+        if (wkt && onGeometryChange) onGeometryChange(wkt);
+      } catch (err) {
+        console.error(err);
+        alert('Erro ao ler o arquivo KML. Verifique o formato.');
+      }
+    };
+    reader.readAsText(file, 'UTF-8');
+    e.target.value = '';
+  };
+
+  const handleExportKML = () => {
+    if (!vectorSourceRef.current) return;
+    const features = vectorSourceRef.current.getFeatures() as Feature<Geometry>[];
+    if (features.length === 0) {
+      alert('Desenhe um polígono antes de exportar.');
+      return;
+    }
+    const kml = writeKML(features);
+    if (kml) downloadKML(kml, 'lote.kml');
   };
 
   return (
@@ -123,6 +166,38 @@ export default function DrawMap({
         }}
       />
 
+      {/* Seletor de basemap */}
+      <div style={{
+        position: 'absolute',
+        top: '10px',
+        left: '10px',
+        background: 'rgba(255,255,255,0.95)',
+        padding: '8px 12px',
+        borderRadius: '8px',
+        fontSize: '12px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+        zIndex: 1,
+      }}>
+        <label style={{ fontWeight: 'bold', marginRight: '8px' }}>Mapa base:</label>
+        <select
+          value={currentBasemap}
+          onChange={(e) => setCurrentBasemap(e.target.value as BasemapId)}
+          style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '12px' }}
+        >
+          {BASEMAP_OPTIONS.map((opt) => (
+            <option key={opt.id} value={opt.id}>{opt.label}</option>
+          ))}
+        </select>
+      </div>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".kml,.xml"
+        style={{ display: 'none' }}
+        onChange={handleImportKML}
+      />
+
       {/* Controles */}
       <div style={{
         position: 'absolute',
@@ -130,8 +205,43 @@ export default function DrawMap({
         right: '10px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '8px'
+        gap: '8px',
+        zIndex: 1,
       }}>
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          style={{
+            padding: '8px 16px',
+            background: '#2196f3',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: 'bold',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+          }}
+        >
+          <span role="img" aria-label="Importar KML">📂</span> Importar KML
+        </button>
+        <button
+          type="button"
+          onClick={handleExportKML}
+          style={{
+            padding: '8px 16px',
+            background: '#4caf50',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: 'bold',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+          }}
+        >
+          <span role="img" aria-label="Exportar KML">📥</span> Exportar KML
+        </button>
         <button
           onClick={handleClear}
           style={{
@@ -146,7 +256,7 @@ export default function DrawMap({
             boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
           }}
         >
-          🗑️ Limpar
+          <span role="img" aria-label="Limpar desenho">🗑️</span> Limpar
         </button>
       </div>
 

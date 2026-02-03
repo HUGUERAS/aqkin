@@ -56,6 +56,20 @@ export default function TopografoLayout() {
             </Link>
 
             <Link
+              to="/topografo/projetos"
+              style={{
+                padding: '1rem 2rem',
+                textDecoration: 'none',
+                color: isActive('projetos') ? '#667eea' : '#333',
+                background: isActive('projetos') ? '#f0f4ff' : 'transparent',
+                borderLeft: isActive('projetos') ? '4px solid #667eea' : '4px solid transparent',
+                fontWeight: isActive('projetos') ? 'bold' : 'normal'
+              }}
+            >
+              📁 Meus Projetos
+            </Link>
+
+            <Link
               to="/topografo/validar"
               style={{
                 padding: '1rem 2rem',
@@ -84,6 +98,34 @@ export default function TopografoLayout() {
             </Link>
 
             <hr style={{ margin: '2rem 0', border: 'none', borderTop: '1px solid #ddd' }} />
+
+            <Link
+              to="/topografo/orcamentos"
+              style={{
+                padding: '1rem 2rem',
+                textDecoration: 'none',
+                color: isActive('orcamentos') ? '#667eea' : '#333',
+                background: isActive('orcamentos') ? '#f0f4ff' : 'transparent',
+                borderLeft: isActive('orcamentos') ? '4px solid #667eea' : '4px solid transparent',
+                fontWeight: isActive('orcamentos') ? 'bold' : 'normal'
+              }}
+            >
+              💰 Orçamentos
+            </Link>
+
+            <Link
+              to="/topografo/financeiro"
+              style={{
+                padding: '1rem 2rem',
+                textDecoration: 'none',
+                color: isActive('financeiro') ? '#667eea' : '#333',
+                background: isActive('financeiro') ? '#f0f4ff' : 'transparent',
+                borderLeft: isActive('financeiro') ? '4px solid #667eea' : '4px solid transparent',
+                fontWeight: isActive('financeiro') ? 'bold' : 'normal'
+              }}
+            >
+              💳 Financeiro
+            </Link>
 
             <div style={{ padding: '0 2rem' }}>
               <h4 style={{ color: '#666', fontSize: '0.9rem', marginBottom: '1rem' }}>

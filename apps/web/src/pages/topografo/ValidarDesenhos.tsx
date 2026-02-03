@@ -1,7 +1,9 @@
 export default function ValidarDesenhos() {
   return (
     <div style={{ padding: '2rem' }}>
-      <h1 style={{ marginBottom: '2rem' }}>✅ Validar Desenhos</h1>
+      <h1 style={{ marginBottom: '2rem' }}>
+        <span role="img" aria-label="Validar Desenhos">✅</span> Validar Desenhos
+      </h1>
 
       <div style={{
         background: 'white',
@@ -10,7 +12,9 @@ export default function ValidarDesenhos() {
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
         marginBottom: '2rem'
       }}>
-        <h2 style={{ marginBottom: '1rem' }}>🔧 Ferramentas de Ajuste</h2>
+        <h2 style={{ marginBottom: '1rem' }}>
+          <span role="img" aria-label="Ferramentas de Ajuste">🔧</span> Ferramentas de Ajuste
+        </h2>
 
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
           <button style={{
@@ -22,7 +26,7 @@ export default function ValidarDesenhos() {
             fontWeight: 'bold',
             cursor: 'pointer'
           }}>
-            🧲 Snap Tool (0.5m)
+            <span role="img" aria-label="Snap Tool">🧲</span> Snap Tool (0.5m)
           </button>
 
           <button style={{
@@ -34,7 +38,7 @@ export default function ValidarDesenhos() {
             fontWeight: 'bold',
             cursor: 'pointer'
           }}>
-            ✏️ Editar Vértices
+            <span role="img" aria-label="Editar Vértices">✏️</span> Editar Vértices
           </button>
 
           <button style={{
@@ -46,7 +50,7 @@ export default function ValidarDesenhos() {
             fontWeight: 'bold',
             cursor: 'pointer'
           }}>
-            📏 Medir Distância
+            <span role="img" aria-label="Medir Distância">📏</span> Medir Distância
           </button>
 
           <button style={{
@@ -58,7 +62,7 @@ export default function ValidarDesenhos() {
             fontWeight: 'bold',
             cursor: 'pointer'
           }}>
-            📐 Calcular Área
+            <span role="img" aria-label="Calcular Área">📐</span> Calcular Área
           </button>
         </div>
 
@@ -73,7 +77,9 @@ export default function ValidarDesenhos() {
           justifyContent: 'center'
         }}>
           <div style={{ textAlign: 'center', color: '#666' }}>
-            <p style={{ fontSize: '3rem' }}>🗺️</p>
+            <p style={{ fontSize: '3rem' }}>
+              <span role="img" aria-label="Mapa">🗺️</span>
+            </p>
             <p style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Mapa de Validação</p>
             <div style={{ marginTop: '1rem' }}>
               <p><strong>Layers Ativas:</strong></p>

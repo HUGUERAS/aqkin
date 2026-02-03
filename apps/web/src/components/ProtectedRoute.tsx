@@ -97,7 +97,9 @@ export default function ProtectedRoute({ children, allowedRole }: ProtectedRoute
         background: '#f5f5f5'
       }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>⏳</div>
+          <div style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>
+            <span role="img" aria-label="Carregando">⏳</span>
+          </div>
           <div>Verificando acesso...</div>
         </div>
       </div>
@@ -126,5 +128,5 @@ export default function ProtectedRoute({ children, allowedRole }: ProtectedRoute
   }
 
   // Usuário autenticado e com perfil correto → renderizar children
-  return <>{children}</>;
+  return children;
 }

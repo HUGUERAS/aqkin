@@ -223,7 +223,7 @@ export default function DrawMap({
             boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
           }}
         >
-          📂 Importar KML
+          <span role="img" aria-label="Importar KML">📂</span> Importar KML
         </button>
         <button
           type="button"
@@ -240,7 +240,7 @@ export default function DrawMap({
             boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
           }}
         >
-          📥 Exportar KML
+          <span role="img" aria-label="Exportar KML">📥</span> Exportar KML
         </button>
         <button
           onClick={handleClear}
@@ -256,7 +256,7 @@ export default function DrawMap({
             boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
           }}
         >
-          🗑️ Limpar
+          <span role="img" aria-label="Limpar desenho">🗑️</span> Limpar
         </button>
       </div>
 

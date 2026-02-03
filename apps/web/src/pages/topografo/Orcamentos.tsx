@@ -431,12 +431,16 @@ export default function Orcamentos() {
       {/* Lista de Orçamentos */}
       {loading ? (
         <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
-          <p style={{ fontSize: '2rem' }}>⏳</p>
+          <p style={{ fontSize: '2rem' }}>
+            <span role="img" aria-label="Carregando">⏳</span>
+          </p>
           <p>Carregando orçamentos...</p>
         </div>
       ) : orcamentosFiltrados.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '3rem', color: '#666', background: 'white', borderRadius: '12px' }}>
-          <p style={{ fontSize: '2rem' }}>📭</p>
+          <p style={{ fontSize: '2rem' }}>
+            <span role="img" aria-label="Nenhum orçamento">📭</span>
+          </p>
           <p>Nenhum orçamento encontrado</p>
         </div>
       ) : (

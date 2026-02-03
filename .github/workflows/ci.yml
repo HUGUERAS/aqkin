@@ -27,13 +27,13 @@ jobs:
         run: npm ci
 
       - name: Run linting
-        run: npx nx run-many --target=lint --all
+        run: npx nx run-many --target=lint --all --exclude=api
 
       - name: Run tests
-        run: npx nx run-many --target=test --all --coverage
+        run: npx nx run-many --target=test --all --coverage --exclude=api
 
       - name: Build all projects
-        run: npx nx run-many --target=build --all
+        run: npx nx run-many --target=build --all --exclude=api
 
   backend-check:
     runs-on: ubuntu-latest

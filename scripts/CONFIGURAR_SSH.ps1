@@ -1,5 +1,35 @@
-# Configura SSH para não abrir Bloco de Notas
-# Uso: .\scripts\CONFIGURAR_SSH.ps1
+# Configurar SSH no Windows para deploy via chave
+# IMPORTANTE: Este script configura o SSH de forma SEGURA
+# Não desabilita verificação de host key
+
+$ErrorActionPreference = "Stop"
+
+Write-Host "============================================" -ForegroundColor Cyan
+Write-Host "  CONFIGURAÇÃO SSH (SEGURA)" -ForegroundColor Cyan
+Write-Host "============================================" -ForegroundColor Cyan
+Write-Host ""
+
+# Carregar configuração de deployment
+$deployEnvPath = Join-Path $PSScriptRoot ".." ".deploy.env"
+if (-not (Test-Path $deployEnvPath)) {
+    Write-Host "ERRO: Arquivo .deploy.env não encontrado!" -ForegroundColor Red
+    Write-Host "Copie .deploy.env.example para .deploy.env e configure." -ForegroundColor Yellow
+    exit 1
+}
+
+# Ler variáveis do .deploy.env
+Get-Content $deployEnvPath | ForEach-Object {
+    if ($_ -match '^([^=]+)=(.*)$') {
+        $name = $matches[1].Trim()
+        $value = $matches[2].Trim()
+        Set-Variable -Name $name -Value $value -Scope Script
+    }
+}
+
+if (-not $VPS_IP) {
+    Write-Host "ERRO: VPS_IP não configurado em .deploy.env" -ForegroundColor Red
+    exit 1
+}
 
 $SSH_CONFIG = "$env:USERPROFILE\.ssh\config"
 $SSH_DIR = "$env:USERPROFILE\.ssh"
@@ -10,23 +40,23 @@ if (-not (Test-Path $SSH_DIR)) {
     Write-Host "Pasta .ssh criada" -ForegroundColor Green
 }
 
-# Criar/atualizar config
+# Criar/atualizar config SEGURA (SEM StrictHostKeyChecking=no)
 $CONFIG_CONTENT = @"
-# Configuração para bemreal.com VPS
+# Configuração para bemreal.com VPS (SEGURA)
+# SEGURANÇA: Host key verification HABILITADA
 Host bemreal
-    HostName 76.13.113.9
+    HostName $VPS_IP
     User root
     PreferredAuthentications password
     PubkeyAuthentication no
-    StrictHostKeyChecking no
-    UserKnownHostsFile $env:USERPROFILE\.ssh\known_hosts_bemreal
+    # StrictHostKeyChecking mantido no padrão (ask) para primeira conexão
 
 Host bemreal-key
-    HostName 76.13.113.9
+    HostName $VPS_IP
     User root
     IdentityFile $env:USERPROFILE\.ssh\id_ed25519
     PreferredAuthentications publickey
-    StrictHostKeyChecking no
+    # StrictHostKeyChecking mantido no padrão (ask) para primeira conexão
 "@
 
 if (Test-Path $SSH_CONFIG) {
@@ -44,18 +74,20 @@ if (Test-Path $SSH_CONFIG) {
 
 Write-Host ""
 Write-Host "==============================================" -ForegroundColor Cyan
-Write-Host "  CONFIGURAÇÃO SSH ATUALIZADA" -ForegroundColor Cyan
+Write-Host "  CONFIGURAÇÃO SSH ATUALIZADA (SEGURA)" -ForegroundColor Cyan
 Write-Host "==============================================" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "Agora você pode usar:" -ForegroundColor Yellow
+Write-Host "IMPORTANTE: Na primeira conexão, você será" -ForegroundColor Yellow
+Write-Host "solicitado a verificar a chave do host." -ForegroundColor Yellow
+Write-Host "Digite 'yes' após verificar o fingerprint." -ForegroundColor Yellow
+Write-Host ""
+Write-Host "Agora você pode usar:" -ForegroundColor Green
 Write-Host ""
 Write-Host "  scp arquivo bemreal:/destino" -ForegroundColor Cyan
 Write-Host "  ssh bemreal" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "OU se tiver chave SSH configurada:" -ForegroundColor Yellow
+Write-Host "OU se tiver chave SSH configurada:" -ForegroundColor Green
 Write-Host ""
 Write-Host "  scp arquivo bemreal-key:/destino" -ForegroundColor Cyan
 Write-Host "  ssh bemreal-key" -ForegroundColor Cyan
-Write-Host ""
-Write-Host "Isso pode resolver o problema do Bloco de Notas." -ForegroundColor Green
 Write-Host ""

@@ -30,6 +30,7 @@ node_modules
 # env e artefatos de deploy
 .env
 .env.local
+.deploy.env
 *.tar.gz
 
 # Deployment scripts with credentials

@@ -1,23 +1,54 @@
 # Deploy AUTOMÁTICO usando SSH Key via Posh-SSH
 # Uso: .\scripts\DEPLOY_AUTOMATICO.ps1
-# Instala Posh-SSH automaticamente se necessário
+# SEGURO: Verifica host key e usa versão específica do módulo
 
-$VPS_IP = "76.13.113.9"
-$SSH_KEY = "$env:USERPROFILE\.ssh\id_ed25519"
-$SSH_KEY_PUB = "$env:USERPROFILE\.ssh\id_ed25519.pub"
+# Carregar configuração de deployment
 $PROJECT_ROOT = Join-Path $PSScriptRoot ".." | Resolve-Path
+$deployEnvPath = Join-Path $PROJECT_ROOT ".deploy.env"
+
+if (-not (Test-Path $deployEnvPath)) {
+    Write-Host "ERRO: Arquivo .deploy.env não encontrado!" -ForegroundColor Red
+    Write-Host "Copie .deploy.env.example para .deploy.env e configure." -ForegroundColor Yellow
+    exit 1
+}
+
+# Ler variáveis do .deploy.env
+Get-Content $deployEnvPath | ForEach-Object {
+    if ($_ -match '^([^=]+)=(.*)$') {
+        $name = $matches[1].Trim()
+        $value = $matches[2].Trim()
+        Set-Variable -Name $name -Value $value -Scope Script
+    }
+}
+
+if (-not $VPS_IP) {
+    Write-Host "ERRO: VPS_IP não configurado em .deploy.env" -ForegroundColor Red
+    exit 1
+}
+
+$SSH_KEY = if ($SSH_KEY_PATH) { $SSH_KEY_PATH } else { "$env:USERPROFILE\.ssh\id_ed25519" }
+$SSH_KEY_PUB = "$SSH_KEY.pub"
+
 Set-Location $PROJECT_ROOT
 
 Write-Host "==============================================" -ForegroundColor Cyan
-Write-Host "  DEPLOY AUTOMÁTICO COM SSH KEY" -ForegroundColor Cyan
+Write-Host "  DEPLOY AUTOMÁTICO COM SSH KEY (SEGURO)" -ForegroundColor Cyan
 Write-Host "==============================================" -ForegroundColor Cyan
 Write-Host ""
 
-# Verificar/instalar Posh-SSH
-if (-not (Get-Module -ListAvailable -Name Posh-SSH)) {
-    Write-Host ">>> Instalando módulo Posh-SSH..." -ForegroundColor Yellow
-    Install-Module -Name Posh-SSH -Scope CurrentUser -Force -SkipPublisherCheck
-    Write-Host "OK" -ForegroundColor Green
+# Verificar/instalar Posh-SSH com versão específica e verificação de publisher
+$POSH_SSH_VERSION = "3.0.8"
+if (-not (Get-Module -ListAvailable -Name Posh-SSH | Where-Object Version -eq $POSH_SSH_VERSION)) {
+    Write-Host ">>> Instalando módulo Posh-SSH versão $POSH_SSH_VERSION..." -ForegroundColor Yellow
+    Write-Host "    SEGURANÇA: Verificando assinatura do publisher..." -ForegroundColor Yellow
+    try {
+        Install-Module -Name Posh-SSH -RequiredVersion $POSH_SSH_VERSION -Scope CurrentUser -Force -ErrorAction Stop
+        Write-Host "OK" -ForegroundColor Green
+    } catch {
+        Write-Host "ERRO: Falha ao instalar Posh-SSH" -ForegroundColor Red
+        Write-Host "Tente instalar manualmente: Install-Module -Name Posh-SSH -RequiredVersion $POSH_SSH_VERSION" -ForegroundColor Yellow
+        exit 1
+    }
 }
 
 Import-Module Posh-SSH -ErrorAction Stop
@@ -36,20 +67,26 @@ Write-Host ">>> Usando chave SSH: $SSH_KEY" -ForegroundColor Green
 $securePassword = Read-Host "Digite a senha do VPS (root)" -AsSecureString
 $credential = New-Object System.Management.Automation.PSCredential("root", $securePassword)
 
-# Testar conexão
+# Testar conexão (SEM -AcceptKey - requer host key manual na primeira vez)
 Write-Host ">>> Testando conexão SSH..." -ForegroundColor Yellow
+Write-Host "    SEGURANÇA: Verificando host key..." -ForegroundColor Yellow
 try {
-    $session = New-SSHSession -ComputerName $VPS_IP -Credential $credential -KeyFile $SSH_KEY -AcceptKey -ErrorAction Stop
+    $session = New-SSHSession -ComputerName $VPS_IP -Credential $credential -KeyFile $SSH_KEY -ErrorAction Stop
     Write-Host "OK: Conectado via SSH Key!" -ForegroundColor Green
 } catch {
     Write-Host "Tentando configurar chave SSH no VPS..." -ForegroundColor Yellow
+    Write-Host "    NOTA: Na primeira conexão, verifique o fingerprint do host" -ForegroundColor Yellow
     
-    # Conectar com senha para configurar chave
+    # Conectar com senha para configurar chave (SEM -AcceptKey)
     try {
-        $session = New-SSHSession -ComputerName $VPS_IP -Credential $credential -AcceptKey -ErrorAction Stop
+        $session = New-SSHSession -ComputerName $VPS_IP -Credential $credential -ErrorAction Stop
     } catch {
         Write-Host "ERRO: Não foi possível conectar ao VPS" -ForegroundColor Red
         Write-Host $_.Exception.Message -ForegroundColor Red
+        Write-Host ""
+        Write-Host "Se for a primeira conexão, conecte manualmente primeiro:" -ForegroundColor Yellow
+        Write-Host "  ssh root@$VPS_IP" -ForegroundColor Cyan
+        Write-Host "E verifique o fingerprint da chave do host." -ForegroundColor Yellow
         exit 1
     }
     
@@ -69,8 +106,8 @@ echo "OK"
         
         Remove-SSHSession -SessionId $session.SessionId | Out-Null
         
-        # Reconectar com chave
-        $session = New-SSHSession -ComputerName $VPS_IP -Credential $credential -KeyFile $SSH_KEY -AcceptKey -ErrorAction Stop
+        # Reconectar com chave (SEM -AcceptKey - host key já verificada)
+        $session = New-SSHSession -ComputerName $VPS_IP -Credential $credential -KeyFile $SSH_KEY -ErrorAction Stop
     }
 }
 

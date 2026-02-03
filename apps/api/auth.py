@@ -1,4 +1,5 @@
 """RBAC e Multitenant: validação JWT e filtros por tenant."""
+
 from fastapi import Depends, HTTPException, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, APIKeyHeader
 from jose import JWTError, jwt
@@ -11,7 +12,9 @@ ALGORITHM = "HS256"
 security = HTTPBearer(auto_error=False)
 
 
-async def get_token(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)) -> Optional[str]:
+async def get_token(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security),
+) -> Optional[str]:
     """Extrai o token Bearer do header."""
     if credentials:
         return credentials.credentials
@@ -42,11 +45,19 @@ async def get_current_user_required(user: Optional[dict] = Depends(get_current_u
     return user
 
 
-async def get_perfil(user: dict = Depends(get_current_user_required), request: Request = None):
+async def get_perfil(
+    user: dict = Depends(get_current_user_required), request: Request = None
+):
     """Obtém perfil (role) do usuário no banco. Requer auth."""
     from db import supabase
+
     try:
-        r = supabase.table("perfis").select("role").eq("user_id", user["user_id"]).execute()
+        r = (
+            supabase.table("perfis")
+            .select("role")
+            .eq("user_id", user["user_id"])
+            .execute()
+        )
         if r.data and len(r.data) > 0:
             role = r.data[0].get("role", "proprietario")
         else:
@@ -73,7 +84,13 @@ async def get_perfil_optional(user: Optional[dict] = Depends(get_current_user)):
         return None
     try:
         from db import supabase
-        r = supabase.table("perfis").select("role").eq("user_id", user["user_id"]).execute()
+
+        r = (
+            supabase.table("perfis")
+            .select("role")
+            .eq("user_id", user["user_id"])
+            .execute()
+        )
         role = r.data[0].get("role", "proprietario") if r.data else "proprietario"
         return {
             **user,

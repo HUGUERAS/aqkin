@@ -39,8 +39,6 @@ export default function ViewMap({
   useEffect(() => {
     if (!mapRef.current) return;
 
-    const basemapLayer = getBasemapLayer(currentBasemap);
-
     // Layers para diferentes tipos
     const rascunhoSource = new VectorSource();
     const oficialSource = new VectorSource();

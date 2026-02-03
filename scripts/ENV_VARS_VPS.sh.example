@@ -1,0 +1,13 @@
+#!/bin/bash
+# Variáveis de ambiente para deploy não-interativo
+# INSTRUÇÕES:
+# 1. Copie este arquivo para ENV_VARS_VPS.sh
+# 2. Substitua os valores de exemplo pelas suas credenciais reais
+# 3. NUNCA commit o arquivo ENV_VARS_VPS.sh no Git
+# 4. Use: source /root/ENV_VARS_VPS.sh && bash /root/deploy-completo.sh
+
+export SUPABASE_URL="https://your-project.supabase.co"
+export SUPABASE_SERVICE_KEY="your-service-role-key-here"
+export JWT_SECRET="your-jwt-secret-here"
+
+echo "Variáveis configuradas. Rode: bash /root/deploy-completo.sh"

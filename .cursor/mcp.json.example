@@ -6,7 +6,7 @@
         "hostinger-api-mcp@latest"
       ],
       "env": {
-        "API_TOKEN": "D2shZbUeIcTke2myHPzqBiuoj1uGUV1dbPXL3dax3afa8c2b"
+        "API_TOKEN": "YOUR_HOSTINGER_API_TOKEN_HERE"
       }
     }
   }

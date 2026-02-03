@@ -5,8 +5,17 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from typing import Optional
 import os
+import logging
 
+logger = logging.getLogger(__name__)
+
+# Fail fast if JWT_SECRET is not configured
 JWT_SECRET = os.getenv("JWT_SECRET") or os.getenv("SUPABASE_JWT_SECRET")
+if not JWT_SECRET:
+    error_msg = "CRITICAL: JWT_SECRET or SUPABASE_JWT_SECRET environment variable must be set for authentication to work"
+    logger.critical(error_msg)
+    raise RuntimeError(error_msg)
+
 ALGORITHM = "HS256"
 
 security = HTTPBearer(auto_error=False)
@@ -25,8 +34,6 @@ async def get_current_user(token: Optional[str] = Depends(get_token)):
     """Decodifica o JWT e retorna user_id e email. Retorna None se não autenticado."""
     if not token:
         return None
-    if not JWT_SECRET:
-        return None  # Sem secret configurado, ignora auth (dev)
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM])
         user_id = payload.get("sub")

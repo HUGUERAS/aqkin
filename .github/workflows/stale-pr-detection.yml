@@ -28,8 +28,8 @@ jobs:
             because it has not had any activity for 30 days.
 
             **What happens next:**
-            - If no activity occurs within the next 60 days,
-              this PR will be closed automatically
+            - If no activity occurs within 60 additional days,
+              this PR will be closed (90 days total inactivity)
             - To keep this PR open, add a comment or push new commits
             - If this PR is blocked or waiting for something,
               please add a comment explaining the situation

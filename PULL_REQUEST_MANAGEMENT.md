@@ -39,8 +39,8 @@ gh pr close 10 --comment "Closing as work has been completed in main branch"
 ## Preventing Stale PRs
 
 This repository now includes a workflow (`.github/workflows/stale-pr-detection.yml`) that:
-- Automatically labels PRs as "stale" after 30 days of inactivity
-- Adds a comment warning about closure after 60 days
+- Automatically labels PRs as "stale" after 30 days of inactivity (with a warning comment)
+- Closes stale PRs after an additional 60 days (90 days total inactivity)
 - Helps maintain a clean PR list
 
 ## Best Practices

@@ -49,10 +49,10 @@ gh pr close 10 --comment "Fechando porque o trabalho foi completado na branch ma
 ## Prevenção Automática de PRs Obsoletos
 
 Um novo workflow foi adicionado (`.github/workflows/stale-pr-detection.yml`) que:
-- Marca PRs como "stale" (obsoletos) após 30 dias sem atividade
-- Adiciona um aviso sobre fechamento após 60 dias
-- Fecha automaticamente PRs após 90 dias de inatividade
+- Marca PRs como "stale" (obsoletos) após 30 dias sem atividade (com comentário de aviso)
+- Fecha PRs obsoletos após mais 60 dias (90 dias de inatividade total)
 - NÃO afeta PRs em rascunho ou com labels especiais (pinned, security, blocked)
+- Ajuda a manter o repositório limpo
 
 ## Documentação Completa
 

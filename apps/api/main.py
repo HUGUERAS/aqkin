@@ -1,18 +1,13 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 import uuid
 
 from db import supabase
-from auth import (
-    get_perfil,
-    require_topografo,
-    get_perfil_optional,
-    get_current_user_required,
-)
+from auth import get_perfil, require_topografo, get_current_user_required
 
 load_dotenv()
 
@@ -535,7 +530,7 @@ def listar_orcamentos(
                 _projeto_autorizado(projeto_id, perfil)
                 query = query.eq("projeto_id", projeto_id)
             elif lote_id:
-                lote = _lote_autorizado(lote_id, perfil, escrita=False)
+                _lote_autorizado(lote_id, perfil, escrita=False)
                 query = query.eq("lote_id", lote_id)
             else:
                 # Listar todos os orçamentos dos projetos do tenant
@@ -563,7 +558,7 @@ def listar_orcamentos(
                     .eq("email_cliente", perfil.get("email", ""))
                     .execute()
                 )
-                ids = [l["id"] for l in (lotes.data or [])]
+                ids = [lote["id"] for lote in (lotes.data or [])]
                 if ids:
                     query = query.in_("lote_id", ids)
                 else:
@@ -895,13 +890,13 @@ def listar_pagamentos(
                     .eq("projeto_id", projeto_id)
                     .execute()
                 )
-                ids = [l["id"] for l in (lotes.data or [])]
+                ids = [lote["id"] for lote in (lotes.data or [])]
                 if ids:
                     query = query.in_("lote_id", ids)
                 else:
                     return []
             elif lote_id:
-                lote = _lote_autorizado(lote_id, perfil, escrita=False)
+                _lote_autorizado(lote_id, perfil, escrita=False)
                 query = query.eq("lote_id", lote_id)
             else:
                 # Listar todos os pagamentos dos projetos do tenant
@@ -919,7 +914,7 @@ def listar_pagamentos(
                         .in_("projeto_id", ids)
                         .execute()
                     )
-                    lote_ids = [l["id"] for l in (lotes.data or [])]
+                    lote_ids = [lote["id"] for lote in (lotes.data or [])]
                     if lote_ids:
                         query = query.in_("lote_id", lote_ids)
                     else:
@@ -939,7 +934,7 @@ def listar_pagamentos(
                     .eq("email_cliente", perfil.get("email", ""))
                     .execute()
                 )
-                ids = [l["id"] for l in (lotes.data or [])]
+                ids = [lote["id"] for lote in (lotes.data or [])]
                 if ids:
                     query = query.in_("lote_id", ids)
                 else:

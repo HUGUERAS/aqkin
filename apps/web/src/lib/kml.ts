@@ -78,7 +78,7 @@ function multiPolygonFirstToWKT(rings: number[][][][]): string {
 /**
  * Dispara download de um arquivo .kml com o conteúdo informado.
  */
-export function downloadKML(content: string, filename: string = 'lote.kml'): void {
+export function downloadKML(content: string, filename = 'lote.kml'): void {
   const blob = new Blob([content], { type: 'application/vnd.google-earth.kml+xml' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');

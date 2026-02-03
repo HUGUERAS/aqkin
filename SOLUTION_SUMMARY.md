@@ -57,6 +57,8 @@ Updated main `README.md` with a new "Pull Request Management" section linking to
   gh pr close 10 --comment "Closing: Work completed in main branch (commit 0e842fc)"
   ```
 
+> **Note**: Commit 0e842fc added the Copilot instructions (`.github/copilot-instructions.md`) and other setup to main branch.
+
 ### PR #3 - KEEP OPEN ✅
 - **Title**: feat: auth, módulo financeiro, proteção de rotas, mapas Esri e script…
 - **Status**: OPEN - Ready for review

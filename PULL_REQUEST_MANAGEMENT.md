@@ -68,3 +68,5 @@ To close it, run:
 ```bash
 gh pr close 10 --comment "Closing: Copilot instructions already exist in main branch and security fix has been applied. Work completed through commit 0e842fc."
 ```
+
+> **Note**: Commit 0e842fc is the commit that added the Copilot instructions to the main branch, making PR #10 redundant.

@@ -76,7 +76,15 @@ export default function Login() {
         maxWidth: '400px'
       }}>
         <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>
-          {role === 'cliente' ? '📱 Portal do Proprietário' : '🗺️ Portal do Topógrafo'}
+          {role === 'cliente' ? (
+            <>
+              <span role="img" aria-label="Portal do Proprietário">📱</span> Portal do Proprietário
+            </>
+          ) : (
+            <>
+              <span role="img" aria-label="Portal do Topógrafo">🗺️</span> Portal do Topógrafo
+            </>
+          )}
         </h2>
 
         {erro && (

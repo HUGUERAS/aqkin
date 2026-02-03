@@ -1,6 +1,64 @@
-# AtivoRealMonorepo
+# AtivoReal Monorepo
 
 <a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+
+A geospatial property management system built with React, TypeScript, FastAPI, and PostGIS.
+
+## 🤖 GitHub Copilot Instructions
+
+This repository has comprehensive GitHub Copilot instructions configured to help AI assistants understand the codebase:
+
+- **[Main Instructions](.github/copilot-instructions.md)** - Project overview, commands, standards, and workflows
+- **Specialized Instructions** in `.github/instructions/`:
+  - [Testing Guide](.github/instructions/testing.instructions.md) - Unit, integration, and E2E testing
+  - [Frontend Guide](.github/instructions/frontend.instructions.md) - React/TypeScript best practices
+  - [Backend Guide](.github/instructions/backend.instructions.md) - FastAPI/Python patterns
+
+These instructions help ensure consistent code quality and adherence to project conventions.
+
+## 📚 Documentation
+
+- **[SUPABASE_SETUP.md](SUPABASE_SETUP.md)** - Database setup and configuration
+- **[DEPLOY_GUIDE.md](DEPLOY_GUIDE.md)** - General deployment instructions
+- **[DEPLOY_BACKEND.md](DEPLOY_BACKEND.md)** - Backend deployment specifics
+- **[SETUP_AZURE.md](SETUP_AZURE.md)** - Azure deployment guide
+- **[SECURITY.md](SECURITY.md)** - Security policies and reporting
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 20+
+- Python 3.11+
+- npm or yarn
+
+### Installation
+
+```bash
+# Install all dependencies
+npm install
+
+# Set up Python environment for backend
+cd apps/api
+pip install -r requirements.txt
+cd ../..
+
+# Copy environment files and configure
+cp apps/web/.env.example apps/web/.env
+cp apps/api/.env.example apps/api/.env
+# Edit .env files with your configuration
+```
+
+### Development
+
+```bash
+# Start frontend dev server (port 4200)
+npx nx serve web
+
+# Run backend API (separate terminal)
+npx nx serve api
+```
+
+---
 
 ✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
 
@@ -29,6 +87,49 @@ npx nx show project web
 These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
 
 [More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+
+## Testing & Code Quality
+
+### Run Tests
+
+```sh
+# Frontend unit tests with Vitest
+npx nx test web
+
+# Frontend tests with coverage
+npx nx test web --coverage
+
+# E2E tests with Playwright
+npx nx e2e web-e2e
+
+# Backend tests (Python)
+cd apps/api && pytest
+```
+
+### Code Quality Checks
+
+```sh
+# Lint frontend code
+npx nx lint web
+
+# TypeScript type checking
+npx nx typecheck web
+
+# Format and lint Python backend
+cd apps/api
+black .
+flake8 . --max-line-length=120 --extend-ignore=E203,W503
+```
+
+### Build
+
+```sh
+# Build frontend for production
+npx nx build web
+
+# Build backend
+npx nx build api
+```
 
 ## Add new projects
 

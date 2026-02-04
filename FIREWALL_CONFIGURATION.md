@@ -23,11 +23,18 @@ With a properly configured firewall:
 ### Automatic Configuration (Recommended)
 
 ```bash
-# On your VPS server
+# On your VPS server, download and review the script first
 curl -sSL https://raw.githubusercontent.com/HUGUERAS/aqkin/main/scripts/configure-firewall.sh -o configure-firewall.sh
+
+# Review the script contents before executing
+cat configure-firewall.sh
+
+# Make executable and run
 chmod +x configure-firewall.sh
 sudo bash configure-firewall.sh
 ```
+
+**Security Note:** Always review scripts before executing them, especially when downloaded from the internet.
 
 This script will:
 1. Install UFW (Uncomplicated Firewall) if needed

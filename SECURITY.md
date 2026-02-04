@@ -105,7 +105,7 @@ sudo grep "Failed password" /var/log/auth.log
 If you discover a security vulnerability, please follow responsible disclosure:
 
 1. **DO NOT** open a public GitHub issue
-2. Email security concerns to: [PROJECT_SECURITY_EMAIL]
+2. Email security concerns to: security@ativoreal.com (or open a private security advisory on GitHub)
 3. Include:
    - Description of the vulnerability
    - Steps to reproduce

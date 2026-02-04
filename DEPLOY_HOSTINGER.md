@@ -60,11 +60,18 @@ apt update && apt install -y python3 python3-pip python3-venv nginx certbot pyth
 ### Opção A: Configuração automática (recomendado)
 
 ```bash
-# Baixar e executar script de configuração
+# Baixar script de configuração
 curl -sSL https://raw.githubusercontent.com/HUGUERAS/aqkin/main/scripts/configure-firewall.sh -o configure-firewall.sh
+
+# IMPORTANTE: Revisar o script antes de executar
+cat configure-firewall.sh
+
+# Executar após revisar
 chmod +x configure-firewall.sh
 sudo bash configure-firewall.sh
 ```
+
+**⚠️ Segurança:** Sempre revise scripts antes de executá-los, especialmente quando baixados da internet.
 
 ### Opção B: Configuração manual
 

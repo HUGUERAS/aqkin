@@ -38,7 +38,8 @@ echo ">>> Configuring firewall rules..."
 
 # Check if UFW is already enabled
 UFW_ACTIVE=false
-if ufw status | grep -q "Status: active"; then
+UFW_STATUS_OUTPUT=$(ufw status 2>/dev/null || true)
+if echo "$UFW_STATUS_OUTPUT" | grep -q "Status: active"; then
   UFW_ACTIVE=true
   echo "UFW is already active"
 else

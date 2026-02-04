@@ -47,9 +47,13 @@ else
 fi
 
 # Set default policies
-echo "Setting default policies (deny incoming, allow outgoing)..."
-ufw default deny incoming
-ufw default allow outgoing
+if [ "$UFW_ACTIVE" = false ]; then
+  echo "Setting default policies (deny incoming, allow outgoing)..."
+  ufw default deny incoming
+  ufw default allow outgoing
+else
+  echo "UFW is already active. Skipping default policy changes to preserve existing configuration."
+fi
 
 # Allow SSH (port 22) - CRITICAL: This must be allowed first to prevent lockout
 echo "Allowing SSH (port 22)..."

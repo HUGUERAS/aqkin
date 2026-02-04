@@ -18,6 +18,39 @@ echo "=============================================="
 echo "  DEPLOY COMPLETO - bemreal.com"
 echo "=============================================="
 
+# -----------------------------------------------------------------------------
+# 0. Configurar Firewall (UFW)
+# -----------------------------------------------------------------------------
+echo ""
+echo ">>> Verificando e configurando firewall (UFW)..."
+
+# Install UFW if not present
+if ! command -v ufw &> /dev/null; then
+    echo "Instalando UFW..."
+    apt update && apt install -y ufw
+fi
+
+# Check if UFW is already enabled
+if ufw status | grep -q "Status: active"; then
+  echo "UFW já está ativo. Verificando regras..."
+else
+  echo "Configurando UFW pela primeira vez..."
+  # Allow SSH first to prevent lockout
+  ufw allow 22/tcp comment 'SSH'
+  # Enable UFW with default deny incoming
+  ufw --force enable
+  echo "UFW ativado com sucesso"
+fi
+
+# Configure firewall rules
+ufw allow 80/tcp comment 'HTTP'
+ufw allow 443/tcp comment 'HTTPS'
+
+echo "Regras de firewall configuradas:"
+ufw status numbered
+echo "✓ Firewall configurado: SSH (22), HTTP (80), HTTPS (443)"
+echo ""
+
 API_DOMAIN="api.bemreal.com"
 APP_DIR="/var/www/aqkin"
 API_DIR="${APP_DIR}/apps/api"

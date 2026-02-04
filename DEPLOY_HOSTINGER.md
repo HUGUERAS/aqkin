@@ -48,8 +48,53 @@ ssh root@SEU_IP_HOSTINGER
 ## 2️⃣ Instalar dependências no servidor
 
 ```bash
-apt update && apt install -y python3 python3-pip python3-venv nginx certbot python3-certbot-nginx git
+apt update && apt install -y python3 python3-pip python3-venv nginx certbot python3-certbot-nginx git ufw
 ```
+
+---
+
+## 2.5️⃣ Configurar Firewall (UFW)
+
+**⚠️ IMPORTANTE: Configure o firewall antes de expor serviços**
+
+### Opção A: Configuração automática (recomendado)
+
+```bash
+# Baixar e executar script de configuração
+curl -sSL https://raw.githubusercontent.com/HUGUERAS/aqkin/main/scripts/configure-firewall.sh -o configure-firewall.sh
+chmod +x configure-firewall.sh
+sudo bash configure-firewall.sh
+```
+
+### Opção B: Configuração manual
+
+```bash
+# Instalar UFW se necessário
+apt install -y ufw
+
+# Permitir SSH (CRÍTICO: faça isso primeiro para não perder acesso)
+ufw allow 22/tcp
+
+# Permitir HTTP e HTTPS
+ufw allow 80/tcp
+ufw allow 443/tcp
+
+# Ativar firewall
+ufw --force enable
+
+# Verificar status
+ufw status verbose
+```
+
+**Portas configuradas:**
+- ✅ **22 (SSH)**: Acesso remoto ao servidor
+- ✅ **80 (HTTP)**: Tráfego web
+- ✅ **443 (HTTPS)**: Tráfego web seguro
+- ✅ **8000 (API)**: Acessível apenas via localhost (Nginx faz proxy)
+
+**Política padrão:**
+- 🔒 Entrada: DENY (seguro por padrão)
+- ✅ Saída: ALLOW (servidor pode fazer requisições externas)
 
 ---
 
@@ -283,3 +328,41 @@ systemctl restart ativo-real-api
 | 502 Bad Gateway | Verificar se uvicorn está rodando na porta 8000 |
 | CORS | Backend já tem `allow_origins=["*"]` |
 | Frontend não chama API | Conferir `VITE_API_URL` no build |
+| **Firewall bloqueando** | `sudo ufw status` - verificar se portas 80/443 estão permitidas |
+| **Não consigo conectar via SSH** | Certifique-se que porta 22 está permitida: `sudo ufw allow 22/tcp` |
+| **Site não carrega** | 1. Verificar firewall: `sudo ufw status`<br>2. Verificar Nginx: `systemctl status nginx`<br>3. Verificar DNS |
+
+### Comandos úteis de firewall:
+
+```bash
+# Ver status do firewall
+sudo ufw status verbose
+
+# Ver regras numeradas
+sudo ufw status numbered
+
+# Permitir porta específica
+sudo ufw allow 80/tcp
+
+# Remover regra (usar número da lista)
+sudo ufw delete 3
+
+# Desabilitar firewall (NÃO recomendado)
+sudo ufw disable
+
+# Recarregar regras
+sudo ufw reload
+```
+
+### Verificação rápida de conectividade:
+
+```bash
+# Testar se portas estão abertas (de outro computador)
+nc -zv SEU_IP 80
+nc -zv SEU_IP 443
+
+# Testar de dentro do servidor
+curl localhost:8000
+curl localhost:80
+```
+

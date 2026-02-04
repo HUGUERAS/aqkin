@@ -29,7 +29,36 @@ fi
 echo ""
 echo ">>> Instalando dependências do sistema..."
 apt update
-apt install -y python3 python3-pip python3-venv nginx certbot python3-certbot-nginx git curl
+apt install -y python3 python3-pip python3-venv nginx certbot python3-certbot-nginx git curl ufw
+
+# -----------------------------------------------------------------------------
+# 2.5. Configurar Firewall (UFW)
+# -----------------------------------------------------------------------------
+echo ""
+echo ">>> Configurando firewall (UFW)..."
+
+# Check if UFW is already enabled
+if ufw status | grep -q "Status: active"; then
+  echo "UFW já está ativo. Verificando regras..."
+else
+  echo "Configurando UFW pela primeira vez..."
+  # Allow SSH first to prevent lockout
+  ufw allow 22/tcp comment 'SSH'
+  # Enable UFW with default deny incoming
+  ufw --force enable
+  echo "UFW ativado com sucesso"
+fi
+
+# Configure firewall rules
+ufw allow 80/tcp comment 'HTTP'
+ufw allow 443/tcp comment 'HTTPS'
+# Port 8000 is only accessible from localhost (handled by nginx proxy)
+
+echo "Regras de firewall configuradas:"
+ufw status numbered
+echo ""
+echo "✓ SSH (22), HTTP (80), HTTPS (443) estão abertos"
+echo "✓ Porta 8000 (API) acessível apenas via nginx (localhost)"
 
 # -----------------------------------------------------------------------------
 # 3. Clone ou atualiza o projeto

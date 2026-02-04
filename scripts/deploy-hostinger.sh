@@ -1,13 +1,21 @@
 #!/bin/bash
 # =============================================================================
 # Deploy Ativo Real - Hostinger VPS
-# Execute no servidor: bash deploy-hostinger.sh
+# Execute no servidor: sudo bash deploy-hostinger.sh
 # =============================================================================
 set -e
 
 echo "=============================================="
 echo "  Deploy Ativo Real - Hostinger VPS"
 echo "=============================================="
+echo ""
+
+# Check if running as root
+if [ "$EUID" -ne 0 ]; then
+  echo "Error: This script must be run as root (use sudo)"
+  echo "Usage: sudo bash deploy-hostinger.sh"
+  exit 1
+fi
 
 # -----------------------------------------------------------------------------
 # 1. Variáveis (edite aqui ou serão perguntadas)

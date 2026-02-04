@@ -1,12 +1,19 @@
 #!/bin/bash
 # Deploy completo bemreal.com - API + Frontend
-# Uso: bash /root/deploy-completo.sh
+# Uso: sudo bash /root/deploy-completo.sh
 # OU com variáveis de ambiente (não-interativo):
-#   SUPABASE_SERVICE_KEY=xxx JWT_SECRET=yyy bash /root/deploy-completo.sh
+#   SUPABASE_SERVICE_KEY=xxx JWT_SECRET=yyy sudo bash /root/deploy-completo.sh
 # OU carregar de arquivo:
-#   source /root/ENV_VARS_VPS.sh && bash /root/deploy-completo.sh
+#   source /root/ENV_VARS_VPS.sh && sudo bash /root/deploy-completo.sh
 
 set -e
+
+# Check if running as root
+if [ "$EUID" -ne 0 ]; then
+  echo "Error: This script must be run as root (use sudo)"
+  echo "Usage: sudo bash /root/deploy-completo.sh"
+  exit 1
+fi
 
 # Carregar variáveis de arquivo se existir
 if [ -f /root/ENV_VARS_VPS.sh ]; then

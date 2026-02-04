@@ -7,7 +7,7 @@ Guia passo a passo para subir **backend** e **frontend** na Hostinger.
 ## ⚡ Deploy automático (script)
 
 ```bash
-# 1. Conectar no VPS
+# 1. Conectar no VPS (como root)
 ssh root@SEU_IP_HOSTINGER
 
 # 2. Baixar e executar o script
@@ -16,7 +16,9 @@ chmod +x deploy.sh
 bash deploy.sh
 ```
 
-**Ou** copie o conteúdo de `scripts/deploy-hostinger.sh` para o servidor e execute `bash deploy-hostinger.sh`.
+**Nota:** Se não estiver conectado como root, use `sudo bash deploy.sh`
+
+**Ou** copie o conteúdo de `scripts/deploy-hostinger.sh` para o servidor e execute `bash deploy-hostinger.sh` (ou `sudo bash deploy-hostinger.sh` se não for root).
 
 O script vai:
 

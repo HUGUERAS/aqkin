@@ -42,6 +42,9 @@ if ufw status | grep -q "Status: active"; then
   echo "UFW já está ativo. Verificando regras..."
 else
   echo "Configurando UFW pela primeira vez..."
+  # Definir políticas padrão para garantir postura segura
+  ufw default deny incoming
+  ufw default allow outgoing
   # Allow SSH first to prevent lockout
   ufw allow 22/tcp comment 'SSH'
   # Enable UFW with default deny incoming

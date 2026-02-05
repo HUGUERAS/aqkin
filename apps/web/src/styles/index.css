@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Roboto+Condensed:wght@300;400;700&display=swap');
-@import './styles/design-tokens.css';
 
 @tailwind base;
 @tailwind components;

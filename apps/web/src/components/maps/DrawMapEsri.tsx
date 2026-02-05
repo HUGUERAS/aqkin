@@ -24,7 +24,9 @@ export default function DrawMapEsri({
   initialCenter = [-47.9292, -15.7801],
   initialZoom = 15,
   basemap = 'topo-vector',
-}: DrawMapEsriProps) {
+  className = '',
+  style = {},
+}: DrawMapEsriProps & { className?: string; style?: React.CSSProperties }) {
   const mapRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<MapView | null>(null);
   const [, setReady] = useState(false);
@@ -85,12 +87,13 @@ export default function DrawMapEsri({
   }, [initialCenter, initialZoom, basemap, onGeometryChange]);
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div className="draw-map-container" style={{ position: 'relative', width: '100%', height: '100%', ...style }}>
       <div
         ref={mapRef}
+        className={className}
         style={{
           width: '100%',
-          height: '500px',
+          height: '100%',
           borderRadius: '8px',
           overflow: 'hidden',
         }}

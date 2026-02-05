@@ -309,3 +309,8 @@
 .transition-fast {
   transition: all var(--transition-fast);
 }
+
+:root {
+  --bem-navy: var(--navy-800);
+  --bem-bronze: var(--bronze-600);
+}

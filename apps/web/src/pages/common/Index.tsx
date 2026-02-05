@@ -1,59 +1,64 @@
+import { Link } from 'react-router-dom';
+import '../../styles/HomePage.css';
+
 export default function Index() {
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      color: 'white',
-      fontFamily: 'system-ui, -apple-system, sans-serif',
-      padding: '2rem'
-    }}>
-      <h1 style={{ fontSize: '3rem', marginBottom: '1rem', textAlign: 'center' }}>
-        🏡 Ativo Real
-      </h1>
-      <p style={{ fontSize: '1.5rem', marginBottom: '3rem', textAlign: 'center', maxWidth: '600px' }}>
-        Plataforma de Coleta Colaborativa de Dados para Regularização Fundiária
-      </p>
+    <div className="home-shell">
+      <div className="hero">
+        <div className="texture-panel">
+          <div className="eyebrow">🚀 Regularização 100% Digital</div>
+          <h1 className="hero-title">Ativo Real</h1>
+          <p className="hero-sub">
+            Plataforma inovadora para coleta colaborativa de dados e regularização fundiária.
+            Conectamos proprietários e profissionais com tecnologia de ponta.
+          </p>
 
-      <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-        <a
-          href="/login?role=cliente"
-          style={{
-            padding: '1rem 2rem',
-            background: 'white',
-            color: '#667eea',
-            textDecoration: 'none',
-            borderRadius: '8px',
-            fontWeight: 'bold',
-            fontSize: '1.1rem'
-          }}
-        >
-          📱 Sou Proprietário
-        </a>
+          <div className="hero-stats">
+            <div className="stat-card">
+              <span className="stat-icon">🏡</span>
+              <div className="stat-text">
+                <strong>Proprietários</strong>
+                <span>Legalize seu imóvel</span>
+              </div>
+            </div>
+            <div className="stat-card">
+              <span className="stat-icon">📐</span>
+              <div className="stat-text">
+                <strong>Topógrafos</strong>
+                <span>Gerencie projetos</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        <a
-          href="/login?role=topografo"
-          style={{
-            padding: '1rem 2rem',
-            background: 'rgba(255,255,255,0.2)',
-            color: 'white',
-            textDecoration: 'none',
-            borderRadius: '8px',
-            fontWeight: 'bold',
-            fontSize: '1.1rem',
-            border: '2px solid white'
-          }}
-        >
-          🗺️ Sou Topógrafo
-        </a>
-      </div>
+        <div className="hero-card">
+          <span className="card-kicker">Acesso ao Sistema</span>
+          <h2 className="card-title">Como deseja continuar?</h2>
+          <p className="card-sub">Selecione seu perfil de acesso abaixo:</p>
+          
+          <div className="card-actions">
+            <Link to="/login?role=cliente" className="option urbano">
+              <div>
+                <div className="label">Sou Proprietário</div>
+                <div className="desc">Regularizar meu imóvel</div>
+              </div>
+            </Link>
+            
+            <Link to="/login?role=topografo" className="option rural">
+              <div>
+                <div className="label">Sou Topógrafo</div>
+                <div className="desc">Acessar projetos</div>
+              </div>
+            </Link>
+          </div>
 
-      <div style={{ marginTop: '4rem', textAlign: 'center', opacity: 0.8 }}>
-        <h3>🎯 Diferencial: Coleta Colaborativa</h3>
-        <p>Clientes desenham suas áreas → Topógrafo valida → Sistema detecta sobreposições automaticamente</p>
+          <div className="card-divider">ou</div>
+
+          <div className="card-links">
+            <Link to="/suporte">Precisa de ajuda?</Link>
+            <Link to="/sobre">Saiba mais</Link>
+          </div>
+        </div>
       </div>
     </div>
   );

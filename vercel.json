@@ -1,6 +1,7 @@
 {
   "outputDirectory": "apps/web/dist",
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "http://76.13.113.9/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

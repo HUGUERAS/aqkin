@@ -1,0 +1,61 @@
+/* Estilos para ícones topográficos BEM REAL */
+
+.topo-icon {
+  stroke: #CD7F32; /* Bronze Fosco (Padrão) */
+  transition: stroke 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+/* Estado Hover - Destaque Dourado */
+.topo-icon:hover:not(.disabled) {
+  stroke: #FFD700;
+}
+
+/* Estado Ativo - Bronze Fosco */
+.topo-icon.active {
+  stroke: #CD7F32;
+}
+
+/* Estado Inativo - Cinza Claro */
+.topo-icon.inactive {
+  stroke: #A0A0A0;
+}
+
+/* Estado Desabilitado - Cinza Escuro */
+.topo-icon.disabled {
+  stroke: #4A4A4A;
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Tamanhos */
+.topo-icon-16 {
+  width: 16px;
+  height: 16px;
+}
+
+.topo-icon-24 {
+  width: 24px;
+  height: 24px;
+}
+
+.topo-icon-32 {
+  width: 32px;
+  height: 32px;
+}
+
+/* Animações de entrada */
+@keyframes iconFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.topo-icon.animate-in {
+  animation: iconFadeIn 0.2s ease-out;
+}

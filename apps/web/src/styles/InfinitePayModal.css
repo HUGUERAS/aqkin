@@ -1,0 +1,307 @@
+/* InfinitePay Modal Overlay */
+.infinitepay-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal Container */
+.infinitepay-modal {
+  background: white;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Header */
+.infinitepay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.infinitepay-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.infinitepay-close {
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: #6b7280;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.infinitepay-close:hover {
+  color: #111827;
+}
+
+/* Content */
+.infinitepay-content {
+  padding: 24px;
+}
+
+/* Loading State */
+.infinitepay-loading {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error State */
+.infinitepay-error {
+  text-align: center;
+  padding: 20px;
+}
+
+.infinitepay-error p {
+  color: #dc2626;
+  margin-bottom: 16px;
+}
+
+.infinitepay-error button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.infinitepay-error button:hover {
+  background: #2563eb;
+}
+
+/* Payment Info */
+.payment-info {
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.payment-info h3 {
+  font-size: 18px;
+  color: #374151;
+  margin: 0 0 12px 0;
+}
+
+.payment-info .amount {
+  font-size: 36px;
+  font-weight: bold;
+  color: #10b981;
+}
+
+/* Payment Methods */
+.payment-methods {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.method-btn {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.method-btn:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.method-btn.active {
+  border-color: #3b82f6;
+  background: #3b82f6;
+  color: white;
+}
+
+.method-icon {
+  font-size: 24px;
+}
+
+.method-badge {
+  font-size: 10px;
+  background: #10b981;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.method-btn.active .method-badge {
+  background: white;
+  color: #3b82f6;
+}
+
+/* PIX Content */
+.pix-content {
+  text-align: center;
+}
+
+.pix-instructions {
+  color: #6b7280;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.qr-code-container {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  border: 2px dashed #d1d5db;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.qr-code-container img {
+  max-width: 200px;
+  height: auto;
+  display: block;
+}
+
+.copy-btn {
+  width: 100%;
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 16px;
+}
+
+.copy-btn:hover {
+  background: #059669;
+}
+
+.pix-status {
+  padding: 12px;
+  background: #fef3c7;
+  border-radius: 8px;
+  color: #92400e;
+  font-size: 14px;
+}
+
+/* Card/Boleto Content */
+.card-content,
+.boleto-content {
+  text-align: center;
+}
+
+.card-content p,
+.boleto-content p {
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+.checkout-btn {
+  display: block;
+  width: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-decoration: none;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 16px;
+}
+
+.checkout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.security-note,
+.boleto-note {
+  font-size: 13px;
+  color: #10b981;
+  font-weight: 500;
+}
+
+/* Footer */
+.payment-footer {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.payment-footer small {
+  color: #9ca3af;
+  font-size: 12px;
+}

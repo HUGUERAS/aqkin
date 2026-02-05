@@ -135,15 +135,15 @@ export default function Login() {
               }}
               required
             />
-          </div>htmlFor="role" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+          </div>
+
+          <div>
+            <label htmlFor="role" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
               Tipo de Acesso
             </label>
             <select
               id="role"
-              name="role"style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-              Tipo de Acesso
-            </label>
-            <select
+              name="role"
               value={role}
               onChange={(e) => setRole(e.target.value as any)}
               style={{
@@ -183,7 +183,7 @@ export default function Login() {
             ← Voltar para Home
           </a>
         </p>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }

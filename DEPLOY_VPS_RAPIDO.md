@@ -3,23 +3,26 @@
 ## ✅ PRÉ-REQUISITOS
 
 - [ ] Docker instalado (Windows 10+)
+
   ```powershell
   docker --version
   ```
 
 - [ ] SSH funcionando
+
   ```powershell
   ssh root@76.13.113.9 "echo OK"
   ```
   
   **Se falhar, gerar SSH key:**
+
   ```powershell
   ssh-keygen -t ed25519 -f $HOME\.ssh\id_ed25519 -N ""
   type $HOME\.ssh\id_ed25519.pub | ssh root@76.13.113.9 "cat >> ~/.ssh/authorized_keys"
   ```
 
 - [ ] GitHub Personal Token criado
-  - Ir a: https://github.com/settings/tokens
+  - Ir a: <https://github.com/settings/tokens>
   - Clicar: "Generate new token (classic)"
   - Scopes: `write:packages, read:packages, delete:packages`
   - Copiar token (começa com `ghp_`)
@@ -48,6 +51,7 @@ $GitHubRepo = "SEU-REPO-AQUI/ativreal-monorepo"
 ```
 
 **Exemplo:**
+
 ```powershell
 $GitHubUsername = "joaosilva"
 $GitHubRepo = "joaosilva/ativreal-monorepo"
@@ -60,6 +64,7 @@ $GitHubRepo = "joaosilva/ativreal-monorepo"
 ```
 
 **O script fará automaticamente:**
+
 1. ✅ Verificar Docker
 2. ✅ Pedir GitHub Token (digite no prompt)
 3. ✅ Login no GitHub Container Registry
@@ -91,6 +96,7 @@ $GitHubRepo = "joaosilva/ativreal-monorepo"
 ## 🚨 SE DER ERRO
 
 ### Err: "SSH connection refused"
+
 ```powershell
 # SSH não configurado. Gerar key:
 ssh-keygen -t ed25519 -f $HOME\.ssh\id_ed25519 -N ""
@@ -101,6 +107,7 @@ ssh root@76.13.113.9 "echo OK"
 ```
 
 ### Err: "Docker not found"
+
 ```powershell
 # Instalar Docker:
 # https://www.docker.com/products/docker-desktop
@@ -109,6 +116,7 @@ ssh root@76.13.113.9 "echo OK"
 ```
 
 ### Err: "GHCR login failed"
+
 ```powershell
 # Verificar token
 # Ir a: https://github.com/settings/tokens
@@ -119,6 +127,7 @@ ssh root@76.13.113.9 "echo OK"
 ```
 
 ### Err: "API returns 502 Bad Gateway"
+
 ```powershell
 # Normal! Containers ainda estão iniciando
 # Aguardar 30 segundos
@@ -134,7 +143,7 @@ ssh root@76.13.113.9 "cd /home/bemreal/ativreal-monorepo && docker-compose logs 
 - [ ] Rodar: `.\scripts\DEPLOY-VPS.ps1`
 - [ ] Cole GitHub Token quando pedido
 - [ ] Aguardar 15-20 min
-- [ ] Acessar https://bemreal.com
+- [ ] Acessar <https://bemreal.com>
 - [ ] ✅ Pronto!
 
 ---

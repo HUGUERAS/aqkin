@@ -3,6 +3,7 @@
 ## ✅ IMPLEMENTADO NESTA SESSÃO (2025-02-05)
 
 ### Frontend
+
 - [x] LayerControl component (visibilidade + opacidade)
 - [x] DrawMapValidation component (mapa com 4 layers + ferramentas)
 - [x] ValidarDesenhos página (grid 3-colunas integrado)
@@ -14,6 +15,7 @@
 - [x] CSS completo (~600 linhas)
 
 ### Documentação
+
 - [x] FLUXO_LAYER_CONTROL.md
 - [x] MAPA_INTEGRACACAO_COMPLETA.md
 - [x] ARQUITETURA_FINAL_MAPA.md
@@ -24,12 +26,14 @@
 ## ⚠️ CRÍTICO - HOJE (2025-02-05)
 
 ### 1. Testar Mapa no Browser
+
 ```bash
 npm run dev
 # Abrir: http://localhost:4200/topografo/validar-desenhos
 ```
 
 **Checklist:**
+
 - [ ] Mapa carrega
 - [ ] 4 layers renderizam
 - [ ] LayerControl responde
@@ -38,6 +42,7 @@ npm run dev
 - [ ] Nenhum erro no console F12
 
 **Se não funcionar:**
+
 ```bash
 # Verificar imports
 npm run typecheck
@@ -54,9 +59,11 @@ npm run build
 ## 🟡 IMPORTANTE - PRÓXIMAS 48 HORAS
 
 ### 2. Backend - GET /api/lotes/{id}/layers
+
 **File:** `apps/api/routers/lotes.py`
 
 **Adicionar endpoint:**
+
 ```python
 @router.get("/api/lotes/{lote_id}/layers")
 async def get_lote_layers(lote_id: str, db: Session):
@@ -86,6 +93,7 @@ async def get_lote_layers(lote_id: str, db: Session):
 ```
 
 **Fields to use:**
+
 - `Lote.geom_cliente` (initial drawing)
 - `Lote.geom_oficial` (edited)
 - PostGIS ST_Intersects (overlaps with neighbors)
@@ -96,9 +104,11 @@ async def get_lote_layers(lote_id: str, db: Session):
 ---
 
 ### 3. Backend - Validação PostGIS
+
 **File:** `apps/api/routers/lotes.py`
 
 **Adicionar endpoints:**
+
 ```python
 @router.post("/api/lotes/{lote_id}/validar-overlaps")
 async def validate_overlaps(lote_id: str, geometry_wkt: str, db: Session):
@@ -119,17 +129,21 @@ async def validate_topografia(lote_id: str, request: ValidateRequest, db: Sessio
 ## 🟢 IMPORTANTE - PRÓXIMA SEMANA
 
 ### 4. Frontend - Contract Preview/Signing
+
 **New Files:**
+
 - `apps/web/src/components/ContractForm.tsx` (form fields)
 - `apps/web/src/components/ContractPreview.tsx` (PDF preview)
 - Integrar em `apps/web/src/pages/topografo/GerarPecas.tsx`
 
 **Backend está 100% pronto:**
+
 - POST /api/contracts/generate ✅
 - POST /api/contracts/sign ✅
 - GET /api/contracts/{id} ✅
 
 **Frontend precisa:**
+
 - Form UI para dados contrato
 - Preview HTML/PDF
 - Botão assinar
@@ -140,7 +154,9 @@ async def validate_topografia(lote_id: str, request: ValidateRequest, db: Sessio
 ---
 
 ### 5. Tests - Unit + E2E
+
 **Test files to create:**
+
 - `apps/web/src/components/maps/DrawMapValidation.test.tsx`
 - `apps/web/src/components/LayerControl.test.tsx`
 - `apps/web/src/pages/topografo/ValidarDesenhos.test.tsx`
@@ -155,6 +171,7 @@ async def validate_topografia(lote_id: str, request: ValidateRequest, db: Sessio
 ## 📋 ANTIGOS - Ainda Aplicáveis
 
 ### DNS na Hostinger (1x)
+
 **Arquivo existente:** [Veja O_QUE_FALTA.md original]
 
 ---
@@ -162,6 +179,7 @@ async def validate_topografia(lote_id: str, request: ValidateRequest, db: Sessio
 ## 🎯 PRIORIDADES
 
 ### MVP (Essencial para launch)
+
 1. ⚠️ Testar mapa (hoje)
 2. ⚠️ Backend layers API (amanhã)
 3. ⚠️ PostGIS validação (amanhã)
@@ -169,6 +187,7 @@ async def validate_topografia(lote_id: str, request: ValidateRequest, db: Sessio
 5. ⚠️ Tests básicos (próxima semana)
 
 ### Nice-to-have (Pós-MVP)
+
 1. SnapTool logic (lógica real)
 2. EditTool refinement
 3. Documentação usuário

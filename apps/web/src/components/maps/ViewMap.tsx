@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import VectorLayer from 'ol/layer/Vector';
-import { getBasemapLayer, BASEMAP_OPTIONS, type BasemapId } from '../../lib/basemaps';
+import TileLayer from 'ol/layer/Tile';
+import { BASEMAP_OPTIONS, type BasemapId } from '../../lib/basemaps';
 import VectorSource from 'ol/source/Vector';
+import OSM from 'ol/source/OSM';
 import { Style, Fill, Stroke } from 'ol/style';
 import { fromLonLat } from 'ol/proj';
 import Feature from 'ol/Feature';
@@ -38,8 +40,6 @@ export default function ViewMap({
 
   useEffect(() => {
     if (!mapRef.current) return;
-
-    const basemapLayer = getBasemapLayer(currentBasemap);
 
     // Layers para diferentes tipos
     const rascunhoSource = new VectorSource();

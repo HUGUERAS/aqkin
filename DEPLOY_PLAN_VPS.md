@@ -1,4 +1,5 @@
 # 🚀 Deploy Docker à VPS - Plano Executivo
+
 # user: root | host: 76.13.113.9
 
 ## PASSO 1: Preparar SSH Key (30 seg)
@@ -12,6 +13,7 @@ ssh -v root@76.13.113.9
 ```
 
 **Se precisa SSH key:**
+
 ```powershell
 # Gerar nova chave
 ssh-keygen -t ed25519 -f "$HOME\.ssh\id_bemreal" -C "bemreal-deploy"
@@ -39,6 +41,7 @@ docker-compose --version  # Deve retornar compose version
 ```
 
 **Se Docker não estiver instalado, rodar na VPS:**
+
 ```bash
 curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
 sudo usermod -aG docker root
@@ -56,6 +59,7 @@ ssh root@76.13.113.9 mkdir -p /home/bemreal/ativreal-monorepo
 ```
 
 **Copiar `.env.production` para VPS:**
+
 ```powershell
 # Criar arquivo localmente com dados reais
 @"
@@ -116,12 +120,14 @@ docker images | grep ativreal
 ## PASSO 5: Push para GitHub Container Registry (5 min)
 
 **Primeiro: Criar GitHub Token**
-1. Abrir: https://github.com/settings/tokens
+
+1. Abrir: <https://github.com/settings/tokens>
 2. Click "Generate new token (classic)"
 3. Scope: `write:packages, read:packages, delete:packages`
 4. Copy token (exemplo: `ghp_xxxxxxxxxxxxxx`)
 
 **Depois: Login no Docker Registry**
+
 ```powershell
 $GithubToken = "ghp_xxxxxx"  # Sua token aqui
 $GithubUsername = "seu-username"  # Seu username GitHub
@@ -133,6 +139,7 @@ docker info | grep Registry
 ```
 
 **Push das imagens**
+
 ```powershell
 docker push ghcr.io/seu-username/ativreal-monorepo-api:main
 docker push ghcr.io/seu-username/ativreal-monorepo-web:main

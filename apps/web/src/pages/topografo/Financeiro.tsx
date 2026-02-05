@@ -512,80 +512,81 @@ export default function Financeiro() {
             <DialogHeader
               title={despesaEditando ? 'Editar Despesa' : 'Nova Despesa'}
               onClose={fecharFormularioDespesa}
-            />
-            <div className="form-body">
-              <Select
-                label="Projeto *"
-                value={formDataDespesa.projeto_id}
-                onChange={(e) => setFormDataDespesa({ ...formDataDespesa, projeto_id: e.target.value })}
-                required
-                options={[
-                  { value: '', label: 'Selecione um projeto' },
-                  ...projetos.map((p) => ({ value: p.id.toString(), label: p.nome }))
-                ]}
-              />
+            >
+              <div className="form-body">
+                <Select
+                  label="Projeto *"
+                  value={formDataDespesa.projeto_id}
+                  onChange={(e) => setFormDataDespesa({ ...formDataDespesa, projeto_id: e.target.value })}
+                  required
+                  options={[
+                    { value: '', label: 'Selecione um projeto' },
+                    ...projetos.map((p) => ({ value: p.id.toString(), label: p.nome }))
+                  ]}
+                />
 
-              <Input
-                label="Descrição *"
-                type="text"
-                value={formDataDespesa.descricao}
-                onChange={(e) => setFormDataDespesa({ ...formDataDespesa, descricao: e.target.value })}
-                placeholder="Ex: Material de escritório"
-                required
-              />
+                <Input
+                  label="Descrição *"
+                  type="text"
+                  value={formDataDespesa.descricao}
+                  onChange={(e) => setFormDataDespesa({ ...formDataDespesa, descricao: e.target.value })}
+                  placeholder="Ex: Material de escritório"
+                  required
+                />
 
-              <Input
-                label="Valor (R$) *"
-                type="number"
-                step="0.01"
-                min="0"
-                value={formDataDespesa.valor}
-                onChange={(e) => setFormDataDespesa({ ...formDataDespesa, valor: e.target.value })}
-                placeholder="0.00"
-                required
-              />
+                <Input
+                  label="Valor (R$) *"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formDataDespesa.valor}
+                  onChange={(e) => setFormDataDespesa({ ...formDataDespesa, valor: e.target.value })}
+                  placeholder="0.00"
+                  required
+                />
 
-              <Input
-                label="Data *"
-                type="date"
-                value={formDataDespesa.data}
-                onChange={(e) => setFormDataDespesa({ ...formDataDespesa, data: e.target.value })}
-                required
-              />
+                <Input
+                  label="Data *"
+                  type="date"
+                  value={formDataDespesa.data}
+                  onChange={(e) => setFormDataDespesa({ ...formDataDespesa, data: e.target.value })}
+                  required
+                />
 
-              <Select
-                label="Categoria"
-                value={formDataDespesa.categoria}
-                onChange={(e) => setFormDataDespesa({ ...formDataDespesa, categoria: e.target.value })}
-                options={categoriaOpcoes}
-              />
+                <Select
+                  label="Categoria"
+                  value={formDataDespesa.categoria}
+                  onChange={(e) => setFormDataDespesa({ ...formDataDespesa, categoria: e.target.value })}
+                  options={categoriaOpcoes}
+                />
 
-              <Textarea
-                label="Observações"
-                value={formDataDespesa.observacoes}
-                onChange={(e) => setFormDataDespesa({ ...formDataDespesa, observacoes: e.target.value })}
-                placeholder="Observações sobre a despesa..."
-                rows={4}
-              />
+                <Textarea
+                  label="Observações"
+                  value={formDataDespesa.observacoes}
+                  onChange={(e) => setFormDataDespesa({ ...formDataDespesa, observacoes: e.target.value })}
+                  placeholder="Observações sobre a despesa..."
+                  rows={4}
+                />
 
-              <div className="form-actions">
-                <Button
-                  variant="secondary"
-                  onClick={fecharFormularioDespesa}
-                  disabled={salvando}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={salvarDespesa}
-                  disabled={salvando}
-                  isLoading={salvando}
-                >
-                  {despesaEditando ? 'Atualizar' : 'Criar'}
-                </Button>
+                <div className="form-actions">
+                  <Button
+                    variant="secondary"
+                    onClick={fecharFormularioDespesa}
+                    disabled={salvando}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    variant="primary"
+                    onClick={salvarDespesa}
+                    disabled={salvando}
+                    isLoading={salvando}
+                  >
+                    {despesaEditando ? 'Atualizar' : 'Criar'}
+                  </Button>
+                </div>
               </div>
-            </div>
+            </DialogHeader>
           </Card>
         </div>
       )}

@@ -7,7 +7,6 @@ import MapView from '@arcgis/core/views/MapView';
 import Map from '@arcgis/core/Map';
 import Sketch from '@arcgis/core/widgets/Sketch';
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
-import Graphic from '@arcgis/core/Graphic';
 import * as webMercatorUtils from '@arcgis/core/geometry/support/webMercatorUtils';
 import esriConfig from '@arcgis/core/config';
 import '@arcgis/core/assets/esri/themes/light/main.css';
@@ -121,7 +120,6 @@ export default function DrawMapEsri({
  */
 function polygonToWKT(polygon: __esri.Polygon): string {
   if (!polygon.rings || polygon.rings.length === 0) return '';
-  const ring = polygon.rings[0];
 
   // Converter Web Mercator (3857) para Geographic (4326)
   const geog = webMercatorUtils.webMercatorToGeographic(polygon) as __esri.Polygon;

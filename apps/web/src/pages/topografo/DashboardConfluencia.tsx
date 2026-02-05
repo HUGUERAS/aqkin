@@ -57,13 +57,16 @@ export default function DashboardConfluencia() {
         }
         const geomsFromParcels = (parcelsResponse.data as Parcel[])
           .filter((p) => p.geom || p.geometry_wkt)
-          .map((p) => ({
-            id: String(p.id),
-            geojson: p.geom,
-            wkt: p.geometry_wkt,
-            type: (p.status === 'VALIDACAO_SIGEF' || p.status === 'FINALIZADO' ? 'oficial' : 'rascunho') as const,
-            label: p.nome_cliente,
-          }));
+          .map((p) => {
+            const geomType: 'oficial' | 'rascunho' = (p.status === 'VALIDACAO_SIGEF' || p.status === 'FINALIZADO') ? 'oficial' : 'rascunho';
+            return {
+              id: String(p.id),
+              geojson: p.geom,
+              wkt: p.geometry_wkt,
+              type: geomType,
+              label: p.nome_cliente,
+            };
+          });
         setGeometries(geomsFromParcels);
       }
       const overlapsResponse = await apiClient.getOverlaps(String(projectId));

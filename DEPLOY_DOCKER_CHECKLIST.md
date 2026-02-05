@@ -3,6 +3,7 @@
 ### ✅ Pré-requisitos Verificar
 
 #### 1️⃣ **VPS - Acesso SSH**
+
 ```bash
 # Testar conexão
 ssh -v root@76.13.113.9
@@ -12,6 +13,7 @@ ssh -v root@76.13.113.9
 ```
 
 **O que preciso:**
+
 - [ ] IP/Host: `76.13.113.9` ✅
 - [ ] User: `root` ❓ (ou qual?)
 - [ ] SSH Port: `22` (padrão)
@@ -20,6 +22,7 @@ ssh -v root@76.13.113.9
 ---
 
 #### 2️⃣ **Docker na VPS**
+
 ```bash
 ssh root@76.13.113.9
 docker --version  # Deve estar instalado
@@ -27,6 +30,7 @@ docker-compose --version
 ```
 
 **Se não tiver:**
+
 ```bash
 # Instalar Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
@@ -41,6 +45,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 ---
 
 #### 3️⃣ **GitHub Container Registry (GHCR) - Auth**
+
 ```bash
 # Na sua máquina local
 cat ~/YOUR_GITHUB_TOKEN | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
@@ -50,14 +55,16 @@ cat ~/.docker/config.json
 ```
 
 **O que preciso:**
+
 - [ ] GitHub Personal Access Token (PAT) ❓
-  - Ir a: https://github.com/settings/tokens
+  - Ir a: <https://github.com/settings/tokens>
   - Criar novo token com `read:packages`
   - Copiar token
 
 ---
 
 #### 4️⃣ **Environment Variables na VPS**
+
 ```bash
 ssh root@76.13.113.9
 cd /home/bemreal/ativreal-monorepo
@@ -67,6 +74,7 @@ cat .env.production
 ```
 
 **Variáveis necessárias (copiar de .env.example):**
+
 ```bash
 # Frontend
 VITE_API_URL=https://api.bemreal.com
@@ -87,6 +95,7 @@ CORS_ORIGINS=https://bemreal.com,https://www.bemreal.com
 ### 🎯 **Dois Caminhos**
 
 #### **Caminho A: Script Automatizado** (Recomendado)
+
 ```bash
 # Na sua máquina local (Windows/Mac/Linux)
 
@@ -102,6 +111,7 @@ export GITHUB_TOKEN=ghp_xxxxx
 ```
 
 #### **Caminho B: Manual na VPS** (Debugging)
+
 ```bash
 # SSH na VPS
 ssh root@76.13.113.9

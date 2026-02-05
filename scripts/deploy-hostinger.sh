@@ -13,7 +13,7 @@ echo "=============================================="
 # 1. Variáveis (edite aqui ou serão perguntadas)
 # -----------------------------------------------------------------------------
 API_DOMAIN="${API_DOMAIN:-api.bemreal.com}"
-REPO_URL="${REPO_URL:-https://github.com/HUGUERAS/ativo-real-monorepo.git}"
+REPO_URL="${REPO_URL:-https://github.com/HUGUERAS/aqkin.git}"
 APP_DIR="/var/www/aqkin"
 API_DIR="${APP_DIR}/apps/api"
 

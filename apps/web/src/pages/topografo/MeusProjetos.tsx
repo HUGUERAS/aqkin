@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../../services/api';
+import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
 
 interface Projeto {
   id: number;
@@ -399,69 +400,16 @@ export default function MeusProjetos() {
       )}
 
       {/* Modal de Confirmação de Exclusão */}
-      {confirmarExclusao !== null && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '1rem',
-          }}
-          onClick={() => !salvando && setConfirmarExclusao(null)}
-        >
-          <div
-            style={{
-              background: 'white',
-              borderRadius: '12px',
-              padding: '2rem',
-              maxWidth: '400px',
-              width: '100%',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ marginTop: 0 }}>Confirmar Exclusão</h3>
-            <p>Tem certeza que deseja excluir este projeto? Esta ação não pode ser desfeita.</p>
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
-              <button
-                onClick={() => setConfirmarExclusao(null)}
-                disabled={salvando}
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  background: '#6c757d',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: salvando ? 'wait' : 'pointer',
-                }}
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={() => excluirProjeto(confirmarExclusao)}
-                disabled={salvando}
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  background: '#dc3545',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: salvando ? 'wait' : 'pointer',
-                }}
-              >
-                {salvando ? 'Excluindo...' : 'Excluir'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDeleteModal
+        open={confirmarExclusao !== null}
+        busy={salvando}
+        message="Tem certeza que deseja excluir este projeto? Esta ação não pode ser desfeita."
+        onCancel={() => setConfirmarExclusao(null)}
+        onConfirm={() => confirmarExclusao !== null && excluirProjeto(confirmarExclusao)}
+        overlayPadding="1rem"
+        width="100%"
+        boxShadow="0 8px 32px rgba(0,0,0,0.2)"
+      />
 
       {/* Modal de Formulário (Criar/Editar) */}
       {mostrarFormulario && (

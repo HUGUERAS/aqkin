@@ -45,7 +45,7 @@ export default function DashboardConfluencia() {
 
   const loadProjectData = async (projectId: number) => {
     try {
-      const parcelsResponse = await apiClient.getParcels(projectId);
+      const parcelsResponse = await apiClient.getParcels(String(projectId));
       if (parcelsResponse.data) {
         setParcels(parcelsResponse.data);
         interface Parcel {
@@ -66,7 +66,7 @@ export default function DashboardConfluencia() {
           }));
         setGeometries(geomsFromParcels);
       }
-      const overlapsResponse = await apiClient.getOverlaps(projectId);
+      const overlapsResponse = await apiClient.getOverlaps(String(projectId));
       if (overlapsResponse.data) setOverlaps(overlapsResponse.data);
     } catch (error) {
       console.error('Erro ao carregar projeto:', error);

@@ -6,8 +6,8 @@ import { getBasemapLayer, BASEMAP_OPTIONS, type BasemapId } from '../../lib/base
 import VectorSource from 'ol/source/Vector';
 import { Style, Fill, Stroke } from 'ol/style';
 import { fromLonLat } from 'ol/proj';
-import { Feature } from 'ol';
-import { Polygon } from 'ol/geom';
+import Feature from 'ol/Feature';
+import Polygon from 'ol/geom/Polygon';
 import GeoJSON from 'ol/format/GeoJSON';
 import * as olExtent from 'ol/extent';
 import 'ol/ol.css';

@@ -7,9 +7,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import apiClient from '../../services/api';
-import { Alert, Button, Input, Checkbox } from '../../components/UIComponents';
+import { Alert, Button, Input } from '../../components/UIComponents';
 import Logo from '../../components/Logo';
-import Icon from '../../components/Icon';
 
 export default function SignUp() {
     const navigate = useNavigate();

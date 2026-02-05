@@ -5,7 +5,7 @@
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
 import XYZ from 'ol/source/XYZ';
-import type { TileSource } from 'ol/source/Tile';
+import type TileSource from 'ol/source/Tile';
 
 export type BasemapId = 'osm' | 'esri-street' | 'esri-topo' | 'esri-satellite';
 

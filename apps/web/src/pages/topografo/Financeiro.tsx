@@ -355,7 +355,7 @@ export default function Financeiro() {
                   <div className="expense-header">
                     <div className="expense-title-group">
                       <h3>{despesa.descricao}</h3>
-                      <Badge variant="secondary" style={{ backgroundColor: getCategoryColor(despesa.categoria) }}>
+                      <Badge variant="info" style={{ backgroundColor: getCategoryColor(despesa.categoria) }}>
                         {despesa.categoria || 'OUTROS'}
                       </Badge>
                     </div>
@@ -512,8 +512,8 @@ export default function Financeiro() {
             <DialogHeader
               title={despesaEditando ? 'Editar Despesa' : 'Nova Despesa'}
               onClose={fecharFormularioDespesa}
-            >
-              <div className="form-body">
+            />
+            <div className="form-body">
               <Select
                 label="Projeto *"
                 value={formDataDespesa.projeto_id}
@@ -585,7 +585,7 @@ export default function Financeiro() {
                   {despesaEditando ? 'Atualizar' : 'Criar'}
                 </Button>
               </div>
-            </DialogHeader>
+            </div>
           </Card>
         </div>
       )}

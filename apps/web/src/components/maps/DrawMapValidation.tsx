@@ -7,7 +7,7 @@
  * - Feedback visual de medições
  */
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MapView from '@arcgis/core/views/MapView';
 import Map from '@arcgis/core/Map';
 import Sketch from '@arcgis/core/widgets/Sketch';
@@ -16,7 +16,6 @@ import Graphic from '@arcgis/core/Graphic';
 import SimpleLineSymbol from '@arcgis/core/symbols/SimpleLineSymbol';
 import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
 import SimpleMarkerSymbol from '@arcgis/core/symbols/SimpleMarkerSymbol';
-import * as webMercatorUtils from '@arcgis/core/geometry/support/webMercatorUtils';
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
 import Polyline from '@arcgis/core/geometry/Polyline';
 import esriConfig from '@arcgis/core/config';
@@ -58,7 +57,8 @@ export default function DrawMapValidation({
 }: DrawMapValidationProps) {
     const mapRef = useRef<HTMLDivElement>(null);
     const viewRef = useRef<MapView | null>(null);
-    const layersRef = useRef<Map<string, GraphicsLayer>>(new Map());
+    // Using any to avoid conflict with ArcGIS Map type
+    const layersRef = useRef<any>(new globalThis.Map<string, GraphicsLayer>());
     const [state, setState] = useState<MapState>({
         measurementPoints: [],
         measurementDistance: null,
@@ -146,7 +146,7 @@ export default function DrawMapValidation({
         const map = new Map({ basemap });
 
         // Criar GraphicsLayer para cada layer definida
-        const layerInstances = new Map<string, GraphicsLayer>();
+        const layerInstances = new globalThis.Map<string, GraphicsLayer>();
         layers.forEach((layerData) => {
             const graphicsLayer = new GraphicsLayer({
                 id: layerData.id,
@@ -158,11 +158,11 @@ export default function DrawMapValidation({
             // Adicionar graphics com símbolos apropriados
             const symbol = getSymbolForLayer(layerData);
             layerData.graphics.forEach((graphic) => {
-                if (graphic.geometry.type === 'polygon') {
+                if (graphic.geometry && graphic.geometry.type === 'polygon') {
                     graphic.symbol = symbol.fill;
-                } else if (graphic.geometry.type === 'polyline') {
+                } else if (graphic.geometry && graphic.geometry.type === 'polyline') {
                     graphic.symbol = symbol.line;
-                } else if (graphic.geometry.type === 'point') {
+                } else if (graphic.geometry && graphic.geometry.type === 'point') {
                     graphic.symbol = symbol.point;
                 }
                 graphicsLayer.add(graphic);
@@ -214,7 +214,7 @@ export default function DrawMapValidation({
     // Ferramenta: Medir distância
     const handleMeasureTool = (view: MapView) => {
         const measureLayer = new GraphicsLayer({ id: 'measurements-layer' });
-        view.map.add(measureLayer);
+        if (view.map) view.map.add(measureLayer);
 
         view.on('click', (event) => {
             const coords: [number, number] = [event.mapPoint.longitude, event.mapPoint.latitude];
@@ -250,20 +250,22 @@ export default function DrawMapValidation({
     // Ferramenta: Calcular área
     const handleAreaTool = (view: MapView) => {
         const areaLayer = new GraphicsLayer({ id: 'area-layer' });
-        view.map.add(areaLayer);
+        if (view.map) view.map.add(areaLayer);
 
         // Pegar primeiro polígono selecionado
         view.when(() => {
-            view.map.allLayers.forEach((layer) => {
-                if (layer instanceof GraphicsLayer && layer.id !== 'area-layer' && layer.id !== 'measurements-layer') {
-                    layer.graphics.forEach((graphic) => {
-                        if (graphic.geometry.type === 'polygon') {
-                            const area = calculatePolygonArea(graphic.geometry as __esri.Polygon);
-                            if (onAreaCalculated) onAreaCalculated(area);
-                        }
-                    });
-                }
-            });
+            if (view.map) {
+                view.map.allLayers.forEach((layer) => {
+                    if (layer instanceof GraphicsLayer && layer.id !== 'area-layer' && layer.id !== 'measurements-layer') {
+                        layer.graphics.forEach((graphic) => {
+                            if (graphic.geometry && graphic.geometry.type === 'polygon') {
+                                const area = calculatePolygonArea(graphic.geometry as __esri.Polygon);
+                                if (onAreaCalculated) onAreaCalculated(area);
+                            }
+                        });
+                    }
+                });
+            }
         });
     };
 
@@ -278,7 +280,7 @@ export default function DrawMapValidation({
     const handleEditTool = (view: MapView) => {
         // Ativar Sketch para edição
         const editLayer = new GraphicsLayer({ id: 'edit-layer' });
-        view.map.add(editLayer);
+        if (view.map) view.map.add(editLayer);
 
         const sketch = new Sketch({
             view,

@@ -97,122 +97,112 @@ export default function DesenharArea() {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div style={{ padding: '0', height: 'calc(100vh - 80px)', display: 'flex', flexDirection: 'column' }}>
       <div
         style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
+          width: '100%',
+          height: '100%',
+          margin: 0,
           background: 'white',
-          borderRadius: '12px',
-          padding: '2rem',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          borderRadius: 0,
+          padding: 0,
+          boxShadow: 'none',
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative'
         }}
       >
-        <h1 style={{ marginBottom: '1rem' }}>✏️ Desenhar Minha Área</h1>
-        <p style={{ color: '#666', marginBottom: '2rem' }}>
-          Desenhe o contorno da sua propriedade no mapa. Use o dedo ou mouse para criar os pontos.
-        </p>
+        {/* Painel Flutuante de Informações */}
+        <div style={{
+          position: 'absolute',
+          top: '20px',
+          left: '20px',
+          zIndex: 10,
+          background: 'white',
+          padding: '1.5rem',
+          borderRadius: '12px',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+          maxWidth: '400px',
+          maxHeight: '80vh',
+          overflowY: 'auto'
+        }}>
+          <h1 style={{ marginBottom: '0.5rem', fontSize: '1.5rem' }}>✏️ Desenhar Área</h1>
+          <p style={{ color: '#666', marginBottom: '1rem', fontSize: '0.9rem' }}>
+            Use as ferramentas do mapa para desenhar sua propriedade.
+          </p>
 
-        {!loteId && !error && <p style={{ color: '#666' }}>⏳ Carregando...</p>}
-        {error && (
-          <div
-            style={{
-              padding: '1rem',
-              background: '#ffebee',
-              borderRadius: '6px',
-              color: '#c62828',
-              marginBottom: '1rem',
-            }}
-          >
-            {error}
-          </div>
-        )}
-
-        {loteId && (
-          <>
-            <div style={{ marginBottom: '2rem' }}>
-              <DrawMapEsri onGeometryChange={handleGeometryChange} />
+          {!loteId && !error && <p style={{ color: '#666' }}>⏳ Carregando...</p>}
+          {error && (
+            <div
+              style={{
+                padding: '0.75rem',
+                background: '#ffebee',
+                borderRadius: '6px',
+                color: '#c62828',
+                marginBottom: '1rem',
+                fontSize: '0.9rem'
+              }}
+            >
+              {error}
             </div>
+          )}
 
-            {/* Validação em tempo real */}
-            {validando && (
-              <p style={{ color: '#666', marginBottom: '0.5rem' }}>⏳ Validando topologia...</p>
-            )}
-            {validacao && !validando && (
-              <div
-                style={{
-                  marginBottom: '1rem',
-                  padding: '1rem',
-                  borderRadius: '6px',
-                  background: validacao.valido ? '#e8f5e9' : '#ffebee',
-                  color: validacao.valido ? '#2e7d32' : '#c62828',
-                }}
-              >
-                {validacao.valido ? (
-                  '✅ Geometria válida (sem sobreposições críticas)'
-                ) : (
-                  <div>
-                    <strong>❌ Erros:</strong>
-                    <ul style={{ margin: '0.5rem 0 0 1rem' }}>
+          {loteId && (
+            <>
+              {/* Validação em tempo real */}
+              {validando && (
+                <p style={{ color: '#666', marginBottom: '0.5rem' }}>⏳ Validando...</p>
+              )}
+              {validacao && !validando && (
+                <div
+                  style={{
+                    marginBottom: '1rem',
+                    padding: '0.75rem',
+                    borderRadius: '6px',
+                    background: validacao.valido ? '#e8f5e9' : '#ffebee',
+                    color: validacao.valido ? '#2e7d32' : '#c62828',
+                    fontSize: '0.9rem'
+                  }}
+                >
+                  {validacao.valido ? (
+                    <strong>✅ Desenho válido!</strong>
+                  ) : (
+                    <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
                       {validacao.erros.map((e, i) => (
                         <li key={i}>{e.mensagem}</li>
                       ))}
                     </ul>
-                  </div>
-                )}
+                  )}
+                </div>
+              )}
+
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button
+                  onClick={handleSave}
+                  disabled={loading || !geometry || (validacao && !validacao.valido)}
+                  style={{
+                    flex: 1,
+                    padding: '0.75rem',
+                    background: saved ? '#4caf50' : '#2563eb',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontWeight: 'bold',
+                    cursor: loading || !geometry || (validacao && !validacao.valido) ? 'not-allowed' : 'pointer',
+                    opacity: loading || !geometry || (validacao && !validacao.valido) ? 0.7 : 1,
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {loading ? 'Salvando...' : saved ? 'Salvo!' : 'Salvar Desenho'}
+                </button>
               </div>
-            )}
+            </>
+          )}
+        </div>
 
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-              <button
-                onClick={handleSave}
-                disabled={!geometry || loading || (validacao && !validacao.valido)}
-                style={{
-                  padding: '1rem 2rem',
-                  background: geometry && !loading && (!validacao || validacao.valido) ? '#667eea' : '#ccc',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontSize: '1rem',
-                  fontWeight: 'bold',
-                  cursor: geometry && !loading && (!validacao || validacao.valido) ? 'pointer' : 'not-allowed',
-                }}
-              >
-                {loading ? '⏳ Salvando...' : saved ? '✅ Salvo!' : '💾 Salvar'}
-              </button>
-            </div>
-
-            {geometry && !error && (
-              <div
-                style={{
-                  marginTop: '1rem',
-                  padding: '1rem',
-                  background: '#f0f4ff',
-                  borderRadius: '6px',
-                  fontSize: '0.9rem',
-                }}
-              >
-                <strong>✓ Geometria capturada!</strong> Valide antes de salvar.
-              </div>
-            )}
-          </>
-        )}
-
-        <div
-          style={{
-            marginTop: '2rem',
-            padding: '1rem',
-            background: '#f0f4ff',
-            borderRadius: '6px',
-            border: '1px solid #667eea',
-          }}
-        >
-          <h3>💡 Dicas:</h3>
-          <ul style={{ marginLeft: '1.5rem', lineHeight: '1.8' }}>
-            <li>Toque/clique para adicionar pontos</li>
-            <li>Feche o polígono tocando no primeiro ponto</li>
-            <li>Evite sobreposição com lotes vizinhos</li>
-          </ul>
+        {/* Mapa ocupando todo o espaço restante */}
+        <div style={{ flex: 1, position: 'relative' }}>
+          {loteId && <DrawMapEsri onGeometryChange={handleGeometryChange} style={{ height: '100%' }} />}
         </div>
       </div>
     </div>

@@ -94,10 +94,13 @@ export default function Login() {
         )}
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+            <label htmlFor="email" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
               Email
             </label>
             <input
+              id="email"
+              name="email"
+              autoComplete="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -113,10 +116,13 @@ export default function Login() {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+            <label htmlFor="password" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
               Senha
             </label>
             <input
+              id="password"
+              name="password"
+              autoComplete="current-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -129,10 +135,12 @@ export default function Login() {
               }}
               required
             />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+          </div>htmlFor="role" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+              Tipo de Acesso
+            </label>
+            <select
+              id="role"
+              name="role"style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
               Tipo de Acesso
             </label>
             <select

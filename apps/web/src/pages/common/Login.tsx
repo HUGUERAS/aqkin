@@ -1,16 +1,13 @@
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import apiClient from '../../services/api';
 
 export default function Login() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const roleParam = searchParams.get('role') || 'cliente';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'cliente' | 'topografo'>(roleParam as any);
   const [erro, setErro] = useState('');
   const [carregando, setCarregando] = useState(false);
 
@@ -28,29 +25,16 @@ export default function Login() {
 
       apiClient.setToken(token);
 
-      // Verificar se usuário já tem perfil definido
+      // Verificar/criar perfil como proprietário
       const perfilResponse = await apiClient.getPerfilMe();
 
       if (perfilResponse.error || !perfilResponse.data) {
-        // Primeiro acesso: definir role no backend
-        const roleApi = role === 'topografo' ? 'topografo' : 'proprietario';
-        await apiClient.setPerfilRole(roleApi);
-
-        // Redirecionar baseado no role selecionado
-        if (role === 'cliente') {
-          navigate('/cliente');
-        } else {
-          navigate('/topografo');
-        }
-      } else {
-        // Usuário já tem perfil: redirecionar baseado no perfil existente
-        const perfilExistente = perfilResponse.data.role;
-        if (perfilExistente === 'topografo') {
-          navigate('/topografo');
-        } else {
-          navigate('/cliente');
-        }
+        // Primeiro acesso: definir como proprietário
+        await apiClient.setPerfilRole('proprietario');
       }
+
+      // Sempre redirecionar para área do cliente
+      navigate('/cliente');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Erro ao entrar';
       setErro(msg);
@@ -65,27 +49,22 @@ export default function Login() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: '#f5f5f5'
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
     }}>
       <div style={{
         background: 'white',
         padding: '3rem',
-        borderRadius: '12px',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+        borderRadius: '16px',
+        boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
         width: '100%',
-        maxWidth: '400px'
+        maxWidth: '420px'
       }}>
-        <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>
-          {role === 'cliente' ? (
-            <>
-              <span role="img" aria-label="Portal do Proprietário">📱</span> Portal do Proprietário
-            </>
-          ) : (
-            <>
-              <span role="img" aria-label="Portal do Topógrafo">🗺️</span> Portal do Topógrafo
-            </>
-          )}
+        <h2 style={{ marginBottom: '0.5rem', textAlign: 'center', fontSize: '1.8rem', color: '#1a202c' }}>
+          🔑 Entrar
         </h2>
+        <p style={{ marginBottom: '2rem', textAlign: 'center', color: '#718096', fontSize: '0.95rem' }}>
+          Acesse sua área de regularização
+        </p>
 
         {erro && (
           <div style={{ padding: '0.75rem', background: '#fee', color: '#c00', borderRadius: '6px', fontSize: '0.9rem' }}>
@@ -94,7 +73,7 @@ export default function Login() {
         )}
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label htmlFor="email" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+            <label htmlFor="email" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#2d3748' }}>
               Email
             </label>
             <input
@@ -107,8 +86,8 @@ export default function Login() {
               style={{
                 width: '100%',
                 padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '6px',
+                border: '1px solid #e2e8f0',
+                borderRadius: '8px',
                 fontSize: '1rem'
               }}
               required
@@ -116,7 +95,7 @@ export default function Login() {
           </div>
 
           <div>
-            <label htmlFor="password" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+            <label htmlFor="password" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#2d3748' }}>
               Senha
             </label>
             <input
@@ -129,34 +108,12 @@ export default function Login() {
               style={{
                 width: '100%',
                 padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '6px',
+                border: '1px solid #e2e8f0',
+                borderRadius: '8px',
                 fontSize: '1rem'
               }}
               required
             />
-          </div>
-
-          <div>
-            <label htmlFor="role" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-              Tipo de Acesso
-            </label>
-            <select
-              id="role"
-              name="role"
-              value={role}
-              onChange={(e) => setRole(e.target.value as any)}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '6px',
-                fontSize: '1rem'
-              }}
-            >
-              <option value="cliente">Proprietário</option>
-              <option value="topografo">Topógrafo</option>
-            </select>
           </div>
 
           <button
@@ -164,32 +121,38 @@ export default function Login() {
             disabled={carregando}
             style={{
               padding: '1rem',
-              background: '#667eea',
+              background: carregando ? '#a0aec0' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               color: 'white',
               border: 'none',
-              borderRadius: '6px',
+              borderRadius: '8px',
               fontSize: '1rem',
               fontWeight: 'bold',
-              cursor: 'pointer',
-              marginTop: '1rem'
+              cursor: carregando ? 'not-allowed' : 'pointer',
+              marginTop: '1rem',
+              transition: 'all 0.2s ease'
             }}
           >
-            {carregando ? 'Entrando...' : 'Entrar'}
+            {carregando ? '⏳ Entrando...' : '🚀 Entrar'}
           </button>
         </form>
 
-        <p style={{ marginTop: '2rem', textAlign: 'center', color: '#666', fontSize: '0.9rem' }}>
-          <a href="/forgot-password" style={{ color: '#667eea', textDecoration: 'none', marginRight: '1rem' }}>
+        <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#fef6e7', border: '1px solid #f6d365', borderRadius: '8px', fontSize: '0.85rem', color: '#744210', textAlign: 'center' }}>
+          ⭐ <strong>Quer acesso às ferramentas profissionais?</strong><br />
+          <span style={{ fontSize: '0.8rem' }}>Upgrade para Premium após login</span>
+        </div>
+
+        <p style={{ marginTop: '1.5rem', textAlign: 'center', color: '#718096', fontSize: '0.9rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+          <a href="/forgot-password" style={{ color: '#667eea', textDecoration: 'none' }}>
             Esqueci a Senha
           </a>
-          |
-          <a href="/signup" style={{ color: '#667eea', textDecoration: 'none', marginLeft: '1rem' }}>
+          <span>•</span>
+          <a href="/signup" style={{ color: '#667eea', textDecoration: 'none' }}>
             Criar Conta
           </a>
         </p>
 
-        <p style={{ marginTop: '1rem', textAlign: 'center', color: '#666' }}>
-          <a href="/" style={{ color: '#667eea', textDecoration: 'none' }}>
+        <p style={{ marginTop: '1rem', textAlign: 'center' }}>
+          <a href="/" style={{ color: '#667eea', textDecoration: 'none', fontSize: '0.9rem' }}>
             ← Voltar para Home
           </a>
         </p>

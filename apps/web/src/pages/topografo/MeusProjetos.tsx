@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../../services/api';
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
+import { LoadingState, EmptyState, ErrorState } from '../../components/StateViews';
 
 interface Projeto {
   id: number;
@@ -17,6 +18,7 @@ type StatusFiltro = 'TODOS' | 'RASCUNHO' | 'EM_ANDAMENTO' | 'CONCLUIDO' | 'ARQUI
 export default function MeusProjetos() {
   const [projetos, setProjetos] = useState<Projeto[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filtroStatus, setFiltroStatus] = useState<StatusFiltro>('TODOS');
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [projetoEditando, setProjetoEditando] = useState<Projeto | null>(null);
@@ -34,14 +36,19 @@ export default function MeusProjetos() {
   }, []);
 
   const carregarProjetos = async () => {
-    setLoading(true);
+    setError(null);
     try {
       const response = await apiClient.getProjects();
+      if (response.error) {
+        setError(response.error);
+        return;
+      }
       if (response.data) {
-        setProjetos(response.data as Projeto[]);
+        setProjetos(response.data as unknown as Projeto[]);
       }
     } catch (error) {
       console.error('Erro ao carregar projetos:', error);
+      setError('Erro ao carregar projetos');
     } finally {
       setLoading(false);
     }
@@ -247,31 +254,21 @@ export default function MeusProjetos() {
 
       {/* Lista de Projetos */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
-          <p style={{ fontSize: '2rem' }}>⏳</p>
-          <p>Carregando projetos...</p>
-        </div>
+        <LoadingState title="Carregando projetos" description="Aguarde alguns segundos" />
+      ) : error ? (
+        <ErrorState
+          title="Nao foi possivel carregar projetos"
+          description={error}
+          actionLabel="Tentar novamente"
+          onAction={carregarProjetos}
+        />
       ) : projetosFiltrados.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '3rem', color: '#666', background: 'white', borderRadius: '12px' }}>
-          <p style={{ fontSize: '2rem' }}>📭</p>
-          <p>Nenhum projeto encontrado</p>
-          {filtroStatus !== 'TODOS' && (
-            <button
-              onClick={() => setFiltroStatus('TODOS')}
-              style={{
-                marginTop: '1rem',
-                padding: '0.5rem 1rem',
-                background: '#667eea',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-              }}
-            >
-              Ver todos os projetos
-            </button>
-          )}
-        </div>
+        <EmptyState
+          title="Nenhum projeto encontrado"
+          description={filtroStatus !== 'TODOS' ? 'Ajuste o filtro para ver outros projetos' : undefined}
+          actionLabel={filtroStatus !== 'TODOS' ? 'Ver todos os projetos' : undefined}
+          onAction={filtroStatus !== 'TODOS' ? () => setFiltroStatus('TODOS') : undefined}
+        />
       ) : (
         <div style={{
           display: 'grid',

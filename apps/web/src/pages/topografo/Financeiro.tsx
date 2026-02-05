@@ -4,6 +4,7 @@ import { Button, Input, Select, Card, Badge, Textarea } from '../../components/U
 import Icon from '../../components/Icon';
 import { DialogHeader } from '../../components/Navigation';
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
+import { LoadingState, EmptyState, ErrorState } from '../../components/StateViews';
 import './Financeiro.css';
 
 interface Despesa {
@@ -74,6 +75,7 @@ export default function Financeiro() {
   const [projetos, setProjetos] = useState<Projeto[]>([]);
   const [lotes, setLotes] = useState<Lote[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filtroProjeto, setFiltroProjeto] = useState<number | null>(null);
   const [mostrarFormularioDespesa, setMostrarFormularioDespesa] = useState(false);
   const [despesaEditando, setDespesaEditando] = useState<Despesa | null>(null);
@@ -102,17 +104,25 @@ export default function Financeiro() {
 
   const loadInitialData = async () => {
     setLoading(true);
+    setError(null);
     try {
       const [projData, despData, pagData] = await Promise.all([
         apiClient.getProjects(),
         apiClient.getDespesas(),
         apiClient.getPagamentos?.(),
       ]);
-      setProjetos(Array.isArray(projData) ? projData : []);
-      setDespesas(Array.isArray(despData) ? despData : []);
-      setPagamentos(Array.isArray(pagData) ? pagData : []);
+
+      if (projData?.error || despData?.error || pagData?.error) {
+        setError(projData?.error || despData?.error || pagData?.error || 'Erro ao carregar dados');
+        return;
+      }
+
+      setProjetos(Array.isArray(projData?.data) ? (projData?.data as Projeto[]) : []);
+      setDespesas(Array.isArray(despData?.data) ? (despData?.data as Despesa[]) : []);
+      setPagamentos(Array.isArray(pagData?.data) ? (pagData?.data as Pagamento[]) : []);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
+      setError('Erro ao carregar dados');
     } finally {
       setLoading(false);
     }
@@ -339,15 +349,16 @@ export default function Financeiro() {
 
           {/* Expenses List */}
           {loading ? (
-            <div className="empty-state">
-              <Icon name="loader" size="lg" />
-              <p>Carregando despesas...</p>
-            </div>
+            <LoadingState title="Carregando despesas" description="Aguarde alguns segundos" />
+          ) : error ? (
+            <ErrorState
+              title="Nao foi possivel carregar despesas"
+              description={error}
+              actionLabel="Tentar novamente"
+              onAction={loadInitialData}
+            />
           ) : despesasFiltradas.length === 0 ? (
-            <div className="empty-state">
-              <Icon name="inbox" size="lg" />
-              <p>Nenhuma despesa encontrada</p>
-            </div>
+            <EmptyState title="Nenhuma despesa encontrada" />
           ) : (
             <div className="expenses-list">
               {despesasFiltradas.map((despesa) => (
@@ -446,15 +457,16 @@ export default function Financeiro() {
 
           {/* Payments List */}
           {loading ? (
-            <div className="empty-state">
-              <Icon name="loader" size="lg" />
-              <p>Carregando pagamentos...</p>
-            </div>
+            <LoadingState title="Carregando pagamentos" description="Aguarde alguns segundos" />
+          ) : error ? (
+            <ErrorState
+              title="Nao foi possivel carregar pagamentos"
+              description={error}
+              actionLabel="Tentar novamente"
+              onAction={loadInitialData}
+            />
           ) : pagamentosFiltrados.length === 0 ? (
-            <div className="empty-state">
-              <Icon name="inbox" size="lg" />
-              <p>Nenhum pagamento encontrado</p>
-            </div>
+            <EmptyState title="Nenhum pagamento encontrado" />
           ) : (
             <div className="payments-list">
               {pagamentosFiltrados.map((pagamento) => (

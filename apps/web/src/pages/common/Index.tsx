@@ -1,61 +1,81 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../../styles/HomePage.css';
 
 export default function Index() {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const toggleMobileMenu = () => setIsExpanded(!isExpanded);
+
   return (
     <div className="home-shell">
+      {/* MAP - FULL SCREEN */}
       <div className="hero">
         <div className="map-card">
-          <div className="map-badge">🌐 Visual do mapa</div>
+          <div className="map-badge">🌐 Regularização fundiária visual</div>
           <div className="map-preview">
             <div className="map-grid" />
             <div className="map-overlay">
-              <h2>Mapa pronto para desenhar</h2>
+              <h2>Visualize sua propriedade no mapa</h2>
               <p>
-                Veja a área, desenhe e valide sem misturar com outras telas. Tudo começa aqui:
-                escolha seu perfil e continue para o fluxo correto.
+                Desenhe sua área, gerencie documentos e regularize sua propriedade de forma simples.
               </p>
               <div className="map-tags">
-                <span>Desenho</span>
-                <span>Validação</span>
-                <span>Upload</span>
+                <span>📍 Desenhar área</span>
+                <span>👥 Vizinhos</span>
+                <span>📄 Documentos</span>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="hero-card">
-          <span className="card-kicker">Acesso rápido</span>
-          <h1 className="hero-title">Ativo Real</h1>
-          <p className="hero-sub">
-            Plataforma de regularização fundiária. Escolha como quer entrar:
-            login dedicado para cada perfil.
-          </p>
+      {/* MOBILE TOGGLE BUTTON */}
+      <button
+        className={`sidebar-toggle ${isExpanded ? 'active' : ''}`}
+        onClick={toggleMobileMenu}
+        aria-label="Menu"
+      >
+        {isExpanded ? '✕' : '☰'}
+      </button>
 
-          <div className="card-actions">
-            <Link to="/login?role=cliente" className="option urbano">
-              <div>
-                <div className="label">Sou Proprietário</div>
-                <div className="desc">Desenhar área, vizinhos, documentos</div>
-              </div>
-            </Link>
-            <Link to="/login?role=topografo" className="option rural">
-              <div>
-                <div className="label">Sou Topógrafo</div>
-                <div className="desc">Validar desenhos, peças, orçamentos</div>
-              </div>
-            </Link>
+      {/* SIDEBAR - LOGIN */}
+      <div className={`hero-card ${isExpanded ? 'expanded' : ''}`}>
+        <h1 className="hero-title">Ativo Real</h1>
+        <p className="hero-sub">
+          Regularize sua propriedade de forma simples e visual
+        </p>
+
+        <div className="card-actions">
+          <Link to="/login" className="option primary" onClick={() => setIsExpanded(false)}>
+            <div>
+              <div className="label">🔑 Entrar na plataforma</div>
+              <div className="desc">Acesse sua área e documentos</div>
+            </div>
+          </Link>
+
+          <Link to="/signup" className="option secondary" onClick={() => setIsExpanded(false)}>
+            <div>
+              <div className="label">➕ Criar conta grátis</div>
+              <div className="desc">Comece agora em 2 minutos</div>
+            </div>
+          </Link>
+        </div>
+
+        <div className="premium-banner">
+          <div className="premium-icon">⭐</div>
+          <div className="premium-text">
+            <strong>Acesso Premium</strong>
+            <span>Ferramentas profissionais de topografia e validação</span>
           </div>
+        </div>
 
-          <div className="card-divider">ou</div>
-
-          <div className="card-links">
-            <Link to="/signup" style={{ fontWeight: 'bold', color: '#667eea' }}>
-              Criar nova conta
-            </Link>
-            <Link to="/suporte">Precisa de ajuda?</Link>
-            <Link to="/sobre">Saiba mais</Link>
-          </div>
+        <div className="card-links">
+          <Link to="/suporte" onClick={() => setIsExpanded(false)}>
+            ❓ Precisa de ajuda?
+          </Link>
+          <Link to="/sobre" onClick={() => setIsExpanded(false)}>
+            ℹ️ Saiba mais
+          </Link>
         </div>
       </div>
     </div>

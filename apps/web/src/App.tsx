@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { supabase } from './lib/supabase';
 import apiClient from './services/api';
+import NetworkBanner from './components/NetworkBanner';
 
 // Pages Common
 import Index from './pages/common/Index';
@@ -40,6 +41,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <NetworkBanner />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Index />} />

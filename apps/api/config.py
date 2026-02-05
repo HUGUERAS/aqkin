@@ -8,6 +8,10 @@ load_dotenv()
 class Settings:
     """App settings."""
     
+    # Environment
+    ENV = os.getenv("ENV", "development")
+    SQL_ECHO = os.getenv("SQL_ECHO", "False").lower() == "true"
+    
     # Database
     DATABASE_URL = os.getenv(
         "DATABASE_URL",

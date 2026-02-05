@@ -45,7 +45,7 @@ export default function DashboardEnhanced() {
         setLoading(false);
         try {
             const response = await apiClient.getProjects();
-            if (response.data) {
+            if (Array.isArray(response.data)) {
                 setProjects(response.data);
                 // Calculate stats from projects
                 setStats({
@@ -54,6 +54,8 @@ export default function DashboardEnhanced() {
                     concluidROS: response.data.filter((p: any) => p.status === 'CONCLUIDO').length,
                     pendentes: response.data.filter((p: any) => p.status === 'EM_ANDAMENTO').length,
                 });
+            } else {
+                setProjects([]);
             }
         } catch (error) {
             console.error('Erro ao carregar dados:', error);

@@ -1,14 +1,7 @@
-/**
- * Sign Up Page
- * User registration for new accounts
- */
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import apiClient from '../../services/api';
-import { Alert, Button, Input } from '../../components/UIComponents';
-import Logo from '../../components/Logo';
 
 export default function SignUp() {
     const navigate = useNavigate();
@@ -18,7 +11,6 @@ export default function SignUp() {
         email: '',
         password: '',
         passwordConfirm: '',
-        role: 'cliente' as 'cliente' | 'topografo',
         agreeTerms: false,
     });
 
@@ -27,9 +19,8 @@ export default function SignUp() {
     const [passwordError, setPasswordError] = useState('');
 
     const validatePassword = (pwd: string) => {
-        if (pwd.length < 8) return 'Mínimo 8 caracteres';
-        if (!/[A-Z]/.test(pwd)) return 'Deve conter uma letra maiúscula';
-        if (!/[0-9]/.test(pwd)) return 'Deve conter um número';
+        if (pwd.length < 6) return 'Mínimo 6 caracteres';
+        // Validação mais permissiva - Supabase aceita senhas simples por padrão
         return '';
     };
 
@@ -73,18 +64,24 @@ export default function SignUp() {
                 password: formData.password,
             });
 
-            if (authError) throw authError;
+            if (authError) {
+                // Se o Supabase pediu confirmação de email
+                if (authError.message.includes('email') && authError.message.includes('confirm')) {
+                    setError('✉️ Conta criada! Verifique seu email para confirmar.');
+                    setTimeout(() => navigate('/login'), 3000);
+                    return;
+                }
+                throw authError;
+            }
             if (!authData.user) throw new Error('Erro ao criar usuário');
 
-            // 2. Definir role no backend
+            // 2. Definir como proprietário no backend
             const token = authData.session?.access_token;
             if (token) {
                 apiClient.setToken(token);
-                const roleApi = formData.role === 'topografo' ? 'topografo' : 'proprietario';
+                await apiClient.setPerfilRole('proprietario');
 
-                await apiClient.setPerfilRole(roleApi);
-
-                // 3. Criar perfil do usuário (nome, etc)
+                // 3. Criar perfil do usuário
                 try {
                     await supabase.auth.updateUser({
                         data: { display_name: formData.name },
@@ -94,16 +91,19 @@ export default function SignUp() {
                 }
             }
 
-            // Redirecionar para login ou confirmação
+            // Redirecionar para login
             navigate('/login?registered=true');
         } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : 'Erro ao criar conta';
 
-            // Mensagens mais amigáveis
-            if (msg.includes('already registered')) {
-                setError('Este email já está registrado. Faça login ou use outro email.');
-            } else if (msg.includes('password')) {
-                setError('Senha não atende aos requisitos de segurança');
+            if (msg.includes('already registered') || msg.includes('User already registered')) {
+                setError('📧 Este email já está registrado. Faça login ou use outro email.');
+            } else if (msg.includes('password') && msg.includes('weak')) {
+                setError('🔒 Senha muito fraca. Use pelo menos 6 caracteres.');
+            } else if (msg.includes('email') && msg.includes('invalid')) {
+                setError('📧 Email inválido. Verifique o formato.');
+            } else if (msg.includes('confirm')) {
+                setError('✉️ Conta criada! Confirme seu email antes de fazer login.');
             } else {
                 setError(msg);
             }
@@ -113,156 +113,185 @@ export default function SignUp() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4 py-12">
-            <div className="w-full max-w-md">
-                {/* Logo */}
-                <div className="flex justify-center mb-8">
-                    <Logo size="lg" variant="icon" />
-                </div>
+        <div style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            padding: '20px'
+        }}>
+            <div style={{
+                background: 'white',
+                padding: '3rem',
+                borderRadius: '16px',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+                width: '100%',
+                maxWidth: '480px'
+            }}>
+                <h2 style={{ marginBottom: '0.5rem', textAlign: 'center', fontSize: '1.8rem', color: '#1a202c' }}>
+                    ➕ Criar Conta
+                </h2>
+                <p style={{ marginBottom: '2rem', textAlign: 'center', color: '#718096', fontSize: '0.95rem' }}>
+                    Comece a regularizar sua propriedade agora
+                </p>
 
-                {/* Card */}
-                <div className="bg-white rounded-2xl shadow-xl p-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2 text-center">
-                        Criar Conta
-                    </h1>
-                    <p className="text-gray-600 text-center mb-6">
-                        Junte-se a AtivoReal hoje mesmo
-                    </p>
+                {error && (
+                    <div style={{ padding: '0.75rem', background: '#fee', color: '#c00', borderRadius: '8px', fontSize: '0.9rem', marginBottom: '1rem' }}>
+                        {error}
+                    </div>
+                )}
 
-                    {error && (
-                        <Alert type="error" title="Erro">
-                            {error}
-                        </Alert>
-                    )}
-
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        {/* Nome */}
-                        <Input
-                            label="Nome Completo"
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div>
+                        <label htmlFor="name" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#2d3748' }}>
+                            Nome Completo
+                        </label>
+                        <input
+                            id="name"
                             type="text"
                             placeholder="Seu nome"
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            style={{
+                                width: '100%',
+                                padding: '0.75rem',
+                                border: '1px solid #e2e8f0',
+                                borderRadius: '8px',
+                                fontSize: '1rem'
+                            }}
                             required
-                            icon="user"
                         />
+                    </div>
 
-                        {/* Email */}
-                        <Input
-                            label="Email"
+                    <div>
+                        <label htmlFor="email" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#2d3748' }}>
+                            Email
+                        </label>
+                        <input
+                            id="email"
                             type="email"
                             placeholder="seu@email.com"
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            style={{
+                                width: '100%',
+                                padding: '0.75rem',
+                                border: '1px solid #e2e8f0',
+                                borderRadius: '8px',
+                                fontSize: '1rem'
+                            }}
                             required
-                            icon="envelope"
                         />
+                    </div>
 
-                        {/* Tipo de Acesso */}
-                        <div className="mb-4">
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                Tipo de Acesso
-                            </label>
-                            <div className="space-y-2">
-                                {[
-                                    { value: 'cliente', label: '🏠 Proprietário', desc: 'Desenhar e gerenciar suas áreas' },
-                                    { value: 'topografo', label: '🗺️ Topógrafo', desc: 'Validar e criar projetos' },
-                                ].map((option) => (
-                                    <label key={option.value} className="flex items-start p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors">
-                                        <input
-                                            type="radio"
-                                            name="role"
-                                            value={option.value}
-                                            checked={formData.role === option.value}
-                                            onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
-                                            className="mt-1"
-                                        />
-                                        <div className="ml-3">
-                                            <p className="font-semibold text-gray-900">{option.label}</p>
-                                            <p className="text-sm text-gray-600">{option.desc}</p>
-                                        </div>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Senha */}
-                        <Input
-                            label="Senha"
+                    <div>
+                        <label htmlFor="password" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#2d3748' }}>
+                            Senha
+                        </label>
+                        <input
+                            id="password"
                             type="password"
                             placeholder="Pelo menos 8 caracteres"
                             value={formData.password}
                             onChange={(e) => handlePasswordChange(e.target.value)}
+                            style={{
+                                width: '100%',
+                                padding: '0.75rem',
+                                border: passwordError ? '1px solid #f56565' : '1px solid #e2e8f0',
+                                borderRadius: '8px',
+                                fontSize: '1rem'
+                            }}
                             required
-                            error={passwordError}
-                            helperText={!passwordError ? '• Mínimo 8 caracteres\n• 1 letra maiúscula\n• 1 número' : ''}
-                            icon="lock"
                         />
+                        {passwordError && (
+                            <p style={{ marginTop: '0.25rem', fontSize: '0.85rem', color: '#e53e3e' }}>{passwordError}</p>
+                        )}
+                        {!passwordError && (
+                            <p style={{ marginTop: '0.25rem', fontSize: '0.8rem', color: '#718096', lineHeight: '1.4' }}>
+                                • Mínimo 8 caracteres • 1 letra maiúscula • 1 número
+                            </p>
+                        )}
+                    </div>
 
-                        {/* Confirmar Senha */}
-                        <Input
-                            label="Confirmar Senha"
+                    <div>
+                        <label htmlFor="passwordConfirm" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#2d3748' }}>
+                            Confirmar Senha
+                        </label>
+                        <input
+                            id="passwordConfirm"
                             type="password"
                             placeholder="Repita a senha"
                             value={formData.passwordConfirm}
                             onChange={(e) => setFormData({ ...formData, passwordConfirm: e.target.value })}
+                            style={{
+                                width: '100%',
+                                padding: '0.75rem',
+                                border: '1px solid #e2e8f0',
+                                borderRadius: '8px',
+                                fontSize: '1rem'
+                            }}
                             required
-                            icon="lock"
                         />
+                    </div>
 
-                        {/* Termos */}
-                        <div className="flex items-start gap-2">
-                            <input
-                                type="checkbox"
-                                id="terms"
-                                checked={formData.agreeTerms}
-                                onChange={(e) => setFormData({ ...formData, agreeTerms: e.target.checked })}
-                                className="mt-1"
-                            />
-                            <label htmlFor="terms" className="text-sm text-gray-600 cursor-pointer">
-                                Concordo com os{' '}
-                                <button
-                                    type="button"
-                                    onClick={() => window.open('/termos', '_blank')}
-                                    className="text-blue-600 hover:text-blue-800 font-semibold"
-                                >
-                                    termos de serviço
-                                </button>{' '}
-                                e{' '}
-                                <button
-                                    type="button"
-                                    onClick={() => window.open('/privacidade', '_blank')}
-                                    className="text-blue-600 hover:text-blue-800 font-semibold"
-                                >
-                                    política de privacidade
-                                </button>
-                            </label>
-                        </div>
+                    <div style={{ display: 'flex', alignItems: 'start', gap: '0.5rem' }}>
+                        <input
+                            type="checkbox"
+                            id="terms"
+                            checked={formData.agreeTerms}
+                            onChange={(e) => setFormData({ ...formData, agreeTerms: e.target.checked })}
+                            style={{ marginTop: '0.25rem' }}
+                        />
+                        <label htmlFor="terms" style={{ fontSize: '0.85rem', color: '#4a5568', cursor: 'pointer', lineHeight: '1.5' }}>
+                            Concordo com os{' '}
+                            <a href="/termos" target="_blank" style={{ color: '#667eea', fontWeight: 'bold', textDecoration: 'none' }}>
+                                termos de serviço
+                            </a>{' '}
+                            e{' '}
+                            <a href="/privacidade" target="_blank" style={{ color: '#667eea', fontWeight: 'bold', textDecoration: 'none' }}>
+                                política de privacidade
+                            </a>
+                        </label>
+                    </div>
 
-                        {/* Botão */}
-                        <Button
-                            type="submit"
-                            variant="primary"
-                            size="lg"
-                            className="w-full"
-                            disabled={loading || !formData.agreeTerms}
-                            isLoading={loading}
-                        >
-                            {loading ? 'Criando conta...' : 'Criar Conta'}
-                        </Button>
-                    </form>
+                    <button
+                        type="submit"
+                        disabled={loading || !formData.agreeTerms}
+                        style={{
+                            padding: '1rem',
+                            background: (loading || !formData.agreeTerms) ? '#a0aec0' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            fontSize: '1rem',
+                            fontWeight: 'bold',
+                            cursor: (loading || !formData.agreeTerms) ? 'not-allowed' : 'pointer',
+                            marginTop: '0.5rem',
+                            transition: 'all 0.2s ease'
+                        }}
+                    >
+                        {loading ? '⏳ Criando conta...' : '🚀 Criar Conta Grátis'}
+                    </button>
+                </form>
 
-                    {/* Link Login */}
-                    <p className="text-center text-gray-600 text-sm mt-6">
-                        Já tem uma conta?{' '}
-                        <button
-                            onClick={() => navigate('/login')}
-                            className="text-blue-600 hover:text-blue-800 font-semibold transition-colors"
-                        >
-                            Faça login aqui
-                        </button>
-                    </p>
+                <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#fef6e7', border: '1px solid #f6d365', borderRadius: '8px', fontSize: '0.85rem', color: '#744210', textAlign: 'center' }}>
+                    ⭐ Crie sua conta e comece grátis!<br />
+                    <span style={{ fontSize: '0.8rem' }}>Upgrade para Premium quando precisar</span>
                 </div>
+
+                <p style={{ marginTop: '1.5rem', textAlign: 'center', color: '#718096', fontSize: '0.9rem' }}>
+                    Já tem uma conta?{' '}
+                    <a href="/login" style={{ color: '#667eea', textDecoration: 'none', fontWeight: 'bold' }}>
+                        Faça login aqui
+                    </a>
+                </p>
+
+                <p style={{ marginTop: '1rem', textAlign: 'center' }}>
+                    <a href="/" style={{ color: '#667eea', textDecoration: 'none', fontSize: '0.9rem' }}>
+                        ← Voltar para Home
+                    </a>
+                </p>
             </div>
         </div>
     );

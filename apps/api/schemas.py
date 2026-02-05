@@ -311,3 +311,59 @@ class SessionResponse(BaseModel):
     
     class Config:
         from_attributes = True
+
+
+# ============ Contract Schemas ============
+class ContractAcceptRequest(BaseModel):
+    """Request to accept a contract."""
+    signature: str = Field(..., description="Digital signature")
+    accepted_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class ContractAcceptResponse(BaseModel):
+    """Response after accepting a contract."""
+    success: bool
+    message: str
+    contract_id: Optional[UUID] = None
+
+
+class ContractTemplateResponse(BaseModel):
+    """Contract template response."""
+    id: UUID
+    title: str
+    content: str
+    version: str
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+
+# ============ Budget/Orcamento Schemas ============
+class OrcamentoBase(BaseModel):
+    """Base orcamento (budget) schema."""
+    projeto_id: UUID
+    titulo: str
+    descricao: Optional[str] = None
+    valor_total: float
+    data_validade: Optional[datetime] = None
+
+
+class OrcamentoCreate(OrcamentoBase):
+    """Schema for creating orcamento."""
+    pass
+
+
+class OrcamentoResponse(OrcamentoBase):
+    """Response schema for orcamento."""
+    id: UUID
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    
+    class Config:
+        from_attributes = True
+
+
+# ============ Projeto Alias ============
+# Alias for compatibility with different naming conventions
+ProjetoCreate = ProjectCreate

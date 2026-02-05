@@ -12,6 +12,7 @@ import Feature from 'ol/Feature';
 import Polygon from 'ol/geom/Polygon';
 import GeoJSON from 'ol/format/GeoJSON';
 import * as olExtent from 'ol/extent';
+import { reportError } from '../../utils/telemetry';
 import 'ol/ol.css';
 
 interface ViewMapProps {
@@ -37,9 +38,13 @@ export default function ViewMap({
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<Map | null>(null);
   const [currentBasemap, setCurrentBasemap] = useState<BasemapId>(basemap);
+  const [mapError, setMapError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (!mapRef.current) return;
+
+    setMapError(null);
 
     // Layers para diferentes tipos
     const rascunhoSource = new VectorSource();
@@ -89,51 +94,88 @@ export default function ViewMap({
       })
     });
 
-    // Criar mapa
-    const map = new Map({
-      target: mapRef.current,
-      layers: [
-        new TileLayer({
-          source: new OSM()
-        }),
-        rascunhoLayer,
-        sobreposicaoLayer,
-        oficialLayer
-      ],
-      view: new View({
-        center: fromLonLat(center),
-        zoom: zoom
-      })
-    });
+    try {
+      // Criar mapa
+      const map = new Map({
+        target: mapRef.current,
+        layers: [
+          new TileLayer({
+            source: new OSM()
+          }),
+          rascunhoLayer,
+          sobreposicaoLayer,
+          oficialLayer
+        ],
+        view: new View({
+          center: fromLonLat(center),
+          zoom: zoom
+        })
+      });
 
-    mapInstanceRef.current = map;
+      mapInstanceRef.current = map;
 
-    // Adicionar geometrias
-    geometries.forEach(geom => {
-      const feature = geom.geojson ? geojsonToFeature(geom.geojson) : (geom.wkt ? wktToFeature(geom.wkt) : null);
+      // Adicionar geometrias
+      geometries.forEach(geom => {
+        const feature = geom.geojson ? geojsonToFeature(geom.geojson) : (geom.wkt ? wktToFeature(geom.wkt) : null);
 
-      if (feature) {
-        if (geom.type === 'rascunho') {
-          rascunhoSource.addFeature(feature);
-        } else if (geom.type === 'oficial') {
-          oficialSource.addFeature(feature);
-        } else if (geom.type === 'sobreposicao') {
-          sobreposicaoSource.addFeature(feature);
+        if (feature) {
+          if (geom.type === 'rascunho') {
+            rascunhoSource.addFeature(feature);
+          } else if (geom.type === 'oficial') {
+            oficialSource.addFeature(feature);
+          } else if (geom.type === 'sobreposicao') {
+            sobreposicaoSource.addFeature(feature);
+          }
         }
+      });
+
+      // Ajustar view para mostrar todas geometrias
+      if (geometries.length > 0) {
+        const extent = olExtent.createEmpty();
+        [rascunhoSource, oficialSource, sobreposicaoSource].forEach(src => olExtent.extend(extent, src.getExtent()));
+        if (!olExtent.isEmpty(extent)) map.getView().fit(extent, { padding: [50, 50, 50, 50] });
       }
-    });
 
-    // Ajustar view para mostrar todas geometrias
-    if (geometries.length > 0) {
-      const extent = olExtent.createEmpty();
-      [rascunhoSource, oficialSource, sobreposicaoSource].forEach(src => olExtent.extend(extent, src.getExtent()));
-      if (!olExtent.isEmpty(extent)) map.getView().fit(extent, { padding: [50, 50, 50, 50] });
+      return () => {
+        map.setTarget(undefined);
+      };
+    } catch (error) {
+      reportError(error, { component: 'ViewMap' });
+      setMapError('Falha ao carregar o mapa.');
+      return undefined;
     }
+  }, [geometries, center, zoom, currentBasemap, reloadKey]);
 
-    return () => {
-      map.setTarget(undefined);
-    };
-  }, [geometries, center, zoom, currentBasemap]);
+  if (mapError) {
+    return (
+      <div style={{
+        position: 'relative',
+        borderRadius: '8px',
+        border: '1px solid #e5e7eb',
+        padding: '20px',
+        background: '#f9fafb',
+      }}>
+        <div role="alert" style={{ color: '#111827' }}>
+          <strong>Mapa indisponivel.</strong>
+          <div style={{ marginTop: '6px', color: '#6b7280' }}>{mapError}</div>
+          <button
+            onClick={() => setReloadKey((value) => value + 1)}
+            style={{
+              marginTop: '12px',
+              background: '#111827',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '6px',
+              padding: '8px 12px',
+              cursor: 'pointer',
+            }}
+          >
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ position: 'relative' }}>

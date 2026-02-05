@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import apiClient from '../../services/api';
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
+import { LoadingState, EmptyState, ErrorState } from '../../components/StateViews';
 
 interface Orcamento {
   id: number;
@@ -36,6 +37,7 @@ export default function Orcamentos() {
   const [projetos, setProjetos] = useState<Projeto[]>([]);
   const [lotes, setLotes] = useState<Lote[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filtroStatus, setFiltroStatus] = useState<StatusFiltro>('TODOS');
   const [filtroProjeto, setFiltroProjeto] = useState<number | null>(
     projetoIdParam ? Number(projetoIdParam) : null
@@ -64,11 +66,16 @@ export default function Orcamentos() {
   const carregarProjetos = async () => {
     try {
       const response = await apiClient.getProjects();
+      if (response.error) {
+        setError(response.error);
+        return;
+      }
       if (response.data) {
         setProjetos(response.data as Projeto[]);
       }
     } catch (error) {
       console.error('Erro ao carregar projetos:', error);
+      setError('Erro ao carregar projetos');
     }
   };
 
@@ -76,6 +83,10 @@ export default function Orcamentos() {
     try {
       if (filtroProjeto) {
         const response = await apiClient.getLotes(filtroProjeto);
+        if (response.error) {
+          setError(response.error);
+          return;
+        }
         if (response.data) {
           setLotes(response.data as Lote[]);
         }
@@ -84,21 +95,30 @@ export default function Orcamentos() {
       }
     } catch (error) {
       console.error('Erro ao carregar lotes:', error);
+      setError('Erro ao carregar lotes');
     }
   };
 
   const carregarOrcamentos = async () => {
     setLoading(true);
+    setError(null);
     try {
       const response = await apiClient.getOrcamentos(
         filtroProjeto || undefined,
         filtroLote || undefined
       );
-      if (response.data) {
+      if (response.error) {
+        setError(response.error);
+        return;
+      }
+      if (Array.isArray(response.data)) {
         setOrcamentos(response.data as Orcamento[]);
+      } else {
+        setOrcamentos([]);
       }
     } catch (error) {
       console.error('Erro ao carregar orçamentos:', error);
+      setError('Erro ao carregar orcamentos');
     } finally {
       setLoading(false);
     }
@@ -411,7 +431,7 @@ export default function Orcamentos() {
           }}
         >
           <div>
-            <div style={{ fontSize: '0.9rem', color: '#666', marginBottom: '0.25rem' }}>Total de Orçamentos</div>
+            <div style={{ fontSize: '0.9rem', color: '#666', marginBottom: '0.25rem' }}>Total de Orcamentos</div>
             <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{orcamentosFiltrados.length}</div>
           </div>
           <div>
@@ -429,21 +449,18 @@ export default function Orcamentos() {
         </div>
       )}
 
-      {/* Lista de Orçamentos */}
+      {/* Lista de Orcamentos */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
-          <p style={{ fontSize: '2rem' }}>
-            <span role="img" aria-label="Carregando">⏳</span>
-          </p>
-          <p>Carregando orçamentos...</p>
-        </div>
+        <LoadingState title="Carregando orcamentos" description="Aguarde alguns segundos" />
+      ) : error ? (
+        <ErrorState
+          title="Nao foi possivel carregar orcamentos"
+          description={error}
+          actionLabel="Tentar novamente"
+          onAction={carregarOrcamentos}
+        />
       ) : orcamentosFiltrados.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '3rem', color: '#666', background: 'white', borderRadius: '12px' }}>
-          <p style={{ fontSize: '2rem' }}>
-            <span role="img" aria-label="Nenhum orçamento">📭</span>
-          </p>
-          <p>Nenhum orçamento encontrado</p>
-        </div>
+        <EmptyState title="Nenhum orcamento encontrado" />
       ) : (
         <div style={{ display: 'grid', gap: '1rem' }}>
           {orcamentosFiltrados.map((orcamento) => {

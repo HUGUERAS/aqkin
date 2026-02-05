@@ -46,8 +46,8 @@ export default function DashboardConfluencia() {
   const loadProjectData = async (projectId: number) => {
     try {
       const parcelsResponse = await apiClient.getParcels(String(projectId));
-      if (parcelsResponse.data) {
-        setParcels(parcelsResponse.data);
+      if (Array.isArray(parcelsResponse.data)) {
+        setParcels(parcelsResponse.data as unknown as Parcel[]);
         interface Parcel {
           id: number;
           geom?: { type: string; coordinates: number[][][] };
@@ -55,7 +55,7 @@ export default function DashboardConfluencia() {
           status: string;
           nome_cliente?: string;
         }
-        const geomsFromParcels = (parcelsResponse.data as Parcel[])
+        const geomsFromParcels = (parcelsResponse.data as unknown as Parcel[])
           .filter((p) => p.geom || p.geometry_wkt)
           .map((p) => {
             const geomType: 'oficial' | 'rascunho' = (p.status === 'VALIDACAO_SIGEF' || p.status === 'FINALIZADO') ? 'oficial' : 'rascunho';
@@ -68,6 +68,8 @@ export default function DashboardConfluencia() {
             };
           });
         setGeometries(geomsFromParcels);
+      } else {
+        setParcels([]);
       }
       const overlapsResponse = await apiClient.getOverlaps(String(projectId));
       if (overlapsResponse.data) setOverlaps(overlapsResponse.data);

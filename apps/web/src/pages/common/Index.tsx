@@ -50,6 +50,9 @@ export default function Index() {
           <div className="card-divider">ou</div>
 
           <div className="card-links">
+            <Link to="/signup" style={{ fontWeight: 'bold', color: '#667eea' }}>
+              Criar nova conta
+            </Link>
             <Link to="/suporte">Precisa de ajuda?</Link>
             <Link to="/sobre">Saiba mais</Link>
           </div>

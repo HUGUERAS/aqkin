@@ -178,7 +178,17 @@ export default function Login() {
           </button>
         </form>
 
-        <p style={{ marginTop: '2rem', textAlign: 'center', color: '#666' }}>
+        <p style={{ marginTop: '2rem', textAlign: 'center', color: '#666', fontSize: '0.9rem' }}>
+          <a href="/forgot-password" style={{ color: '#667eea', textDecoration: 'none', marginRight: '1rem' }}>
+            Esqueci a Senha
+          </a>
+          |
+          <a href="/signup" style={{ color: '#667eea', textDecoration: 'none', marginLeft: '1rem' }}>
+            Criar Conta
+          </a>
+        </p>
+
+        <p style={{ marginTop: '1rem', textAlign: 'center', color: '#666' }}>
           <a href="/" style={{ color: '#667eea', textDecoration: 'none' }}>
             ← Voltar para Home
           </a>

@@ -1,4 +1,6 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
+import Logo from '../components/Logo';
+import Icon from '../components/Icon';
 import '../styles/PortalLayout.css';
 
 export default function ClienteLayout() {
@@ -9,19 +11,28 @@ export default function ClienteLayout() {
     <div className="portal-shell">
       <header className="portal-header">
         <div className="inner">
-          <div className="portal-brand">📱 Portal do Proprietário</div>
+          <div className="portal-brand">
+            <Logo size="md" variant="icon" />
+            <span>AtivoReal</span>
+          </div>
           <nav className="portal-nav">
             <Link to="/cliente/desenhar" className={`nav-pill ${isActive('desenhar') ? 'active' : ''}`}>
-              ✏️ Desenhar
+              <Icon name="map-pin" size="sm" />
+              Desenhar
             </Link>
             <Link to="/cliente/vizinhos" className={`nav-pill ${isActive('vizinhos') ? 'active' : ''}`}>
-              👥 Vizinhos
+              <Icon name="users" size="sm" />
+              Vizinhos
             </Link>
             <Link to="/cliente/documentos" className={`nav-pill ${isActive('documentos') ? 'active' : ''}`}>
-              📄 Documentos
+              <Icon name="file" size="sm" />
+              Documentos
             </Link>
           </nav>
-          <Link to="/" className="nav-pill">← Sair</Link>
+          <Link to="/" className="nav-pill">
+            <Icon name="logout" size="sm" />
+            Sair
+          </Link>
         </div>
       </header>
 

@@ -6,6 +6,9 @@ import apiClient from './services/api';
 // Pages Common
 import Index from './pages/common/Index';
 import Login from './pages/common/Login';
+import SignUp from './pages/common/SignUp';
+import ForgotPassword from './pages/common/ForgotPassword';
+import ResetPassword from './pages/common/ResetPassword';
 import NotFound from './pages/common/NotFound';
 
 // Pages Cliente
@@ -41,6 +44,9 @@ function App() {
         {/* Public Routes */}
         <Route path="/" element={<Index />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Cliente Routes - Portal Mobile - Protegido para Proprietário */}
         <Route

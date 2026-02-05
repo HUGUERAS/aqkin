@@ -1,6 +1,7 @@
 # 🚀 Deploy Misto: Vercel (Front) + Hostinger (Back)
 
 Essa é a configuração **ideal** em termos de custo-benefício profissional.
+
 - **Frontend** na Vercel: CDN global, super rápido e grátis.
 - **Backend** na Hostinger: VPS robusta, IP fixo, controle total e sem limitações de "dormir" do Render.
 
@@ -11,17 +12,20 @@ Essa é a configuração **ideal** em termos de custo-benefício profissional.
 Você precisa acessar sua VPS via SSH e rodar o script de deploy que já preparamos.
 
 1. **Acesse a VPS**:
+
    ```bash
    ssh root@SEU_IP_HOSTINGER
    ```
 
 2. **Execute o Script de Deploy**:
+
    ```bash
    # Baixar e instalar
    curl -sSL https://raw.githubusercontent.com/SEU_USUARIO/aqkin/main/scripts/deploy-hostinger.sh -o deploy.sh
    chmod +x deploy.sh
    bash deploy.sh
    ```
+
    *Durante a instalação, o script vai te dar o IP ou Domínio da API (ex: `http://123.456.78.90` ou `https://api.seudominio.com`).* **Anote isso!**
 
 ---
@@ -37,7 +41,7 @@ Você precisa acessar sua VPS via SSH e rodar o script de deploy que já prepara
    - **Output Directory**: `dist`
 4. **Environment Variables (MUITO IMPORTANTE)**:
    Adicione as seguintes variáveis:
-   
+
    | Nome | Valor |
    |------|-------|
    | `VITE_SUPABASE_URL` | *Sua URL do Supabase* |
@@ -54,7 +58,8 @@ Você precisa acessar sua VPS via SSH e rodar o script de deploy que já prepara
 - O Frontend (React) faz chamadas para o Supabase (Auth/Dados).
 - O Frontend faz chamadas para sua API Python na Hostinger (`VITE_API_URL`) para regras de negócio complexas.
 
-### Vantagens dessa abordagem:
+### Vantagens dessa abordagem
+
 - **Zero Custo na Vercel** (Hobby Tier).
 - **Backend Rápido**: A VPS da Hostinger está sempre ligada, não tem "Cold Start".
 - **Escalabilidade**: Se precisar de mais poder no backend, é só aumentar a VPS. O frontend escala infinitamente na Vercel.

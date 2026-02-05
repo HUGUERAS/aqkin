@@ -28,7 +28,7 @@ const mockStatusData = [
 ];
 
 export default function DashboardEnhanced() {
-    const [loading, setLoading] = useState(true);
+    const [_loading, setLoading] = useState(true);
     const [projects, setProjects] = useState<any[]>([]);
     const [stats, setStats] = useState({
         totalProjetos: 0,

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AtivoReal - Ícones Customizados</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e3a5f;
+            margin-bottom: 40px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .icon-card {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .icon-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .icon-card svg {
+            margin-bottom: 16px;
+        }
+
+        .icon-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .icon-desc {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .sizes {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #eee;
+        }
+
+        .sizes svg {
+            margin: 0;
+        }
+
+        .color-variants {
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        .color-variants h2 {
+            margin-bottom: 24px;
+            color: #333;
+        }
+
+        .colors {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .color-box {
+            padding: 16px 24px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .color-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🎨 Ícones Customizados - AtivoReal</h1>
+
+    <div class="grid">
+        <!-- TerrainIcon -->
+        <div class="icon-card">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                <path d="M4 8L8 4L16 6L20 10L18 18L10 20L4 16V8Z" stroke="#1e3a5f" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" />
+                <circle cx="4" cy="8" r="2" fill="#3b82f6" />
+                <circle cx="8" cy="4" r="2" fill="#3b82f6" />
+                <circle cx="16" cy="6" r="2" fill="#3b82f6" />
+                <circle cx="20" cy="10" r="2" fill="#3b82f6" />
+                <circle cx="18" cy="18" r="2" fill="#3b82f6" />
+                <circle cx="10" cy="20" r="2" fill="#3b82f6" />
+                <circle cx="4" cy="16" r="2" fill="#3b82f6" />
+            </svg>
+            <div class="icon-name">TerrainIcon</div>
+            <div class="icon-desc">Polígono de terreno com marcadores</div>
+            <div class="sizes">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 8L8 4L16 6L20 10L18 18L10 20L4 16V8Z" stroke="#1e3a5f" stroke-width="2" />
+                    <circle cx="4" cy="8" r="2" fill="#3b82f6" />
+                    <circle cx="8" cy="4" r="2" fill="#3b82f6" />
+                    <circle cx="16" cy="6" r="2" fill="#3b82f6" />
+                    <circle cx="20" cy="10" r="2" fill="#3b82f6" />
+                </svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 8L8 4L16 6L20 10L18 18L10 20L4 16V8Z" stroke="#1e3a5f" stroke-width="2" />
+                    <circle cx="4" cy="8" r="2" fill="#3b82f6" />
+                    <circle cx="8" cy="4" r="2" fill="#3b82f6" />
+                    <circle cx="16" cy="6" r="2" fill="#3b82f6" />
+                    <circle cx="20" cy="10" r="2" fill="#3b82f6" />
+                </svg>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 8L8 4L16 6L20 10L18 18L10 20L4 16V8Z" stroke="#1e3a5f" stroke-width="2" />
+                    <circle cx="4" cy="8" r="2" fill="#3b82f6" />
+                    <circle cx="8" cy="4" r="2" fill="#3b82f6" />
+                    <circle cx="16" cy="6" r="2" fill="#3b82f6" />
+                    <circle cx="20" cy="10" r="2" fill="#3b82f6" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- MeasureIcon -->
+        <div class="icon-card">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                <path d="M3 21L21 3" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+                <path d="M6 18L8 16" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M9 15L11 13" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M12 12L14 10" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M15 9L17 7" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M3 21L3 17M3 21L7 21" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+                <path d="M21 3L17 3M21 3L21 7" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            <div class="icon-name">MeasureIcon</div>
+            <div class="icon-desc">Régua de medição</div>
+            <div class="sizes">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 21L21 3" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+                    <path d="M3 21L3 17M3 21L7 21" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+                    <path d="M21 3L17 3M21 3L21 7" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 21L21 3" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+                    <path d="M3 21L3 17M3 21L7 21" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+                    <path d="M21 3L17 3M21 3L21 7" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 21L21 3" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+                    <path d="M3 21L3 17M3 21L7 21" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+                    <path d="M21 3L17 3M21 3L21 7" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- SurveyorIcon -->
+        <div class="icon-card">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="5" r="3" stroke="#1e3a5f" stroke-width="2" />
+                <path d="M12 8V14" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+                <path d="M8 10L12 12L16 10" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <path d="M12 14L8 21" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+                <path d="M12 14L16 21" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+                <path d="M16 10L20 8L18 12" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <circle cx="19" cy="9" r="1.5" stroke="#3b82f6" stroke-width="1.5" />
+            </svg>
+            <div class="icon-name">SurveyorIcon</div>
+            <div class="icon-desc">Topógrafo com equipamento</div>
+            <div class="sizes">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="5" r="3" stroke="#1e3a5f" stroke-width="2" />
+                    <path d="M12 8V14" stroke="#1e3a5f" stroke-width="2" />
+                    <path d="M12 14L8 21" stroke="#1e3a5f" stroke-width="2" />
+                    <path d="M12 14L16 21" stroke="#1e3a5f" stroke-width="2" />
+                </svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="5" r="3" stroke="#1e3a5f" stroke-width="2" />
+                    <path d="M12 8V14" stroke="#1e3a5f" stroke-width="2" />
+                    <path d="M12 14L8 21" stroke="#1e3a5f" stroke-width="2" />
+                    <path d="M12 14L16 21" stroke="#1e3a5f" stroke-width="2" />
+                </svg>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="5" r="3" stroke="#1e3a5f" stroke-width="2" />
+                    <path d="M12 8V14" stroke="#1e3a5f" stroke-width="2" />
+                    <path d="M12 14L8 21" stroke="#1e3a5f" stroke-width="2" />
+                    <path d="M12 14L16 21" stroke="#1e3a5f" stroke-width="2" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- LegalDocIcon -->
+        <div class="icon-card">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                <path d="M6 2H14L18 6V22H6V2Z" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <path d="M14 2V6H18" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M9 10H15" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M9 13H15" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" />
+                <circle cx="12" cy="18" r="2" stroke="#10b981" stroke-width="1.5" />
+                <path d="M12 16V14" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+            <div class="icon-name">LegalDocIcon</div>
+            <div class="icon-desc">Documento legal com selo</div>
+            <div class="sizes">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M6 2H14L18 6V22H6V2Z" stroke="#1e3a5f" stroke-width="2" />
+                    <path d="M14 2V6H18" stroke="#1e3a5f" stroke-width="2" />
+                    <circle cx="12" cy="18" r="2" stroke="#10b981" stroke-width="1.5" />
+                </svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M6 2H14L18 6V22H6V2Z" stroke="#1e3a5f" stroke-width="2" />
+                    <path d="M14 2V6H18" stroke="#1e3a5f" stroke-width="2" />
+                    <circle cx="12" cy="18" r="2" stroke="#10b981" stroke-width="1.5" />
+                </svg>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path d="M6 2H14L18 6V22H6V2Z" stroke="#1e3a5f" stroke-width="2" />
+                    <path d="M14 2V6H18" stroke="#1e3a5f" stroke-width="2" />
+                    <circle cx="12" cy="18" r="2" stroke="#10b981" stroke-width="1.5" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- AreaIcon -->
+        <div class="icon-card">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                <rect x="4" y="4" width="16" height="16" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <path d="M4 12H20" stroke="#3b82f6" stroke-width="1" stroke-dasharray="2 2" />
+                <path d="M12 4V20" stroke="#3b82f6" stroke-width="1" stroke-dasharray="2 2" />
+                <path d="M2 8L2 16" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M2 8L4 10" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M2 16L4 14" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+            <div class="icon-name">AreaIcon</div>
+            <div class="icon-desc">Área em metros quadrados</div>
+            <div class="sizes">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <rect x="4" y="4" width="16" height="16" stroke="#1e3a5f" stroke-width="2" />
+                    <path d="M4 12H20" stroke="#3b82f6" stroke-width="1" stroke-dasharray="2 2" />
+                    <path d="M12 4V20" stroke="#3b82f6" stroke-width="1" stroke-dasharray="2 2" />
+                </svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <rect x="4" y="4" width="16" height="16" stroke="#1e3a5f" stroke-width="2" />
+                    <path d="M4 12H20" stroke="#3b82f6" stroke-width="1" stroke-dasharray="2 2" />
+                    <path d="M12 4V20" stroke="#3b82f6" stroke-width="1" stroke-dasharray="2 2" />
+                </svg>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <rect x="4" y="4" width="16" height="16" stroke="#1e3a5f" stroke-width="2" />
+                    <path d="M4 12H20" stroke="#3b82f6" stroke-width="1" stroke-dasharray="2 2" />
+                    <path d="M12 4V20" stroke="#3b82f6" stroke-width="1" stroke-dasharray="2 2" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- AtivoRealIcon -->
+        <div class="icon-card">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2Z"
+                    stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M12 6L9 14H10.5L11 12.5H13L13.5 14H15L12 6Z" fill="#3b82f6" />
+                <path d="M11.5 11L12 8.5L12.5 11H11.5Z" fill="white" />
+            </svg>
+            <div class="icon-name">AtivoRealIcon</div>
+            <div class="icon-desc">Logo AtivoReal</div>
+            <div class="sizes">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2Z"
+                        stroke="#1e3a5f" stroke-width="2" />
+                    <path d="M12 6L9 14H10.5L11 12.5H13L13.5 14H15L12 6Z" fill="#3b82f6" />
+                </svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2Z"
+                        stroke="#1e3a5f" stroke-width="2" />
+                    <path d="M12 6L9 14H10.5L11 12.5H13L13.5 14H15L12 6Z" fill="#3b82f6" />
+                </svg>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2Z"
+                        stroke="#1e3a5f" stroke-width="2" />
+                    <path d="M12 6L9 14H10.5L11 12.5H13L13.5 14H15L12 6Z" fill="#3b82f6" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="color-variants">
+        <h2>Variantes de Cor</h2>
+        <div class="colors">
+            <div class="color-box">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 8L8 4L16 6L20 10L18 18L10 20L4 16V8Z" stroke="#3b82f6" stroke-width="2" />
+                    <circle cx="8" cy="4" r="2" fill="#3b82f6" />
+                    <circle cx="16" cy="6" r="2" fill="#3b82f6" />
+                </svg>
+                <div class="color-label">Primary</div>
+            </div>
+            <div class="color-box">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 8L8 4L16 6L20 10L18 18L10 20L4 16V8Z" stroke="#10b981" stroke-width="2" />
+                    <circle cx="8" cy="4" r="2" fill="#10b981" />
+                    <circle cx="16" cy="6" r="2" fill="#10b981" />
+                </svg>
+                <div class="color-label">Success</div>
+            </div>
+            <div class="color-box">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 8L8 4L16 6L20 10L18 18L10 20L4 16V8Z" stroke="#f59e0b" stroke-width="2" />
+                    <circle cx="8" cy="4" r="2" fill="#f59e0b" />
+                    <circle cx="16" cy="6" r="2" fill="#f59e0b" />
+                </svg>
+                <div class="color-label">Warning</div>
+            </div>
+            <div class="color-box">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 8L8 4L16 6L20 10L18 18L10 20L4 16V8Z" stroke="#ef4444" stroke-width="2" />
+                    <circle cx="8" cy="4" r="2" fill="#ef4444" />
+                    <circle cx="16" cy="6" r="2" fill="#ef4444" />
+                </svg>
+                <div class="color-label">Error</div>
+            </div>
+            <div class="color-box" style="background: #1e3a5f;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 8L8 4L16 6L20 10L18 18L10 20L4 16V8Z" stroke="white" stroke-width="2" />
+                    <circle cx="8" cy="4" r="2" fill="white" />
+                    <circle cx="16" cy="6" r="2" fill="white" />
+                </svg>
+                <div class="color-label" style="color: white;">White</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOVOS ÍCONES -->
+    <h1 style="margin-top: 60px;">🆕 Novos Ícones Customizados</h1>
+
+    <div class="grid">
+        <!-- GpsIcon -->
+        <div class="icon-card">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="8" stroke="#1e3a5f" stroke-width="2" />
+                <circle cx="12" cy="12" r="3" fill="#3b82f6" />
+                <path d="M12 2V6" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+                <path d="M12 18V22" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+                <path d="M2 12H6" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+                <path d="M18 12H22" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            <div class="icon-name">GpsIcon</div>
+            <div class="icon-desc">GPS / Coordenadas</div>
+        </div>
+
+        <!-- ContractIcon -->
+        <div class="icon-card">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                <path d="M5 3H15L19 7V21H5V3Z" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <path d="M15 3V7H19" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M8 11H16" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M8 14H16" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M10 17C10 17 11 18 12 18C13 18 14 17 14 17" stroke="#10b981" stroke-width="2"
+                    stroke-linecap="round" />
+            </svg>
+            <div class="icon-name">ContractIcon</div>
+            <div class="icon-desc">Contrato com assinatura</div>
+        </div>
+
+        <!-- NeighborsIcon -->
+        <div class="icon-card">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                <path d="M3 12L6 9V16H3V12Z" stroke="#1e3a5f" stroke-width="1.5" stroke-linejoin="round" />
+                <path d="M8 10L12 6L16 10V18H8V10Z" stroke="#1e3a5f" stroke-width="2" stroke-linejoin="round" />
+                <rect x="10" y="14" width="4" height="4" stroke="#3b82f6" stroke-width="1.5" />
+                <path d="M21 12L18 9V16H21V12Z" stroke="#1e3a5f" stroke-width="1.5" stroke-linejoin="round" />
+                <path d="M6 18H18" stroke="#10b981" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            <div class="icon-name">NeighborsIcon</div>
+            <div class="icon-desc">Vizinhos / Confrontantes</div>
+        </div>
+
+        <!-- ValidationIcon -->
+        <div class="icon-card">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="#1e3a5f" stroke-width="2" />
+                <path d="M8 12L11 15L16 9" stroke="#10b981" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+            <div class="icon-name">ValidationIcon</div>
+            <div class="icon-desc">Validação / Aprovação</div>
+        </div>
+
+        <!-- QuoteIcon -->
+        <div class="icon-card">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                <rect x="4" y="3" width="16" height="18" rx="2" stroke="#1e3a5f" stroke-width="2" />
+                <path d="M8 8H16" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M8 12H12" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" />
+                <circle cx="15" cy="15" r="3" stroke="#10b981" stroke-width="1.5" />
+                <path d="M15 14V16" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M14 15H16" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+            <div class="icon-name">QuoteIcon</div>
+            <div class="icon-desc">Orçamento / Cotação</div>
+        </div>
+
+        <!-- MemorialIcon -->
+        <div class="icon-card">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                <path d="M4 4H16L20 8V20H4V4Z" stroke="#1e3a5f" stroke-width="2" stroke-linejoin="round" />
+                <path d="M16 4V8H20" stroke="#1e3a5f" stroke-width="2" stroke-linejoin="round" />
+                <circle cx="7" cy="11" r="1" fill="#3b82f6" />
+                <path d="M9 11H17" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" />
+                <circle cx="7" cy="14" r="1" fill="#3b82f6" />
+                <path d="M9 14H17" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" />
+                <circle cx="7" cy="17" r="1" fill="#3b82f6" />
+                <path d="M9 17H14" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+            <div class="icon-name">MemorialIcon</div>
+            <div class="icon-desc">Memorial Descritivo</div>
+        </div>
+
+        <!-- BlueprintIcon -->
+        <div class="icon-card">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="3" width="18" height="18" rx="2" stroke="#1e3a5f" stroke-width="2" />
+                <path d="M7 10L10 7L17 9L15 15L9 17L7 10Z" stroke="#3b82f6" stroke-width="1.5"
+                    stroke-linejoin="round" />
+                <path d="M7 10L10 7" stroke="#3b82f6" stroke-width="1" stroke-dasharray="1 1" />
+                <path d="M17 9L15 15" stroke="#3b82f6" stroke-width="1" stroke-dasharray="1 1" />
+                <path d="M19 5L21 3" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M20 3L21 3L21 4" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+            <div class="icon-name">BlueprintIcon</div>
+            <div class="icon-desc">Planta Técnica</div>
+        </div>
+
+        <!-- PaymentIcon -->
+        <div class="icon-card">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                <rect x="2" y="5" width="20" height="14" rx="2" stroke="#1e3a5f" stroke-width="2" />
+                <path d="M2 10H22" stroke="#1e3a5f" stroke-width="2" />
+                <path d="M6 15H10" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" />
+                <circle cx="17" cy="15" r="2" stroke="#10b981" stroke-width="1.5" />
+            </svg>
+            <div class="icon-name">PaymentIcon</div>
+            <div class="icon-desc">Pagamento / Cartão</div>
+        </div>
+
+        <!-- UploadDocIcon -->
+        <div class="icon-card">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                <path d="M6 2H14L18 6V22H6V2Z" stroke="#1e3a5f" stroke-width="2" stroke-linejoin="round" />
+                <path d="M14 2V6H18" stroke="#1e3a5f" stroke-width="2" stroke-linejoin="round" />
+                <path d="M12 18V11" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" />
+                <path d="M9 14L12 11L15 14" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+            <div class="icon-name">UploadDocIcon</div>
+            <div class="icon-desc">Upload de Documento</div>
+        </div>
+
+        <!-- SketchIcon -->
+        <div class="icon-card">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                <path d="M16 3L21 8L8 21H3V16L16 3Z" stroke="#1e3a5f" stroke-width="2" stroke-linejoin="round" />
+                <path d="M13 6L18 11" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" />
+                <path d="M3 21H8" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            <div class="icon-name">SketchIcon</div>
+            <div class="icon-desc">Desenhar / Editar</div>
+        </div>
+
+        <!-- LayersIcon -->
+        <div class="icon-card">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#1e3a5f" stroke-width="2" stroke-linejoin="round" />
+                <path d="M2 12L12 17L22 12" stroke="#3b82f6" stroke-width="2" stroke-linejoin="round" />
+                <path d="M2 17L12 22L22 17" stroke="#10b981" stroke-width="2" stroke-linejoin="round" />
+            </svg>
+            <div class="icon-name">LayersIcon</div>
+            <div class="icon-desc">Camadas do Mapa</div>
+        </div>
+
+        <!-- PerimeterIcon -->
+        <div class="icon-card">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                <path d="M4 8L8 4L16 5L20 9L18 16L12 20L6 18L4 8Z" stroke="#1e3a5f" stroke-width="2"
+                    stroke-linejoin="round" stroke-dasharray="4 2" />
+                <path d="M8 4L10 5" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" />
+                <path d="M16 5L17 7" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" />
+                <path d="M18 16L16 17" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            <div class="icon-name">PerimeterIcon</div>
+            <div class="icon-desc">Perímetro do Terreno</div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -152,8 +152,7 @@ export default function ResetPassword() {
                             </div>
                         </>
                     ) : (
-                        <>
-                            <div className="text-center">
+                        <div className="text-center">
                                 <div className="mb-4 flex justify-center">
                                     <div className="rounded-full bg-green-100 p-4">
                                         <Icon name="check" size="xl" color="success" />
@@ -166,7 +165,6 @@ export default function ResetPassword() {
                                     Redirecionando para login...
                                 </p>
                             </div>
-                        </>
                     )}
                 </div>
             </div>

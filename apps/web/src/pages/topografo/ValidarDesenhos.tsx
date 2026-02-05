@@ -12,12 +12,6 @@ interface LayerState {
   };
 }
 
-interface MeasurementResult {
-  type: 'distance' | 'area';
-  value: number;
-  unit: string;
-}
-
 // Dados de exemplo para as layers (em coordenadas Brasília)
 const createExamplePolygons = () => {
   // Coordenadas em Web Mercator (para as layers)

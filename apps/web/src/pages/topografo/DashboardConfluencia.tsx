@@ -48,9 +48,16 @@ export default function DashboardConfluencia() {
       const parcelsResponse = await apiClient.getParcels(projectId);
       if (parcelsResponse.data) {
         setParcels(parcelsResponse.data);
-        const geomsFromParcels = parcelsResponse.data
-          .filter((p: { geom?: unknown; geometry_wkt?: string }) => p.geom || p.geometry_wkt)
-          .map((p: { id: number; geom?: { type: string; coordinates: number[][][] }; geometry_wkt?: string; status: string; nome_cliente?: string }) => ({
+        interface Parcel {
+          id: number;
+          geom?: { type: string; coordinates: number[][][] };
+          geometry_wkt?: string;
+          status: string;
+          nome_cliente?: string;
+        }
+        const geomsFromParcels = (parcelsResponse.data as Parcel[])
+          .filter((p) => p.geom || p.geometry_wkt)
+          .map((p) => ({
             id: String(p.id),
             geojson: p.geom,
             wkt: p.geometry_wkt,

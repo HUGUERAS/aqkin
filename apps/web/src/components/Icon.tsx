@@ -9,6 +9,7 @@ import {
     FileText,
     LayoutDashboard,
     CheckCircle,
+    CheckCircle2,
     Zap,
     BarChart3,
     DollarSign,
@@ -38,6 +39,9 @@ import {
     ChevronRight,
     Mail,
     User,
+    CreditCard,
+    Loader2,
+    Inbox,
     type LucideIcon,
 } from 'lucide-react';
 
@@ -76,7 +80,11 @@ interface IconProps {
     | 'back'
     | 'forward'
     | 'envelope'
-    | 'user';
+    | 'user'
+    | 'credit-card'
+    | 'check-circle'
+    | 'loader'
+    | 'inbox';
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
     color?: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'white' | 'current';
     className?: string;
@@ -117,9 +125,13 @@ const iconMap: Record<IconProps['name'], LucideIcon> = {
     forward: ChevronRight,
     envelope: Mail,
     user: User,
+    'credit-card': CreditCard,
+    'check-circle': CheckCircle2,
+    loader: Loader2,
+    inbox: Inbox,
 };
 
-const sizeMap: Record<IconProps['size'], number> = {
+const sizeMap: Record<NonNullable<IconProps['size']>, number> = {
     xs: 12,
     sm: 16,
     md: 20,
@@ -127,7 +139,7 @@ const sizeMap: Record<IconProps['size'], number> = {
     xl: 32,
 };
 
-const colorMap: Record<Exclude<IconProps['color'], 'current'>, string> = {
+const colorMap: Record<Exclude<NonNullable<IconProps['color']>, 'current'>, string> = {
     primary: '#3b82f6',
     secondary: '#64748b',
     success: '#10b981',

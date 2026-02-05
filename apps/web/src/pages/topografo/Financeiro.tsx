@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../../services/api';
-import { Button, Input, Select, Card, Badge } from '../../components/UIComponents';
+import { Button, Input, Select, Card, Badge, Textarea } from '../../components/UIComponents';
 import Icon from '../../components/Icon';
 import { DialogHeader } from '../../components/Navigation';
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
-import styles from '../../styles/PortalLayout.module.css';
 import './Financeiro.css';
 
 interface Despesa {
@@ -58,7 +57,7 @@ const getCategoryColor = (categoria?: string): string => {
   return cores[categoria || 'OUTROS'] || '#6b7280';
 };
 
-const getStatusBadgeVariant = (status: string): 'primary' | 'success' | 'warning' | 'error' => {
+const getStatusBadgeVariant = (status: string): 'info' | 'success' | 'warning' | 'error' => {
   switch (status) {
     case 'PAGO': return 'success';
     case 'PROCESSANDO': return 'warning';
@@ -209,15 +208,20 @@ export default function Financeiro() {
     try {
       if (despesaEditando) {
         await apiClient.updateDespesa?.(despesaEditando.id, {
-          ...formDataDespesa,
-          projeto_id: parseInt(formDataDespesa.projeto_id),
+          descricao: formDataDespesa.descricao,
           valor,
+          data: formDataDespesa.data,
+          categoria: formDataDespesa.categoria,
+          observacoes: formDataDespesa.observacoes,
         });
       } else {
         await apiClient.createDespesa?.({
-          ...formDataDespesa,
           projeto_id: parseInt(formDataDespesa.projeto_id),
+          descricao: formDataDespesa.descricao,
           valor,
+          data: formDataDespesa.data,
+          categoria: formDataDespesa.categoria,
+          observacoes: formDataDespesa.observacoes,
         });
       }
 
@@ -285,14 +289,11 @@ export default function Financeiro() {
             const val = e.target.value ? parseInt(e.target.value) : null;
             setFiltroProjeto(val);
           }}
-        >
-          <option value="">Todos os projetos</option>
-          {projetos.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.nome}
-            </option>
-          ))}
-        </Select>
+          options={[
+            { value: '', label: 'Todos os projetos' },
+            ...projetos.map((p) => ({ value: p.id.toString(), label: p.nome }))
+          ]}
+        />
       </div>
 
       {/* Tabs */}
@@ -319,13 +320,13 @@ export default function Financeiro() {
           {/* Summary Cards */}
           {despesasFiltradas.length > 0 && (
             <div className="financeiro-summary">
-              <Card variant="outlined">
+              <Card className="summary-card">
                 <div className="summary-item">
                   <span className="summary-label">Total de Despesas</span>
                   <span className="summary-value">{despesasFiltradas.length}</span>
                 </div>
               </Card>
-              <Card variant="outlined">
+              <Card className="summary-card">
                 <div className="summary-item">
                   <span className="summary-label">Valor Total</span>
                   <span className="summary-value expense">
@@ -410,13 +411,13 @@ export default function Financeiro() {
           {/* Summary Cards */}
           {pagamentosFiltrados.length > 0 && (
             <div className="financeiro-summary">
-              <Card variant="outlined">
+              <Card className="summary-card">
                 <div className="summary-item">
                   <span className="summary-label">Total de Pagamentos</span>
                   <span className="summary-value">{pagamentosFiltrados.length}</span>
                 </div>
               </Card>
-              <Card variant="outlined">
+              <Card className="summary-card">
                 <div className="summary-item">
                   <span className="summary-label">Valor Total</span>
                   <span className="summary-value income">
@@ -424,7 +425,7 @@ export default function Financeiro() {
                   </span>
                 </div>
               </Card>
-              <Card variant="outlined">
+              <Card className="summary-card">
                 <div className="summary-item">
                   <span className="summary-label">Valor Pago</span>
                   <span className="summary-value income">
@@ -432,7 +433,7 @@ export default function Financeiro() {
                   </span>
                 </div>
               </Card>
-              <Card variant="outlined">
+              <Card className="summary-card">
                 <div className="summary-item">
                   <span className="summary-label">Pagamentos Aprovados</span>
                   <span className="summary-value">
@@ -511,23 +512,18 @@ export default function Financeiro() {
             <DialogHeader
               title={despesaEditando ? 'Editar Despesa' : 'Nova Despesa'}
               onClose={fecharFormularioDespesa}
-              icon={despesaEditando ? 'edit' : 'plus'}
-            />
-
-            <div className="form-body">
+            >
+              <div className="form-body">
               <Select
                 label="Projeto *"
                 value={formDataDespesa.projeto_id}
                 onChange={(e) => setFormDataDespesa({ ...formDataDespesa, projeto_id: e.target.value })}
                 required
-              >
-                <option value="">Selecione um projeto</option>
-                {projetos.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.nome}
-                  </option>
-                ))}
-              </Select>
+                options={[
+                  { value: '', label: 'Selecione um projeto' },
+                  ...projetos.map((p) => ({ value: p.id.toString(), label: p.nome }))
+                ]}
+              />
 
               <Input
                 label="Descrição *"
@@ -561,17 +557,11 @@ export default function Financeiro() {
                 label="Categoria"
                 value={formDataDespesa.categoria}
                 onChange={(e) => setFormDataDespesa({ ...formDataDespesa, categoria: e.target.value })}
-              >
-                {categoriaOpcoes.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </Select>
+                options={categoriaOpcoes}
+              />
 
-              <Input
+              <Textarea
                 label="Observações"
-                type="textarea"
                 value={formDataDespesa.observacoes}
                 onChange={(e) => setFormDataDespesa({ ...formDataDespesa, observacoes: e.target.value })}
                 placeholder="Observações sobre a despesa..."
@@ -590,12 +580,12 @@ export default function Financeiro() {
                   variant="primary"
                   onClick={salvarDespesa}
                   disabled={salvando}
-                  loading={salvando}
+                  isLoading={salvando}
                 >
                   {despesaEditando ? 'Atualizar' : 'Criar'}
                 </Button>
               </div>
-            </div>
+            </DialogHeader>
           </Card>
         </div>
       )}

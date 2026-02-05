@@ -19,6 +19,7 @@ from schemas import (
     ParcelCreate, ParcelResponse, ClientIntakeRequest, ClientIntakeResponse,
 )
 from models import User, Project, Parcel, Tenant, InviteLink
+from routers.parcels import router as parcels_router
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,10 @@ app.add_middleware(
     allow_headers=["*"],
     max_age=3600,
 )
+
+
+# ============ Router Registration ============
+app.include_router(parcels_router, prefix="/api", tags=["Parcels"])
 
 
 # ============ Error Handlers ============

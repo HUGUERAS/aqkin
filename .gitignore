@@ -53,3 +53,5 @@ __pycache__/
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
 test-output
+
+clean-project/

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import apiClient from '../../services/api';
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
 import { LoadingState, EmptyState, ErrorState } from '../../components/StateViews';
+import { Select, Input, Textarea } from '../../components/UIComponents';
 
 interface Projeto {
   id: number;
@@ -444,91 +445,48 @@ export default function MeusProjetos() {
             </h2>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-                  Nome do Projeto *
-                </label>
-                <input
-                  type="text"
-                  value={formData.nome}
-                  onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                  placeholder="Ex: Loteamento Jardim das Flores"
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '1rem',
-                  }}
-                />
-              </div>
+              <Input
+                label="Nome do Projeto *"
+                type="text"
+                value={formData.nome}
+                onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                placeholder="Ex: Loteamento Jardim das Flores"
+              />
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-                  Descrição
-                </label>
-                <textarea
-                  value={formData.descricao}
-                  onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-                  placeholder="Descrição do projeto..."
-                  rows={4}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '1rem',
-                    fontFamily: 'inherit',
-                  }}
-                />
-              </div>
+              <Textarea
+                label="Descrição"
+                value={formData.descricao}
+                onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
+                placeholder="Descrição do projeto..."
+                rows={4}
+              />
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-                  Tipo
-                </label>
-                <select
-                  value={formData.tipo}
-                  onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '1rem',
-                  }}
-                >
-                  <option value="INDIVIDUAL">Individual</option>
-                  <option value="DESMEMBRAMENTO">Desmembramento</option>
-                  <option value="LOTEAMENTO">Loteamento</option>
-                  <option value="RETIFICACAO">Retificação</option>
-                </select>
-              </div>
+              <Select
+                label="Tipo"
+                value={formData.tipo}
+                onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
+                options={[
+                  { value: 'INDIVIDUAL', label: 'Individual' },
+                  { value: 'DESMEMBRAMENTO', label: 'Desmembramento' },
+                  { value: 'LOTEAMENTO', label: 'Loteamento' },
+                  { value: 'RETIFICACAO', label: 'Retificação' },
+                ]}
+              />
 
               {projetoEditando && (
-                <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-                    Status
-                  </label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) =>
-                      setFormData({ ...formData, status: e.target.value as Projeto['status'] })
-                    }
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem',
-                      border: '1px solid #ddd',
-                      borderRadius: '6px',
-                      fontSize: '1rem',
-                    }}
-                  >
-                    <option value="RASCUNHO">📝 Rascunho</option>
-                    <option value="EM_ANDAMENTO">🚀 Em Andamento</option>
-                    <option value="CONCLUIDO">✅ Concluído</option>
-                    <option value="ARQUIVADO">📦 Arquivado</option>
-                  </select>
-                </div>
+                <Select
+                  label="Status"
+                  value={formData.status}
+                  onChange={(e) =>
+                    setFormData({ ...formData, status: e.target.value as Projeto['status'] })
+                  }
+                  options={[
+                    { value: 'RASCUNHO', label: '📝 Rascunho' },
+                    { value: 'EM_ANDAMENTO', label: '🚀 Em Andamento' },
+                    { value: 'CONCLUIDO', label: '✅ Concluído' },
+                    { value: 'ARQUIVADO', label: '📦 Arquivado' },
+                  ]}
+                />
               )}
 
               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1rem' }}>

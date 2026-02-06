@@ -3,6 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 import apiClient from '../../services/api';
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
 import { LoadingState, EmptyState, ErrorState } from '../../components/StateViews';
+import { Select, Input, Textarea } from '../../components/UIComponents';
+import { Select, Input, Textarea } from '../../components/UIComponents';
 
 interface Orcamento {
   id: number;
@@ -598,11 +600,9 @@ export default function Orcamentos() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {!orcamentoEditando && (
                 <>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-                      Projeto
-                    </label>
-                    <select
+                  <div style={{ marginBottom: '1rem' }}>
+                    <Select
+                      label="Projeto *"
                       value={formData.projeto_id}
                       onChange={async (e) => {
                         const projetoId = e.target.value;
@@ -620,116 +620,59 @@ export default function Orcamentos() {
                           setLotes([]);
                         }
                       }}
-                      style={{
-                        width: '100%',
-                        padding: '0.75rem',
-                        border: '1px solid #ddd',
-                        borderRadius: '6px',
-                        fontSize: '1rem',
-                      }}
-                    >
-                      <option value="">Selecione um projeto</option>
-                      {projetos.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.nome}
-                        </option>
-                      ))}
-                    </select>
+                      options={[
+                        { value: '', label: 'Selecione um projeto' },
+                        ...projetos.map((p) => ({ value: String(p.id), label: p.nome }))
+                      ]}
+                    />
                   </div>
 
                   {formData.projeto_id && (
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-                        Lote (opcional)
-                      </label>
-                      <select
-                        value={formData.lote_id}
-                        onChange={(e) => setFormData({ ...formData, lote_id: e.target.value })}
-                        style={{
-                          width: '100%',
-                          padding: '0.75rem',
-                          border: '1px solid #ddd',
-                          borderRadius: '6px',
-                          fontSize: '1rem',
-                        }}
-                      >
-                        <option value="">Todos os lotes do projeto</option>
-                        {lotes.map((l) => (
-                          <option key={l.id} value={l.id}>
-                            {l.nome_cliente}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    <Select
+                      label="Lote (opcional)"
+                      value={formData.lote_id}
+                      onChange={(e) => setFormData({ ...formData, lote_id: e.target.value })}
+                      options={[
+                        { value: '', label: 'Todos os lotes do projeto' },
+                        ...lotes.map((l) => ({ value: String(l.id), label: l.nome_cliente }))
+                      ]}
+                    />
                   )}
                 </>
               )}
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-                  Valor (R$) *
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.valor}
-                  onChange={(e) => setFormData({ ...formData, valor: e.target.value })}
-                  placeholder="0.00"
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '1rem',
-                  }}
-                />
-              </div>
+              <Input
+                label="Valor (R$) *"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.valor}
+                onChange={(e) => setFormData({ ...formData, valor: e.target.value })}
+                placeholder="0.00"
+              />
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-                  Status
-                </label>
-                <select
-                  value={formData.status}
-                  onChange={(e) =>
-                    setFormData({ ...formData, status: e.target.value as Orcamento['status'] })
-                  }
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '1rem',
-                  }}
-                >
-                  <option value="RASCUNHO">📝 Rascunho</option>
-                  <option value="ENVIADO">📤 Enviado</option>
-                  <option value="APROVADO">✅ Aprovado</option>
-                  <option value="REJEITADO">❌ Rejeitado</option>
-                  <option value="CANCELADO">🚫 Cancelado</option>
-                </select>
-              </div>
+              <Select
+                label="Status"
+                value={formData.status}
+                onChange={(e) =>
+                  setFormData({ ...formData, status: e.target.value as Orcamento['status'] })
+                }
+                options={[
+                  { value: 'RASCUNHO', label: '📝 Rascunho' },
+                  { value: 'ENVIADO', label: '📤 Enviado' },
+                  { value: 'APROVADO', label: '✅ Aprovado' },
+                  { value: 'REJEITADO', label: '❌ Rejeitado' },
+                  { value: 'CANCELADO', label: '🚫 Cancelado' },
+                ]}
+              />
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-                  Observações
-                </label>
-                <textarea
-                  value={formData.observacoes}
-                  onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
-                  placeholder="Observações sobre o orçamento..."
-                  rows={4}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '1rem',
-                    fontFamily: 'inherit',
-                  }}
-                />
-              </div>
+              <Textarea
+                label="Observações"
+                value={formData.observacoes}
+                onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
+                placeholder="Observações sobre o orçamento..."
+                rows={4}
+              />
 
               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
                 <button

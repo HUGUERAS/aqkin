@@ -6,7 +6,6 @@
   "private": true,
   "dependencies": {
     "@supabase/supabase-js": "^2.93.3",
-    "axios": "^1.13.4",
     "ol": "^10.7.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

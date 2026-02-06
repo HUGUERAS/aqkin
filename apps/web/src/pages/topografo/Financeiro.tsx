@@ -1,16 +1,12 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../../services/api';
-import { Button, Input, Select, Card, Badge, Textarea } from '../../components/UIComponents';
 import { StatusBadge, StatusFilter } from '../../components/StatusBadge';
 import { useFormState, useStatusFilter } from '../../hooks/useFormState';
 import { useApiError, useNotification, extractErrorMessage } from '../../hooks/useErrorHandler';
 import { DESPESA_CATEGORIES, PAGAMENTO_STATUSES, VALIDATION_RULES, ERROR_MESSAGES } from '../../constants';
 import { Despesa, Pagamento } from '../../schemas';
-import Icon from '../../components/Icon';
-import { DialogHeader } from '../../components/Navigation';
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
-import { LoadingState, EmptyState, ErrorState } from '../../components/StateViews';
-import './Financeiro.css';
+import '../../styles/TopografoPro.css';
 
 interface Projeto {
   id: number;
@@ -248,258 +244,295 @@ export default function Financeiro() {
   const totalPago = pagamentosFiltrados.reduce((acc, p) => acc + p.valor_pago, 0);
 
   return (
-    <div className="financeiro-container">
-      {/* Notificações */}
+    <div className="topografo-page">
+      {/* Page Header */}
+      <div className="topografo-page-header">
+        <div className="topografo-page-header-left">
+          <span className="topografo-page-icon">💰</span>
+          <div className="topografo-page-title">
+            <h1>Módulo Financeiro</h1>
+            <p>Controle de despesas, pagamentos e recursos</p>
+          </div>
+        </div>
+        <div className="topografo-page-actions">
+          {abaAtiva === 'DESPESAS' && (
+            <button className="pro-btn pro-btn-primary" onClick={abrirFormularioCriar}>
+              ➕ Nova Despesa
+            </button>
+          )}
+          {abaAtiva === 'ENTRADA_RECURSO' && (
+            <button className="pro-btn pro-btn-success">
+              ➕ Nova Entrada de Recurso
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Notifications */}
       {notification && (
-        <div
-          style={{
-            marginBottom: '1rem',
-            padding: '1rem',
-            borderRadius: '8px',
-            background: notification.type === 'success' ? '#d4edda' : '#f8d7da',
-            color: notification.type === 'success' ? '#155724' : '#721c24',
-            border: `1px solid ${notification.type === 'success' ? '#c3e6cb' : '#f5c6cb'}`,
-          }}
-        >
-          {notification.message}
+        <div className={`pro-alert ${notification.type === 'success' ? 'pro-alert-success' : 'pro-alert-error'}`}>
+          <span className="pro-alert-icon">{notification.type === 'success' ? '✅' : '❌'}</span>
+          <div className="pro-alert-content">
+            <div className="pro-alert-text">{notification.message}</div>
+          </div>
         </div>
       )}
 
       {apiError && (
-        <div style={{ marginBottom: '1rem', padding: '1rem', borderRadius: '8px', background: '#f8d7da', color: '#721c24', border: '1px solid #f5c6cb' }}>
-          {apiError.message}
+        <div className="pro-alert pro-alert-error">
+          <span className="pro-alert-icon">⚠️</span>
+          <div className="pro-alert-content">
+            <div className="pro-alert-text">{apiError.message}</div>
+          </div>
         </div>
       )}
 
-      {/* Header */}
-      <div className="financeiro-header">
-        <div className="financeiro-title">
-          <Icon name="credit-card" size="lg" color="primary" />
-          <h1>Módulo Financeiro</h1>
-        </div>
-        {abaAtiva === 'DESPESAS' && (
-          <Button variant="primary" onClick={abrirFormularioCriar} icon="plus">
-            Nova Despesa
-          </Button>
-        )}
-        {abaAtiva === 'ENTRADA_RECURSO' && (
-          <Button variant="success" icon="plus">
-            Nova Entrada de Recurso
-          </Button>
-        )}
-      </div>
-
       {/* Filter Section */}
-      <div className="financeiro-filter">
-        <Select
-          label="Filtrar por Projeto"
-          value={filtroProjeto?.toString() || ''}
-          onChange={(e) => setFiltroProjeto(e.target.value ? parseInt(e.target.value) : null)}
-          options={[{ value: '', label: 'Todos os projetos' }, ...projetos.map((p) => ({ value: p.id.toString(), label: p.nome }))]}
-        />
+      <div className="pro-card" style={{ marginBottom: '24px' }}>
+        <div className="pro-card-body" style={{ padding: '16px 24px' }}>
+          <div className="pro-form-group" style={{ marginBottom: 0 }}>
+            <label className="pro-form-label">Filtrar por Projeto</label>
+            <select
+              className="pro-form-select"
+              value={filtroProjeto?.toString() || ''}
+              onChange={(e) => setFiltroProjeto(e.target.value ? parseInt(e.target.value) : null)}
+            >
+              <option value="">Todos os projetos</option>
+              {projetos.map((p) => (
+                <option key={p.id} value={p.id.toString()}>{p.nome}</option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
 
       {/* Tabs */}
-      <div className="financeiro-tabs">
+      <div className="pro-tabs" style={{ marginBottom: '24px' }}>
         {(['DESPESAS', 'PAGAMENTOS', 'ENTRADA_RECURSO'] as const).map((aba) => (
           <button
             key={aba}
-            className={`tab ${abaAtiva === aba ? 'active' : ''}`}
+            className={`pro-tab ${abaAtiva === aba ? 'active' : ''}`}
             onClick={() => setAbaAtiva(aba)}
           >
-            <Icon name={aba === 'DESPESAS' ? 'credit-card' : aba === 'PAGAMENTOS' ? 'check-circle' : 'alert-circle'} size="md" />
+            <span style={{ marginRight: '8px' }}>
+              {aba === 'DESPESAS' ? '💳' : aba === 'PAGAMENTOS' ? '✅' : '📋'}
+            </span>
             {aba === 'DESPESAS' ? 'Despesas' : aba === 'PAGAMENTOS' ? 'Pagamentos Recebidos' : 'Entrada de Recurso'}
           </button>
         ))}
       </div>
 
-      {/* Content */}
+      {/* DESPESAS Tab */}
       {abaAtiva === 'DESPESAS' && (
-        <div className="financeiro-content">
+        <div>
           {/* Summary Cards */}
           {despesasFiltradas.length > 0 && (
-            <div className="financeiro-summary">
-              <Card className="summary-card">
-                <div className="summary-item">
-                  <span className="summary-label">Total de Despesas</span>
-                  <span className="summary-value">{despesasFiltradas.length}</span>
+            <div className="pro-stats-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)', marginBottom: '24px' }}>
+              <div className="pro-stat-card">
+                <div className="pro-stat-header">
+                  <span className="pro-stat-label">Total de Despesas</span>
+                  <div className="pro-stat-icon blue"><span>📊</span></div>
                 </div>
-              </Card>
-              <Card className="summary-card">
-                <div className="summary-item">
-                  <span className="summary-label">Valor Total</span>
-                  <span className="summary-value expense">{formatarMoeda(totalDespesas)}</span>
+                <div className="pro-stat-value">{despesasFiltradas.length}</div>
+              </div>
+              <div className="pro-stat-card">
+                <div className="pro-stat-header">
+                  <span className="pro-stat-label">Valor Total</span>
+                  <div className="pro-stat-icon red"><span>💸</span></div>
                 </div>
-              </Card>
+                <div className="pro-stat-value" style={{ color: '#f87171' }}>{formatarMoeda(totalDespesas)}</div>
+              </div>
             </div>
           )}
 
           {/* Expenses List */}
           {loading ? (
-            <LoadingState title="Carregando despesas" description="Aguarde alguns segundos" />
+            <div className="pro-loading">
+              <div className="pro-loading-spinner" />
+              <div className="pro-loading-text">Carregando despesas...</div>
+            </div>
           ) : apiError ? (
-            <ErrorState
-              title="Não foi possível carregar despesas"
-              description={apiError.message}
-              actionLabel="Tentar novamente"
-              onAction={carregarDados}
-            />
+            <div className="pro-card">
+              <div className="pro-card-body" style={{ textAlign: 'center', padding: '48px' }}>
+                <span style={{ fontSize: '64px', marginBottom: '16px', display: 'block' }}>⚠️</span>
+                <h3 style={{ color: '#e2e8f0', marginBottom: '8px' }}>Não foi possível carregar despesas</h3>
+                <p style={{ color: '#94a3b8', marginBottom: '24px' }}>{apiError.message}</p>
+                <button onClick={carregarDados} className="pro-btn pro-btn-primary">
+                  🔄 Tentar novamente
+                </button>
+              </div>
+            </div>
           ) : despesasFiltradas.length === 0 ? (
-            <EmptyState title="Nenhuma despesa encontrada" />
+            <div className="pro-card">
+              <div className="pro-card-body" style={{ textAlign: 'center', padding: '48px' }}>
+                <span style={{ fontSize: '64px', marginBottom: '16px', display: 'block' }}>💳</span>
+                <h3 style={{ color: '#e2e8f0' }}>Nenhuma despesa encontrada</h3>
+              </div>
+            </div>
           ) : (
-            <div className="expenses-list">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {despesasFiltradas.map((despesa) => (
-                <Card key={despesa.id} className="expense-card">
-                  <div className="expense-header">
-                    <div className="expense-title-group">
-                      <h3>{despesa.descricao}</h3>
-                      <Badge variant="info" style={{ backgroundColor: getCategoryColor(despesa.categoria) }}>
+                <div key={despesa.id} className="pro-card">
+                  <div className="pro-card-header" style={{ justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <h3 style={{ margin: 0 }}>{despesa.descricao}</h3>
+                      <span className="pro-badge pro-badge-info" style={{ backgroundColor: getCategoryColor(despesa.categoria) }}>
                         {despesa.categoria || 'OUTROS'}
-                      </Badge>
+                      </span>
                     </div>
-                    <div className="expense-actions">
-                      <Button variant="secondary" size="sm" onClick={() => abrirFormularioEditar(despesa)} icon="edit">
-                        Editar
-                      </Button>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => setConfirmarExclusao(despesa.id)}
-                        icon="trash-2"
-                      >
-                        Excluir
-                      </Button>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button onClick={() => abrirFormularioEditar(despesa)} className="pro-btn pro-btn-secondary" style={{ padding: '8px 16px' }}>
+                        ✏️ Editar
+                      </button>
+                      <button onClick={() => setConfirmarExclusao(despesa.id)} className="pro-btn pro-btn-danger" style={{ padding: '8px 16px' }}>
+                        🗑️ Excluir
+                      </button>
                     </div>
                   </div>
-
-                  <div className="expense-details">
-                    <div className="detail-item">
-                      <span className="detail-label">Valor:</span>
-                      <span className="detail-value expense">{formatarMoeda(despesa.valor)}</span>
+                  <div className="pro-card-body">
+                    <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+                      <div>
+                        <span style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Valor:</span>
+                        <div style={{ color: '#f87171', fontWeight: 600, fontSize: '1.1rem' }}>{formatarMoeda(despesa.valor)}</div>
+                      </div>
+                      <div>
+                        <span style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Data:</span>
+                        <div style={{ color: '#e2e8f0' }}>{formatarData(despesa.data)}</div>
+                      </div>
+                      <div>
+                        <span style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Projeto:</span>
+                        <div style={{ color: '#e2e8f0' }}>{obterNomeProjeto(despesa.projeto_id)}</div>
+                      </div>
                     </div>
-                    <div className="detail-item">
-                      <span className="detail-label">Data:</span>
-                      <span className="detail-value">{formatarData(despesa.data)}</span>
-                    </div>
-                    <div className="detail-item">
-                      <span className="detail-label">Projeto:</span>
-                      <span className="detail-value">{obterNomeProjeto(despesa.projeto_id)}</span>
-                    </div>
+                    {despesa.observacoes && (
+                      <p style={{ color: '#94a3b8', marginTop: '16px', fontStyle: 'italic' }}>{despesa.observacoes}</p>
+                    )}
                   </div>
-
-                  {despesa.observacoes && (
-                    <div className="expense-notes">
-                      <p>{despesa.observacoes}</p>
-                    </div>
-                  )}
-                </Card>
+                </div>
               ))}
             </div>
           )}
         </div>
       )}
 
+      {/* PAGAMENTOS Tab */}
       {abaAtiva === 'PAGAMENTOS' && (
-        <div className="financeiro-content">
+        <div>
           {/* Summary Cards */}
           {pagamentosFiltrados.length > 0 && (
-            <div className="financeiro-summary">
-              <Card className="summary-card">
-                <div className="summary-item">
-                  <span className="summary-label">Total de Pagamentos</span>
-                  <span className="summary-value">{pagamentosFiltrados.length}</span>
+            <div className="pro-stats-grid" style={{ marginBottom: '24px' }}>
+              <div className="pro-stat-card">
+                <div className="pro-stat-header">
+                  <span className="pro-stat-label">Total de Pagamentos</span>
+                  <div className="pro-stat-icon blue"><span>📊</span></div>
                 </div>
-              </Card>
-              <Card className="summary-card">
-                <div className="summary-item">
-                  <span className="summary-label">Valor Total</span>
-                  <span className="summary-value income">{formatarMoeda(totalPagamentos)}</span>
+                <div className="pro-stat-value">{pagamentosFiltrados.length}</div>
+              </div>
+              <div className="pro-stat-card">
+                <div className="pro-stat-header">
+                  <span className="pro-stat-label">Valor Total</span>
+                  <div className="pro-stat-icon green"><span>💰</span></div>
                 </div>
-              </Card>
-              <Card className="summary-card">
-                <div className="summary-item">
-                  <span className="summary-label">Valor Pago</span>
-                  <span className="summary-value income">{formatarMoeda(totalPago)}</span>
+                <div className="pro-stat-value" style={{ color: '#10b981' }}>{formatarMoeda(totalPagamentos)}</div>
+              </div>
+              <div className="pro-stat-card">
+                <div className="pro-stat-header">
+                  <span className="pro-stat-label">Valor Pago</span>
+                  <div className="pro-stat-icon green"><span>✅</span></div>
                 </div>
-              </Card>
-              <Card className="summary-card">
-                <div className="summary-item">
-                  <span className="summary-label">Pagamentos Aprovados</span>
-                  <span className="summary-value">{pagamentosFiltrados.filter((p) => p.status === 'PAGO').length}</span>
+                <div className="pro-stat-value" style={{ color: '#10b981' }}>{formatarMoeda(totalPago)}</div>
+              </div>
+              <div className="pro-stat-card">
+                <div className="pro-stat-header">
+                  <span className="pro-stat-label">Pagamentos Aprovados</span>
+                  <div className="pro-stat-icon purple"><span>🎯</span></div>
                 </div>
-              </Card>
+                <div className="pro-stat-value">{pagamentosFiltrados.filter((p) => p.status === 'PAGO').length}</div>
+              </div>
             </div>
           )}
 
           {/* Payments List */}
           {loading ? (
-            <LoadingState title="Carregando pagamentos" description="Aguarde alguns segundos" />
+            <div className="pro-loading">
+              <div className="pro-loading-spinner" />
+              <div className="pro-loading-text">Carregando pagamentos...</div>
+            </div>
           ) : apiError ? (
-            <ErrorState
-              title="Não foi possível carregar pagamentos"
-              description={apiError.message}
-              actionLabel="Tentar novamente"
-              onAction={carregarDados}
-            />
+            <div className="pro-card">
+              <div className="pro-card-body" style={{ textAlign: 'center', padding: '48px' }}>
+                <span style={{ fontSize: '64px', marginBottom: '16px', display: 'block' }}>⚠️</span>
+                <h3 style={{ color: '#e2e8f0', marginBottom: '8px' }}>Não foi possível carregar pagamentos</h3>
+                <p style={{ color: '#94a3b8', marginBottom: '24px' }}>{apiError.message}</p>
+                <button onClick={carregarDados} className="pro-btn pro-btn-primary">
+                  🔄 Tentar novamente
+                </button>
+              </div>
+            </div>
           ) : pagamentosFiltrados.length === 0 ? (
-            <EmptyState title="Nenhum pagamento encontrado" />
+            <div className="pro-card">
+              <div className="pro-card-body" style={{ textAlign: 'center', padding: '48px' }}>
+                <span style={{ fontSize: '64px', marginBottom: '16px', display: 'block' }}>✅</span>
+                <h3 style={{ color: '#e2e8f0' }}>Nenhum pagamento encontrado</h3>
+              </div>
+            </div>
           ) : (
-            <div className="payments-list">
+            <div className="pro-grid-2">
               {pagamentosFiltrados.map((pagamento) => (
-                <Card key={pagamento.id} className="payment-card">
-                  <div className="payment-header">
-                    <Badge variant={getStatusBadgeVariant(pagamento.status)}>{pagamento.status}</Badge>
+                <div key={pagamento.id} className="pro-card">
+                  <div className="pro-card-header">
+                    <span className={`pro-badge ${pagamento.status === 'PAGO' ? 'pro-badge-success' :
+                        pagamento.status === 'PROCESSANDO' ? 'pro-badge-warning' :
+                          pagamento.status === 'FALHA' ? 'pro-badge-error' : 'pro-badge-warning'
+                      }`}>
+                      {pagamento.status}
+                    </span>
                   </div>
-
-                  <div className="payment-details">
-                    <div className="detail-item">
-                      <span className="detail-label">Valor Total:</span>
-                      <span className="detail-value">{formatarMoeda(pagamento.valor_total)}</span>
-                    </div>
-                    <div className="detail-item">
-                      <span className="detail-label">Valor Pago:</span>
-                      <span className="detail-value income">{formatarMoeda(pagamento.valor_pago)}</span>
-                    </div>
-                    {pagamento.data_pagamento && (
-                      <div className="detail-item">
-                        <span className="detail-label">Data:</span>
-                        <span className="detail-value">{formatarData(pagamento.data_pagamento)}</span>
+                  <div className="pro-card-body">
+                    <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+                      <div>
+                        <span style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Valor Total:</span>
+                        <div style={{ color: '#e2e8f0', fontWeight: 600 }}>{formatarMoeda(pagamento.valor_total)}</div>
                       </div>
+                      <div>
+                        <span style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Valor Pago:</span>
+                        <div style={{ color: '#10b981', fontWeight: 600 }}>{formatarMoeda(pagamento.valor_pago)}</div>
+                      </div>
+                      {pagamento.data_pagamento && (
+                        <div>
+                          <span style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Data:</span>
+                          <div style={{ color: '#e2e8f0' }}>{formatarData(pagamento.data_pagamento)}</div>
+                        </div>
+                      )}
+                    </div>
+                    {pagamento.gateway_id && (
+                      <p style={{ color: '#94a3b8', marginTop: '16px', fontSize: '0.875rem' }}>
+                        <strong style={{ color: '#e2e8f0' }}>Gateway:</strong> {pagamento.gateway_id}
+                      </p>
                     )}
                   </div>
-
-                  {pagamento.gateway_id && (
-                    <div className="payment-gateway">
-                      <p>
-                        <strong>Gateway:</strong> {pagamento.gateway_id}
-                      </p>
-                    </div>
-                  )}
-                </Card>
+                </div>
               ))}
             </div>
           )}
         </div>
       )}
 
-      {/* Entrada de Recurso Tab */}
+      {/* ENTRADA_RECURSO Tab */}
       {abaAtiva === 'ENTRADA_RECURSO' && (
-        <div className="financeiro-content">
-          <Card className="entrada-recurso-info">
-            <div className="entrada-recurso-header">
-              <div className="entrada-recurso-title">
-                <span className="titulo-icon">📋</span>
-                <h2>Entrada de Recurso Financeira</h2>
-              </div>
-              <p className="entrada-recurso-desc">
+        <div>
+          <div className="pro-card" style={{ marginBottom: '24px' }}>
+            <div className="pro-card-header">
+              <h2><span className="icon">📋</span> Entrada de Recurso Financeira</h2>
+            </div>
+            <div className="pro-card-body">
+              <p style={{ color: '#94a3b8', marginBottom: '24px' }}>
                 Registre uma reclamação ou recurso sobre valores pagos, retenções ou cobranças questionáveis
               </p>
-            </div>
 
-            <div className="entrada-recurso-form">
-              <div className="form-group">
-                <label>Tipo de Recurso *</label>
-                <select className="form-select">
+              <div className="pro-form-group">
+                <label className="pro-form-label">Tipo de Recurso *</label>
+                <select className="pro-form-select">
                   <option value="">Selecione o tipo</option>
                   <option value="cobranca">Cobrança Indevida</option>
                   <option value="retencao">Problema com Retenção</option>
@@ -508,56 +541,56 @@ export default function Financeiro() {
                 </select>
               </div>
 
-              <div className="form-group">
-                <label>Descrição do Problema *</label>
+              <div className="pro-form-group">
+                <label className="pro-form-label">Descrição do Problema *</label>
                 <textarea
-                  className="form-textarea"
+                  className="pro-form-textarea"
                   placeholder="Descreva detalhadamente o problema e como deseja resolvê-lo..."
                   rows={5}
                 />
               </div>
 
-              <div className="form-group">
-                <label>Data do Problema *</label>
-                <input type="date" className="form-input" />
+              <div className="pro-grid-2" style={{ marginBottom: '16px' }}>
+                <div className="pro-form-group">
+                  <label className="pro-form-label">Data do Problema *</label>
+                  <input type="date" className="pro-form-input" />
+                </div>
+                <div className="pro-form-group">
+                  <label className="pro-form-label">Valor em Questão (R$)</label>
+                  <input type="number" className="pro-form-input" placeholder="0.00" step="0.01" min="0" />
+                </div>
               </div>
 
-              <div className="form-group">
-                <label>Valor em Questão (R$)</label>
-                <input
-                  type="number"
-                  className="form-input"
-                  placeholder="0.00"
-                  step="0.01"
-                  min="0"
-                />
-              </div>
-
-              <div className="form-actions">
-                <Button variant="secondary">Cancelar</Button>
-                <Button variant="success" icon="send">
-                  Enviar Recurso
-                </Button>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                <button className="pro-btn pro-btn-secondary">Cancelar</button>
+                <button className="pro-btn pro-btn-success">📤 Enviar Recurso</button>
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className="entrada-recurso-info info-box">
-            <h3>📌 Informações Importantes</h3>
-            <ul>
-              <li><strong>Prazo:</strong> Você tem até 30 dias a partir da data do problema para registrar um recurso</li>
-              <li><strong>Documentação:</strong> Tenha documentação disponível (recibos, extratos, contratos)</li>
-              <li><strong>Resposta:</strong> Você receberá resposta em até 15 dias úteis</li>
-              <li><strong>Recursos Anteriores:</strong> Consulte o histórico de recursos abaixo</li>
-            </ul>
-          </Card>
+          <div className="pro-alert pro-alert-info" style={{ marginBottom: '24px' }}>
+            <span className="pro-alert-icon">📌</span>
+            <div className="pro-alert-content">
+              <div className="pro-alert-title">Informações Importantes</div>
+              <div className="pro-alert-text">
+                <ul style={{ margin: '8px 0 0 0', paddingLeft: '20px', lineHeight: 1.8 }}>
+                  <li><strong>Prazo:</strong> Até 30 dias a partir da data do problema</li>
+                  <li><strong>Documentação:</strong> Tenha recibos, extratos e contratos disponíveis</li>
+                  <li><strong>Resposta:</strong> Retorno em até 15 dias úteis</li>
+                </ul>
+              </div>
+            </div>
+          </div>
 
-          <div style={{ marginTop: '2rem' }}>
-            <h3>Histórico de Recursos</h3>
-            <EmptyState
-              title="Nenhum recurso registrado ainda"
-              description="Quando você submeter um recurso, ele aparecerá aqui"
-            />
+          <div className="pro-card">
+            <div className="pro-card-header">
+              <h2><span className="icon">📜</span> Histórico de Recursos</h2>
+            </div>
+            <div className="pro-card-body" style={{ textAlign: 'center', padding: '48px' }}>
+              <span style={{ fontSize: '64px', marginBottom: '16px', display: 'block' }}>📂</span>
+              <h3 style={{ color: '#e2e8f0' }}>Nenhum recurso registrado ainda</h3>
+              <p style={{ color: '#94a3b8' }}>Quando você submeter um recurso, ele aparecerá aqui</p>
+            </div>
           </div>
         </div>
       )}
@@ -573,72 +606,105 @@ export default function Financeiro() {
 
       {/* Form Modal */}
       {mostrarFormularioDespesa && (
-        <div className="modal-overlay" onClick={() => !form.loading && fecharFormulario()}>
-          <Card className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <DialogHeader title={despesaEditando ? 'Editar Despesa' : 'Nova Despesa'} onClose={fecharFormulario}>
-              <div className="form-body">
-                <Select
-                  label="Projeto *"
-                  value={form.formData.projeto_id}
-                  onChange={(e) => form.handleChange('projeto_id', e.target.value)}
-                  required
-                  options={[{ value: '', label: 'Selecione um projeto' }, ...projetos.map((p) => ({ value: p.id.toString(), label: p.nome }))]}
-                />
+        <div className="pro-modal-overlay" onClick={() => !form.loading && fecharFormulario()}>
+          <div className="pro-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="pro-modal-header">
+              <h2 className="pro-modal-title">
+                {despesaEditando ? '✏️ Editar Despesa' : '➕ Nova Despesa'}
+              </h2>
+              <button className="pro-modal-close" onClick={fecharFormulario} disabled={form.loading}>
+                ✕
+              </button>
+            </div>
+            <form onSubmit={form.handleSubmit}>
+              <div className="pro-modal-body">
+                <div className="pro-form-group">
+                  <label className="pro-form-label">Projeto *</label>
+                  <select
+                    className="pro-form-select"
+                    value={form.formData.projeto_id}
+                    onChange={(e) => form.handleChange('projeto_id', e.target.value)}
+                    required
+                  >
+                    <option value="">Selecione um projeto</option>
+                    {projetos.map((p) => (
+                      <option key={p.id} value={p.id.toString()}>{p.nome}</option>
+                    ))}
+                  </select>
+                </div>
 
-                <Input
-                  label="Descrição *"
-                  type="text"
-                  value={form.formData.descricao}
-                  onChange={(e) => form.handleChange('descricao', e.target.value)}
-                  placeholder="Ex: Material de escritório"
-                  required
-                />
+                <div className="pro-form-group">
+                  <label className="pro-form-label">Descrição *</label>
+                  <input
+                    type="text"
+                    className="pro-form-input"
+                    value={form.formData.descricao}
+                    onChange={(e) => form.handleChange('descricao', e.target.value)}
+                    placeholder="Ex: Material de escritório"
+                    required
+                  />
+                </div>
 
-                <Input
-                  label="Valor (R$) *"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={form.formData.valor}
-                  onChange={(e) => form.handleChange('valor', e.target.value)}
-                  placeholder="0.00"
-                  required
-                />
+                <div className="pro-grid-2">
+                  <div className="pro-form-group">
+                    <label className="pro-form-label">Valor (R$) *</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      className="pro-form-input"
+                      value={form.formData.valor}
+                      onChange={(e) => form.handleChange('valor', e.target.value)}
+                      placeholder="0.00"
+                      required
+                    />
+                  </div>
+                  <div className="pro-form-group">
+                    <label className="pro-form-label">Data *</label>
+                    <input
+                      type="date"
+                      className="pro-form-input"
+                      value={form.formData.data}
+                      onChange={(e) => form.handleChange('data', e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
 
-                <Input
-                  label="Data *"
-                  type="date"
-                  value={form.formData.data}
-                  onChange={(e) => form.handleChange('data', e.target.value)}
-                  required
-                />
+                <div className="pro-form-group">
+                  <label className="pro-form-label">Categoria</label>
+                  <select
+                    className="pro-form-select"
+                    value={form.formData.categoria}
+                    onChange={(e) => form.handleChange('categoria', e.target.value)}
+                  >
+                    {categoriaOpcoes.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                </div>
 
-                <Select
-                  label="Categoria"
-                  value={form.formData.categoria}
-                  onChange={(e) => form.handleChange('categoria', e.target.value)}
-                  options={categoriaOpcoes}
-                />
-
-                <Textarea
-                  label="Observações"
-                  value={form.formData.observacoes}
-                  onChange={(e) => form.handleChange('observacoes', e.target.value)}
-                  placeholder="Observações sobre a despesa..."
-                  rows={4}
-                />
-
-                <div className="form-actions">
-                  <Button variant="secondary" onClick={fecharFormulario} disabled={form.loading}>
-                    Cancelar
-                  </Button>
-                  <Button variant="primary" onClick={() => form.handleSubmit()} disabled={form.loading} isLoading={form.loading}>
-                    {despesaEditando ? 'Atualizar' : 'Criar'}
-                  </Button>
+                <div className="pro-form-group">
+                  <label className="pro-form-label">Observações</label>
+                  <textarea
+                    className="pro-form-textarea"
+                    value={form.formData.observacoes}
+                    onChange={(e) => form.handleChange('observacoes', e.target.value)}
+                    placeholder="Observações sobre a despesa..."
+                    rows={4}
+                  />
                 </div>
               </div>
-            </DialogHeader>
-          </Card>
+              <div className="pro-modal-footer">
+                <button type="button" onClick={fecharFormulario} disabled={form.loading} className="pro-btn pro-btn-secondary">
+                  Cancelar
+                </button>
+                <button type="submit" disabled={form.loading} className="pro-btn pro-btn-primary">
+                  {form.loading ? 'Salvando...' : despesaEditando ? 'Atualizar' : 'Criar'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

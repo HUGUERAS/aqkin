@@ -5,9 +5,10 @@
 
 import { useState, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Card, CardHeader, CardBody, CardFooter, Badge, Alert } from '../../components/UIComponents';
+import { Badge, Alert } from '../../components/UIComponents';
 import Icon from '../../components/Icon';
 import apiClient from '../../services/api';
+import '../../styles/TopografoPro.css';
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
@@ -63,71 +64,82 @@ export default function DashboardEnhanced() {
     };
 
     return (
-        <div className="w-full">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
-                <p className="text-gray-600">Acompanhe seus projetos e métricas em tempo real</p>
+        <div className="topografo-page">
+            {/* Page Header */}
+            <div className="topografo-page-header">
+                <div className="topografo-page-header-left">
+                    <span className="topografo-page-icon">📊</span>
+                    <div className="topografo-page-title">
+                        <h1>Dashboard</h1>
+                        <p>Acompanhe seus projetos e métricas em tempo real</p>
+                    </div>
+                </div>
             </div>
 
             {/* Alert - Status Overview */}
             {projects.length === 0 && (
-                <Alert type="info" title="Bem-vindo!">
-                    Crie seu primeiro projeto para começar a trabalhar com geolocalização e desenhos técnicos.
-                </Alert>
+                <div className="pro-alert pro-alert-info">
+                    <span className="pro-alert-icon">💡</span>
+                    <div className="pro-alert-content">
+                        <div className="pro-alert-title">Bem-vindo!</div>
+                        <div className="pro-alert-text">Crie seu primeiro projeto para começar a trabalhar com geolocalização e desenhos técnicos.</div>
+                    </div>
+                </div>
             )}
 
             {/* Stats Cards - 4 Column Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div className="pro-stats-grid">
                 {[
-                    { icon: 'grid', label: 'Projetos', value: stats.totalProjetos, color: 'blue' },
-                    { icon: 'map-pin', label: 'Lotes', value: stats.totalLotes, color: 'green' },
-                    { icon: 'check', label: 'Completos', value: stats.concluidROS, color: 'emerald' },
-                    { icon: 'alert', label: 'Pendentes', value: stats.pendentes, color: 'yellow' },
+                    { icon: '📁', label: 'Projetos', value: stats.totalProjetos, color: 'blue' },
+                    { icon: '📍', label: 'Lotes', value: stats.totalLotes, color: 'green' },
+                    { icon: '✅', label: 'Completos', value: stats.concluidROS, color: 'purple' },
+                    { icon: '⏳', label: 'Pendentes', value: stats.pendentes, color: 'yellow' },
                 ].map((stat, idx) => (
-                    <Card key={idx} className="flex flex-col items-start">
-                        <div className="flex items-center justify-between w-full mb-4">
-                            <h3 className="text-gray-600 font-semibold text-sm">{stat.label}</h3>
-                            <div className={`p-2 rounded-lg bg-${stat.color}-100`}>
-                                <Icon name={stat.icon as any} size="lg" color={stat.color as any} />
+                    <div key={idx} className="pro-stat-card">
+                        <div className="pro-stat-header">
+                            <span className="pro-stat-label">{stat.label}</span>
+                            <div className={`pro-stat-icon ${stat.color}`}>
+                                <span>{stat.icon}</span>
                             </div>
                         </div>
-                        <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                    </Card>
+                        <div className="pro-stat-value">{stat.value}</div>
+                    </div>
                 ))}
             </div>
 
             {/* Charts Section - 2 Column Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div className="pro-grid-2" style={{ marginBottom: '24px' }}>
                 {/* Bar Chart - Projects Trend */}
-                <Card>
-                    <CardHeader>
-                        <h2 className="text-lg font-semibold text-gray-900">Projetos por Mês</h2>
-                    </CardHeader>
-                    <CardBody>
+                <div className="pro-card">
+                    <div className="pro-card-header">
+                        <h2><span className="icon">📈</span> Projetos por Mês</h2>
+                    </div>
+                    <div className="pro-card-body pro-chart-container">
                         <ResponsiveContainer width="100%" height={300}>
                             <BarChart data={mockMetrics}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                                <XAxis dataKey="name" />
-                                <YAxis />
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                                <XAxis dataKey="name" stroke="#94a3b8" />
+                                <YAxis stroke="#94a3b8" />
                                 <Tooltip
                                     contentStyle={{
-                                        backgroundColor: '#fff',
-                                        border: '1px solid #e5e7eb',
+                                        backgroundColor: '#1e293b',
+                                        border: '1px solid rgba(255,255,255,0.1)',
                                         borderRadius: '8px',
+                                        color: '#e2e8f0',
                                     }}
                                 />
-                                <Bar dataKey="projects" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+                                <Bar dataKey="projects" fill="#6366f1" radius={[8, 8, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
-                    </CardBody>
-                </Card>
+                    </div>
+                </div>
 
                 {/* Pie Chart - Status Distribution */}
-                <Card>
-                    <CardHeader>
-                        <h2 className="text-lg font-semibold text-gray-900">Distribuição por Status</h2>
-                    </CardHeader>
-                    <CardBody className="flex justify-center">
+                <div className="pro-card">
+                    <div className="pro-card-header">
+                        <h2><span className="icon">🥧</span> Distribuição por Status</h2>
+                    </div>
+                    <div className="pro-card-body pro-chart-container">
                         <ResponsiveContainer width="100%" height={300}>
                             <PieChart>
                                 <Pie
@@ -137,44 +149,53 @@ export default function DashboardEnhanced() {
                                     labelLine={false}
                                     label={({ name, value }) => `${name}: ${value}`}
                                     outerRadius={80}
-                                    fill="#3b82f6"
+                                    fill="#6366f1"
                                     dataKey="value"
                                 >
                                     {mockStatusData.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
-                                <Tooltip /> </PieChart>
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: '#1e293b',
+                                        border: '1px solid rgba(255,255,255,0.1)',
+                                        borderRadius: '8px',
+                                        color: '#e2e8f0',
+                                    }}
+                                />
+                            </PieChart>
                         </ResponsiveContainer>
-                    </CardBody>
-                </Card>
+                    </div>
+                </div>
             </div>
 
             {/* Line Chart - Progress Over Time */}
-            <Card className="mb-8">
-                <CardHeader>
-                    <h2 className="text-lg font-semibold text-gray-900">Progresso - Últimos 6 Meses</h2>
-                </CardHeader>
-                <CardBody>
+            <div className="pro-card" style={{ marginBottom: '24px' }}>
+                <div className="pro-card-header">
+                    <h2><span className="icon">📉</span> Progresso - Últimos 6 Meses</h2>
+                </div>
+                <div className="pro-card-body pro-chart-container">
                     <ResponsiveContainer width="100%" height={350}>
                         <LineChart data={mockMetrics}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                            <XAxis dataKey="name" stroke="#94a3b8" />
+                            <YAxis stroke="#94a3b8" />
                             <Tooltip
                                 contentStyle={{
-                                    backgroundColor: '#fff',
-                                    border: '1px solid #e5e7eb',
+                                    backgroundColor: '#1e293b',
+                                    border: '1px solid rgba(255,255,255,0.1)',
                                     borderRadius: '8px',
+                                    color: '#e2e8f0',
                                 }}
                             />
                             <Legend />
                             <Line
                                 type="monotone"
                                 dataKey="lotes"
-                                stroke="#3b82f6"
+                                stroke="#6366f1"
                                 strokeWidth={2}
-                                dot={{ fill: '#3b82f6', r: 4 }}
+                                dot={{ fill: '#6366f1', r: 4 }}
                                 activeDot={{ r: 6 }}
                             />
                             <Line
@@ -187,48 +208,40 @@ export default function DashboardEnhanced() {
                             />
                         </LineChart>
                     </ResponsiveContainer>
-                </CardBody>
-            </Card>
+                </div>
+            </div>
 
             {/* Recent Projects Table */}
             {projects.length > 0 && (
-                <Card>
-                    <CardHeader>
-                        <h2 className="text-lg font-semibold text-gray-900">Projetos Recentes</h2>
-                    </CardHeader>
-                    <CardBody>
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="border-b border-gray-200">
-                                    <tr className="text-left text-sm font-semibold text-gray-600">
-                                        <th className="pb-3 px-2">Nome</th>
-                                        <th className="pb-3 px-2">Status</th>
-                                        <th className="pb-3 px-2">Criado</th>
-                                        <th className="pb-3 px-2">Ações</th>
+                <div className="pro-card">
+                    <div className="pro-card-header">
+                        <h2><span className="icon">📋</span> Projetos Recentes</h2>
+                    </div>
+                    <div className="pro-card-body" style={{ padding: 0 }}>
+                        <div className="pro-table-container">
+                            <table className="pro-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Status</th>
+                                        <th>Criado</th>
+                                        <th>Ações</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-200">
+                                <tbody>
                                     {projects.slice(0, 5).map((project, idx) => (
-                                        <tr key={idx} className="hover:bg-gray-50 transition-colors">
-                                            <td className="py-3 px-2 font-medium text-gray-900">{project.nome}</td>
-                                            <td className="py-3 px-2">
-                                                <Badge
-                                                    variant={
-                                                        project.status === 'CONCLUIDO'
-                                                            ? 'success'
-                                                            : project.status === 'RASCUNHO'
-                                                                ? 'default'
-                                                                : 'info'
-                                                    }
-                                                >
+                                        <tr key={idx}>
+                                            <td style={{ fontWeight: 500 }}>{project.nome}</td>
+                                            <td>
+                                                <span className={`pro-badge ${project.status === 'CONCLUIDO' ? 'pro-badge-success' : project.status === 'RASCUNHO' ? 'pro-badge-info' : 'pro-badge-warning'}`}>
                                                     {project.status}
-                                                </Badge>
+                                                </span>
                                             </td>
-                                            <td className="py-3 px-2 text-gray-600 text-sm">
+                                            <td style={{ color: '#94a3b8' }}>
                                                 {new Date(project.criado_em).toLocaleDateString('pt-BR')}
                                             </td>
-                                            <td className="py-3 px-2">
-                                                <button className="text-blue-600 hover:text-blue-800 transition-colors font-semibold text-sm">
+                                            <td>
+                                                <button className="pro-btn pro-btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem' }}>
                                                     Ver →
                                                 </button>
                                             </td>
@@ -237,14 +250,14 @@ export default function DashboardEnhanced() {
                                 </tbody>
                             </table>
                         </div>
-                    </CardBody>
-                    <CardFooter>
-                        <button className="text-blue-600 hover:text-blue-800 font-semibold transition-colors flex items-center gap-2">
+                    </div>
+                    <div className="pro-card-footer">
+                        <button className="pro-btn pro-btn-primary">
                             <Icon name="plus" size="md" />
                             Ver Todos os Projetos
                         </button>
-                    </CardFooter>
-                </Card>
+                    </div>
+                </div>
             )}
         </div>
     );

@@ -110,6 +110,7 @@ export const useFormState = <T extends Record<string, any>>(
         reset,
         setFieldValue,
         setFieldError,
+        setFormData,
         validate,
     };
 };

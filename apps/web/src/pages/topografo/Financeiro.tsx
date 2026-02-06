@@ -510,7 +510,7 @@ export default function Financeiro() {
 
               <div className="form-group">
                 <label>Descrição do Problema *</label>
-                <textarea 
+                <textarea
                   className="form-textarea"
                   placeholder="Descreva detalhadamente o problema e como deseja resolvê-lo..."
                   rows={5}
@@ -524,9 +524,9 @@ export default function Financeiro() {
 
               <div className="form-group">
                 <label>Valor em Questão (R$)</label>
-                <input 
-                  type="number" 
-                  className="form-input" 
+                <input
+                  type="number"
+                  className="form-input"
                   placeholder="0.00"
                   step="0.01"
                   min="0"
@@ -554,8 +554,8 @@ export default function Financeiro() {
 
           <div style={{ marginTop: '2rem' }}>
             <h3>Histórico de Recursos</h3>
-            <EmptyState 
-              title="Nenhum recurso registrado ainda" 
+            <EmptyState
+              title="Nenhum recurso registrado ainda"
               description="Quando você submeter um recurso, ele aparecerá aqui"
             />
           </div>

@@ -23,7 +23,7 @@ interface Lote {
   projeto_id: number;
 }
 
-type Aba = 'DESPESAS' | 'PAGAMENTOS';
+type Aba = 'DESPESAS' | 'PAGAMENTOS' | 'ENTRADA_RECURSO';
 
 const getCategoryColor = (categoria?: string): string => {
   const cores: Record<string, string> = {
@@ -282,6 +282,11 @@ export default function Financeiro() {
             Nova Despesa
           </Button>
         )}
+        {abaAtiva === 'ENTRADA_RECURSO' && (
+          <Button variant="success" icon="plus">
+            Nova Entrada de Recurso
+          </Button>
+        )}
       </div>
 
       {/* Filter Section */}
@@ -296,14 +301,14 @@ export default function Financeiro() {
 
       {/* Tabs */}
       <div className="financeiro-tabs">
-        {(['DESPESAS', 'PAGAMENTOS'] as const).map((aba) => (
+        {(['DESPESAS', 'PAGAMENTOS', 'ENTRADA_RECURSO'] as const).map((aba) => (
           <button
             key={aba}
             className={`tab ${abaAtiva === aba ? 'active' : ''}`}
             onClick={() => setAbaAtiva(aba)}
           >
-            <Icon name={aba === 'DESPESAS' ? 'credit-card' : 'check-circle'} size="md" />
-            {aba === 'DESPESAS' ? 'Despesas' : 'Pagamentos Recebidos'}
+            <Icon name={aba === 'DESPESAS' ? 'credit-card' : aba === 'PAGAMENTOS' ? 'check-circle' : 'alert-circle'} size="md" />
+            {aba === 'DESPESAS' ? 'Despesas' : aba === 'PAGAMENTOS' ? 'Pagamentos Recebidos' : 'Entrada de Recurso'}
           </button>
         ))}
       </div>
@@ -474,6 +479,86 @@ export default function Financeiro() {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Entrada de Recurso Tab */}
+      {abaAtiva === 'ENTRADA_RECURSO' && (
+        <div className="financeiro-content">
+          <Card className="entrada-recurso-info">
+            <div className="entrada-recurso-header">
+              <div className="entrada-recurso-title">
+                <span className="titulo-icon">📋</span>
+                <h2>Entrada de Recurso Financeira</h2>
+              </div>
+              <p className="entrada-recurso-desc">
+                Registre uma reclamação ou recurso sobre valores pagos, retenções ou cobranças questionáveis
+              </p>
+            </div>
+
+            <div className="entrada-recurso-form">
+              <div className="form-group">
+                <label>Tipo de Recurso *</label>
+                <select className="form-select">
+                  <option value="">Selecione o tipo</option>
+                  <option value="cobranca">Cobrança Indevida</option>
+                  <option value="retencao">Problema com Retenção</option>
+                  <option value="pagamento">Discrepância de Pagamento</option>
+                  <option value="outro">Outro</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Descrição do Problema *</label>
+                <textarea 
+                  className="form-textarea"
+                  placeholder="Descreva detalhadamente o problema e como deseja resolvê-lo..."
+                  rows={5}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Data do Problema *</label>
+                <input type="date" className="form-input" />
+              </div>
+
+              <div className="form-group">
+                <label>Valor em Questão (R$)</label>
+                <input 
+                  type="number" 
+                  className="form-input" 
+                  placeholder="0.00"
+                  step="0.01"
+                  min="0"
+                />
+              </div>
+
+              <div className="form-actions">
+                <Button variant="secondary">Cancelar</Button>
+                <Button variant="success" icon="send">
+                  Enviar Recurso
+                </Button>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="entrada-recurso-info info-box">
+            <h3>📌 Informações Importantes</h3>
+            <ul>
+              <li><strong>Prazo:</strong> Você tem até 30 dias a partir da data do problema para registrar um recurso</li>
+              <li><strong>Documentação:</strong> Tenha documentação disponível (recibos, extratos, contratos)</li>
+              <li><strong>Resposta:</strong> Você receberá resposta em até 15 dias úteis</li>
+              <li><strong>Recursos Anteriores:</strong> Consulte o histórico de recursos abaixo</li>
+            </ul>
+          </Card>
+
+          <div style={{ marginTop: '2rem' }}>
+            <h3>Histórico de Recursos</h3>
+            <EmptyState 
+              title="Nenhum recurso registrado ainda" 
+              description="Quando você submeter um recurso, ele aparecerá aqui"
+            />
+          </div>
         </div>
       )}
 

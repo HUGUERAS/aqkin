@@ -61,20 +61,6 @@ export default function Index() {
           </Link>
         </div>
 
-        <div className="resource-entry-banner">
-          <div className="resource-header">
-            <div className="resource-icon">📋</div>
-            <div className="resource-badge">Novo</div>
-          </div>
-          <h3>Entrada de Recurso</h3>
-          <p>
-            Tem dúvida sobre sua propriedade? Registre uma entrada de recurso e nossa equipe de especialistas analisará seu caso.
-          </p>
-          <button className="resource-cta" onClick={() => setIsExpanded(false)}>
-            Registrar Agora
-          </button>
-        </div>
-
         <div className="premium-banner">
           <div className="premium-icon">⭐</div>
           <div className="premium-text">

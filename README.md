@@ -24,6 +24,16 @@ These instructions help ensure consistent code quality and adherence to project 
 - **[SETUP_AZURE.md](SETUP_AZURE.md)** - Azure deployment guide
 - **[SECURITY.md](SECURITY.md)** - Security policies and reporting
 
+## ❓ O que eu tenho que fazer aqui?
+
+Se você está começando e não sabe por onde seguir, use este roteiro rápido:
+
+1. **Instale as dependências** (`npm install` e `cd apps/api && pip install -r requirements.txt`)
+2. **Configure o ambiente** copiando os arquivos `.env.example`
+3. **Inicie o desenvolvimento** (`npx nx serve web` e `npx nx serve api`)
+4. **Revise a base de dados** em [SUPABASE_SETUP.md](SUPABASE_SETUP.md)
+5. **Veja o que ainda falta** em [O_QUE_FALTA.md](O_QUE_FALTA.md)
+
 ## 🚀 Quick Start
 
 ### Prerequisites

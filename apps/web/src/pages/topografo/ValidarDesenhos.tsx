@@ -318,8 +318,8 @@ export default function ValidarDesenhos() {
             {/* Validation Progress */}
             <div className="validation-progress">
               <div className="progress-bar">
-                <div 
-                  className="progress-fill" 
+                <div
+                  className="progress-fill"
                   style={{ width: `${(completedCount / VALIDATION_ITEMS.length) * 100}%` }}
                 />
               </div>
@@ -338,7 +338,7 @@ export default function ValidarDesenhos() {
                 <span className="btn-icon">✅</span>
                 <span className="btn-text">Aprovar Geometria</span>
               </button>
-              
+
               <button className="secondary-button">
                 <span className="btn-icon">💾</span>
                 <span className="btn-text">Salvar Rascunho</span>

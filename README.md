@@ -98,6 +98,23 @@ These targets are either [inferred automatically](https://nx.dev/concepts/inferr
 
 [More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
 
+## 🧰 Como usar a CLI (Nx)
+
+O CLI principal deste monorepo é o Nx. A sintaxe básica é:
+
+```sh
+# npx nx <target> <project>
+npx nx serve web
+npx nx lint web
+npx nx test web
+```
+
+Para descobrir os targets disponíveis de cada app/lib:
+
+```sh
+npx nx show project web
+```
+
 ## Testing & Code Quality
 
 ### Run Tests

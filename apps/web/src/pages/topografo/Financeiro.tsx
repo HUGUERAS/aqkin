@@ -1,32 +1,16 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../../services/api';
 import { Button, Input, Select, Card, Badge, Textarea } from '../../components/UIComponents';
+import { StatusBadge, StatusFilter } from '../../components/StatusBadge';
+import { useFormState, useStatusFilter } from '../../hooks/useFormState';
+import { useApiError, useNotification, extractErrorMessage } from '../../hooks/useErrorHandler';
+import { DESPESA_CATEGORIES, PAGAMENTO_STATUSES, VALIDATION_RULES, ERROR_MESSAGES } from '../../constants';
+import { Despesa, Pagamento } from '../../schemas';
 import Icon from '../../components/Icon';
 import { DialogHeader } from '../../components/Navigation';
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
 import { LoadingState, EmptyState, ErrorState } from '../../components/StateViews';
 import './Financeiro.css';
-
-interface Despesa {
-  id: number;
-  projeto_id: number;
-  descricao: string;
-  valor: number;
-  data: string;
-  categoria?: string;
-  observacoes?: string;
-  criado_em?: string;
-}
-
-interface Pagamento {
-  id: number;
-  lote_id: number;
-  valor_total: number;
-  valor_pago: number;
-  status: string;
-  gateway_id?: string;
-  data_pagamento?: string;
-}
 
 interface Projeto {
   id: number;
@@ -41,32 +25,37 @@ interface Lote {
 
 type Aba = 'DESPESAS' | 'PAGAMENTOS';
 
-const categoriaOpcoes = [
-  { value: 'MATERIAL', label: 'Material' },
-  { value: 'SERVICO', label: 'Serviço' },
-  { value: 'TRANSPORTE', label: 'Transporte' },
-  { value: 'OUTROS', label: 'Outros' },
-];
-
 const getCategoryColor = (categoria?: string): string => {
   const cores: Record<string, string> = {
-    'MATERIAL': '#3b82f6',
-    'SERVICO': '#8b5cf6',
-    'TRANSPORTE': '#f59e0b',
-    'OUTROS': '#6b7280',
+    MATERIAL: '#3b82f6',
+    SERVICO: '#8b5cf6',
+    TRANSPORTE: '#f59e0b',
+    OUTROS: '#6b7280',
   };
   return cores[categoria || 'OUTROS'] || '#6b7280';
 };
 
 const getStatusBadgeVariant = (status: string): 'info' | 'success' | 'warning' | 'error' => {
   switch (status) {
-    case 'PAGO': return 'success';
-    case 'PROCESSANDO': return 'warning';
-    case 'PENDENTE': return 'warning';
-    case 'FALHA': return 'error';
-    default: return 'warning';
+    case 'PAGO':
+      return 'success';
+    case 'PROCESSANDO':
+      return 'warning';
+    case 'PENDENTE':
+      return 'warning';
+    case 'FALHA':
+      return 'error';
+    default:
+      return 'warning';
   }
 };
+
+const categoriaOpcoes = [
+  { value: 'MATERIAL', label: 'Material' },
+  { value: 'SERVICO', label: 'Serviço' },
+  { value: 'TRANSPORTE', label: 'Transporte' },
+  { value: 'OUTROS', label: 'Outros' },
+];
 
 export default function Financeiro() {
   const [abaAtiva, setAbaAtiva] = useState<Aba>('DESPESAS');
@@ -75,36 +64,89 @@ export default function Financeiro() {
   const [projetos, setProjetos] = useState<Projeto[]>([]);
   const [lotes, setLotes] = useState<Lote[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [filtroProjeto, setFiltroProjeto] = useState<number | null>(null);
   const [mostrarFormularioDespesa, setMostrarFormularioDespesa] = useState(false);
   const [despesaEditando, setDespesaEditando] = useState<Despesa | null>(null);
   const [confirmarExclusao, setConfirmarExclusao] = useState<number | null>(null);
   const [salvando, setSalvando] = useState(false);
-  const [formDataDespesa, setFormDataDespesa] = useState({
+  const [filtroProjeto, setFiltroProjeto] = useState<number | null>(null);
+
+  const { error: apiError, handleError, clearError } = useApiError();
+  const { notification, showSuccess, showError } = useNotification();
+  const { filtroStatus: filtroDespesaStatus, setFiltroStatus: setFiltroDespesaStatus, filtered: despesasFiltradas, counts: despesaCounts } = useStatusFilter(despesas);
+  const { filtroStatus: filtroPagamentoStatus, setFiltroStatus: setFiltroPagamentoStatus, filtered: pagamentosFiltrados, counts: pagamentoCounts } = useStatusFilter(pagamentos);
+
+  const formDataDespesa = {
     projeto_id: '',
     descricao: '',
     valor: '',
     data: new Date().toISOString().split('T')[0],
     categoria: 'OUTROS',
     observacoes: '',
+  };
+
+  const form = useFormState(formDataDespesa, {
+    onSubmit: async (data) => {
+      try {
+        if (!data.descricao?.trim()) throw new Error('Descrição é obrigatória');
+        if (!data.projeto_id) throw new Error('Projeto é obrigatório');
+
+        const valor = parseFloat(data.valor);
+        if (isNaN(valor) || valor <= 0) throw new Error('Valor deve ser > 0');
+
+        const response = despesaEditando
+          ? await apiClient.updateDespesa?.(despesaEditando.id, {
+              descricao: data.descricao,
+              valor,
+              data: data.data,
+              categoria: data.categoria,
+              observacoes: data.observacoes,
+            })
+          : await apiClient.createDespesa?.({
+              projeto_id: Number(data.projeto_id),
+              descricao: data.descricao,
+              valor,
+              data: data.data,
+              categoria: data.categoria,
+              observacoes: data.observacoes,
+            });
+
+        if (response?.error) throw new Error(response.error);
+
+        showSuccess(despesaEditando ? 'Despesa atualizada!' : 'Despesa criada!');
+        fecharFormulario();
+        await carregarDados();
+      } catch (error) {
+        throw new Error(extractErrorMessage(error));
+      }
+    },
+    validators: {
+      valor: (v) =>
+        !v || parseFloat(v) <= 0
+          ? 'Valor deve ser maior que zero'
+          : parseFloat(v) > VALIDATION_RULES.VALOR_MAX
+            ? 'Valor excede limite máximo'
+            : null,
+      descricao: (v) =>
+        !v || v.trim().length < 3
+          ? 'Descrição deve ter 3+ caracteres'
+          : null,
+    },
+    onError: (error) => showError(error.message),
   });
 
-  // Load data on mount
   useEffect(() => {
-    loadInitialData();
-  }, []);
+    carregarDados();
+  }, [filtroProjeto]);
 
-  // Load lotes when filtering
   useEffect(() => {
     if (filtroProjeto) {
       carregarLotes();
     }
   }, [filtroProjeto]);
 
-  const loadInitialData = async () => {
+  const carregarDados = async () => {
+    clearError();
     setLoading(true);
-    setError(null);
     try {
       const [projData, despData, pagData] = await Promise.all([
         apiClient.getProjects(),
@@ -112,36 +154,17 @@ export default function Financeiro() {
         apiClient.getPagamentos?.(),
       ]);
 
-      if (projData?.error || despData?.error || pagData?.error) {
-        setError(projData?.error || despData?.error || pagData?.error || 'Erro ao carregar dados');
-        return;
-      }
+      if (projData?.error) throw new Error(projData.error);
+      if (despData?.error) throw new Error(despData.error);
 
       setProjetos(Array.isArray(projData?.data) ? (projData?.data as Projeto[]) : []);
       setDespesas(Array.isArray(despData?.data) ? (despData?.data as Despesa[]) : []);
       setPagamentos(Array.isArray(pagData?.data) ? (pagData?.data as Pagamento[]) : []);
     } catch (error) {
-      console.error('Erro ao carregar dados:', error);
-      setError('Erro ao carregar dados');
+      handleError(error, 'carregarDados');
     } finally {
       setLoading(false);
     }
-  };
-
-  const formatarMoeda = (valor: number): string => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(valor || 0);
-  };
-
-  const formatarData = (data: string): string => {
-    if (!data) return '';
-    return new Date(data).toLocaleDateString('pt-BR');
-  };
-
-  const obterNomeProjeto = (id: number): string => {
-    return projetos.find((p) => p.id === id)?.nome || 'Projeto desconhecido';
   };
 
   const carregarLotes = async () => {
@@ -155,9 +178,9 @@ export default function Financeiro() {
     }
   };
 
-  const abrirFormularioCriarDespesa = () => {
+  const abrirFormularioCriar = () => {
     setDespesaEditando(null);
-    setFormDataDespesa({
+    form.setFormData({
       projeto_id: '',
       descricao: '',
       valor: '',
@@ -168,9 +191,9 @@ export default function Financeiro() {
     setMostrarFormularioDespesa(true);
   };
 
-  const abrirFormularioEditarDespesa = (despesa: Despesa) => {
+  const abrirFormularioEditar = (despesa: Despesa) => {
     setDespesaEditando(despesa);
-    setFormDataDespesa({
+    form.setFormData({
       projeto_id: despesa.projeto_id.toString(),
       descricao: despesa.descricao,
       valor: despesa.valor.toString(),
@@ -181,91 +204,44 @@ export default function Financeiro() {
     setMostrarFormularioDespesa(true);
   };
 
-  const fecharFormularioDespesa = () => {
-    if (!salvando) {
-      setMostrarFormularioDespesa(false);
-      setDespesaEditando(null);
-      setFormDataDespesa({
-        projeto_id: '',
-        descricao: '',
-        valor: '',
-        data: new Date().toISOString().split('T')[0],
-        categoria: 'OUTROS',
-        observacoes: '',
-      });
-    }
-  };
-
-  const salvarDespesa = async () => {
-    // Validate
-    if (!formDataDespesa.descricao.trim()) {
-      alert('Descrição é obrigatória');
-      return;
-    }
-
-    const valor = parseFloat(formDataDespesa.valor);
-    if (isNaN(valor) || valor <= 0) {
-      alert('Valor deve ser maior que 0');
-      return;
-    }
-
-    if (!formDataDespesa.projeto_id) {
-      alert('Selecione um projeto');
-      return;
-    }
-
-    setSalvando(true);
-    try {
-      if (despesaEditando) {
-        await apiClient.updateDespesa?.(despesaEditando.id, {
-          descricao: formDataDespesa.descricao,
-          valor,
-          data: formDataDespesa.data,
-          categoria: formDataDespesa.categoria,
-          observacoes: formDataDespesa.observacoes,
-        });
-      } else {
-        await apiClient.createDespesa?.({
-          projeto_id: parseInt(formDataDespesa.projeto_id),
-          descricao: formDataDespesa.descricao,
-          valor,
-          data: formDataDespesa.data,
-          categoria: formDataDespesa.categoria,
-          observacoes: formDataDespesa.observacoes,
-        });
-      }
-
-      await loadInitialData();
-      fecharFormularioDespesa();
-    } catch (error) {
-      console.error('Erro ao salvar despesa:', error);
-      alert('Erro ao salvar despesa');
-    } finally {
-      setSalvando(false);
-    }
+  const fecharFormulario = () => {
+    setMostrarFormularioDespesa(false);
+    setDespesaEditando(null);
+    form.reset();
   };
 
   const excluirDespesa = async (id: number) => {
     setSalvando(true);
     try {
-      await apiClient.deleteDespesa?.(id);
-      await loadInitialData();
+      const response = await apiClient.deleteDespesa?.(id);
+      if (response?.error) {
+        showError(response.error);
+        setSalvando(false);
+        return;
+      }
+      showSuccess('Despesa excluída!');
       setConfirmarExclusao(null);
+      await carregarDados();
     } catch (error) {
-      console.error('Erro ao excluir despesa:', error);
-      alert('Erro ao excluir despesa');
-    } finally {
+      showError(extractErrorMessage(error));
       setSalvando(false);
     }
   };
 
-  const despesasFiltradas = filtroProjeto
-    ? despesas.filter((d) => d.projeto_id === filtroProjeto)
-    : despesas;
+  const formatarMoeda = (valor: number): string =>
+    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor || 0);
 
-  const pagamentosFiltrados = filtroProjeto && lotes.length > 0
-    ? pagamentos.filter((p) => lotes.some((l) => l.id === p.lote_id))
-    : pagamentos;
+  const formatarData = (data: string): string => {
+    if (!data) return '-';
+    try {
+      return new Date(data).toLocaleDateString('pt-BR');
+    } catch {
+      return '-';
+    }
+  };
+
+  const obterNomeProjeto = (id: number): string => projetos.find((p) => p.id === id)?.nome || `Projeto #${id}`;
+  const obterNomeLote = (id: number): string => lotes.find((l) => l.id === id)?.nome_cliente || `Lote #${id}`;
 
   const totalDespesas = despesasFiltradas.reduce((acc, d) => acc + d.valor, 0);
   const totalPagamentos = pagamentosFiltrados.reduce((acc, p) => acc + p.valor_total, 0);
@@ -273,6 +249,28 @@ export default function Financeiro() {
 
   return (
     <div className="financeiro-container">
+      {/* Notificações */}
+      {notification && (
+        <div
+          style={{
+            marginBottom: '1rem',
+            padding: '1rem',
+            borderRadius: '8px',
+            background: notification.type === 'success' ? '#d4edda' : '#f8d7da',
+            color: notification.type === 'success' ? '#155724' : '#721c24',
+            border: `1px solid ${notification.type === 'success' ? '#c3e6cb' : '#f5c6cb'}`,
+          }}
+        >
+          {notification.message}
+        </div>
+      )}
+
+      {apiError && (
+        <div style={{ marginBottom: '1rem', padding: '1rem', borderRadius: '8px', background: '#f8d7da', color: '#721c24', border: '1px solid #f5c6cb' }}>
+          {apiError.message}
+        </div>
+      )}
+
       {/* Header */}
       <div className="financeiro-header">
         <div className="financeiro-title">
@@ -280,11 +278,7 @@ export default function Financeiro() {
           <h1>Módulo Financeiro</h1>
         </div>
         {abaAtiva === 'DESPESAS' && (
-          <Button
-            variant="primary"
-            onClick={abrirFormularioCriarDespesa}
-            icon="plus"
-          >
+          <Button variant="primary" onClick={abrirFormularioCriar} icon="plus">
             Nova Despesa
           </Button>
         )}
@@ -295,33 +289,23 @@ export default function Financeiro() {
         <Select
           label="Filtrar por Projeto"
           value={filtroProjeto?.toString() || ''}
-          onChange={(e) => {
-            const val = e.target.value ? parseInt(e.target.value) : null;
-            setFiltroProjeto(val);
-          }}
-          options={[
-            { value: '', label: 'Todos os projetos' },
-            ...projetos.map((p) => ({ value: p.id.toString(), label: p.nome }))
-          ]}
+          onChange={(e) => setFiltroProjeto(e.target.value ? parseInt(e.target.value) : null)}
+          options={[{ value: '', label: 'Todos os projetos' }, ...projetos.map((p) => ({ value: p.id.toString(), label: p.nome }))]}
         />
       </div>
 
       {/* Tabs */}
       <div className="financeiro-tabs">
-        <button
-          className={`tab ${abaAtiva === 'DESPESAS' ? 'active' : ''}`}
-          onClick={() => setAbaAtiva('DESPESAS')}
-        >
-          <Icon name="credit-card" size="md" />
-          Despesas
-        </button>
-        <button
-          className={`tab ${abaAtiva === 'PAGAMENTOS' ? 'active' : ''}`}
-          onClick={() => setAbaAtiva('PAGAMENTOS')}
-        >
-          <Icon name="check-circle" size="md" />
-          Pagamentos Recebidos
-        </button>
+        {(['DESPESAS', 'PAGAMENTOS'] as const).map((aba) => (
+          <button
+            key={aba}
+            className={`tab ${abaAtiva === aba ? 'active' : ''}`}
+            onClick={() => setAbaAtiva(aba)}
+          >
+            <Icon name={aba === 'DESPESAS' ? 'credit-card' : 'check-circle'} size="md" />
+            {aba === 'DESPESAS' ? 'Despesas' : 'Pagamentos Recebidos'}
+          </button>
+        ))}
       </div>
 
       {/* Content */}
@@ -339,9 +323,7 @@ export default function Financeiro() {
               <Card className="summary-card">
                 <div className="summary-item">
                   <span className="summary-label">Valor Total</span>
-                  <span className="summary-value expense">
-                    {formatarMoeda(totalDespesas)}
-                  </span>
+                  <span className="summary-value expense">{formatarMoeda(totalDespesas)}</span>
                 </div>
               </Card>
             </div>
@@ -350,12 +332,12 @@ export default function Financeiro() {
           {/* Expenses List */}
           {loading ? (
             <LoadingState title="Carregando despesas" description="Aguarde alguns segundos" />
-          ) : error ? (
+          ) : apiError ? (
             <ErrorState
-              title="Nao foi possivel carregar despesas"
-              description={error}
+              title="Não foi possível carregar despesas"
+              description={apiError.message}
               actionLabel="Tentar novamente"
-              onAction={loadInitialData}
+              onAction={carregarDados}
             />
           ) : despesasFiltradas.length === 0 ? (
             <EmptyState title="Nenhuma despesa encontrada" />
@@ -371,12 +353,7 @@ export default function Financeiro() {
                       </Badge>
                     </div>
                     <div className="expense-actions">
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => abrirFormularioEditarDespesa(despesa)}
-                        icon="edit"
-                      >
+                      <Button variant="secondary" size="sm" onClick={() => abrirFormularioEditar(despesa)} icon="edit">
                         Editar
                       </Button>
                       <Button
@@ -431,25 +408,19 @@ export default function Financeiro() {
               <Card className="summary-card">
                 <div className="summary-item">
                   <span className="summary-label">Valor Total</span>
-                  <span className="summary-value income">
-                    {formatarMoeda(totalPagamentos)}
-                  </span>
+                  <span className="summary-value income">{formatarMoeda(totalPagamentos)}</span>
                 </div>
               </Card>
               <Card className="summary-card">
                 <div className="summary-item">
                   <span className="summary-label">Valor Pago</span>
-                  <span className="summary-value income">
-                    {formatarMoeda(totalPago)}
-                  </span>
+                  <span className="summary-value income">{formatarMoeda(totalPago)}</span>
                 </div>
               </Card>
               <Card className="summary-card">
                 <div className="summary-item">
                   <span className="summary-label">Pagamentos Aprovados</span>
-                  <span className="summary-value">
-                    {pagamentosFiltrados.filter((p) => p.status === 'PAGO').length}
-                  </span>
+                  <span className="summary-value">{pagamentosFiltrados.filter((p) => p.status === 'PAGO').length}</span>
                 </div>
               </Card>
             </div>
@@ -458,12 +429,12 @@ export default function Financeiro() {
           {/* Payments List */}
           {loading ? (
             <LoadingState title="Carregando pagamentos" description="Aguarde alguns segundos" />
-          ) : error ? (
+          ) : apiError ? (
             <ErrorState
-              title="Nao foi possivel carregar pagamentos"
-              description={error}
+              title="Não foi possível carregar pagamentos"
+              description={apiError.message}
               actionLabel="Tentar novamente"
-              onAction={loadInitialData}
+              onAction={carregarDados}
             />
           ) : pagamentosFiltrados.length === 0 ? (
             <EmptyState title="Nenhum pagamento encontrado" />
@@ -472,9 +443,7 @@ export default function Financeiro() {
               {pagamentosFiltrados.map((pagamento) => (
                 <Card key={pagamento.id} className="payment-card">
                   <div className="payment-header">
-                    <Badge variant={getStatusBadgeVariant(pagamento.status)}>
-                      {pagamento.status}
-                    </Badge>
+                    <Badge variant={getStatusBadgeVariant(pagamento.status)}>{pagamento.status}</Badge>
                   </div>
 
                   <div className="payment-details">
@@ -519,29 +488,23 @@ export default function Financeiro() {
 
       {/* Form Modal */}
       {mostrarFormularioDespesa && (
-        <div className="modal-overlay" onClick={() => !salvando && fecharFormularioDespesa()}>
+        <div className="modal-overlay" onClick={() => !form.loading && fecharFormulario()}>
           <Card className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <DialogHeader
-              title={despesaEditando ? 'Editar Despesa' : 'Nova Despesa'}
-              onClose={fecharFormularioDespesa}
-            >
+            <DialogHeader title={despesaEditando ? 'Editar Despesa' : 'Nova Despesa'} onClose={fecharFormulario}>
               <div className="form-body">
                 <Select
                   label="Projeto *"
-                  value={formDataDespesa.projeto_id}
-                  onChange={(e) => setFormDataDespesa({ ...formDataDespesa, projeto_id: e.target.value })}
+                  value={form.formData.projeto_id}
+                  onChange={(e) => form.handleChange('projeto_id', e.target.value)}
                   required
-                  options={[
-                    { value: '', label: 'Selecione um projeto' },
-                    ...projetos.map((p) => ({ value: p.id.toString(), label: p.nome }))
-                  ]}
+                  options={[{ value: '', label: 'Selecione um projeto' }, ...projetos.map((p) => ({ value: p.id.toString(), label: p.nome }))]}
                 />
 
                 <Input
                   label="Descrição *"
                   type="text"
-                  value={formDataDespesa.descricao}
-                  onChange={(e) => setFormDataDespesa({ ...formDataDespesa, descricao: e.target.value })}
+                  value={form.formData.descricao}
+                  onChange={(e) => form.handleChange('descricao', e.target.value)}
                   placeholder="Ex: Material de escritório"
                   required
                 />
@@ -551,8 +514,8 @@ export default function Financeiro() {
                   type="number"
                   step="0.01"
                   min="0"
-                  value={formDataDespesa.valor}
-                  onChange={(e) => setFormDataDespesa({ ...formDataDespesa, valor: e.target.value })}
+                  value={form.formData.valor}
+                  onChange={(e) => form.handleChange('valor', e.target.value)}
                   placeholder="0.00"
                   required
                 />
@@ -560,40 +523,31 @@ export default function Financeiro() {
                 <Input
                   label="Data *"
                   type="date"
-                  value={formDataDespesa.data}
-                  onChange={(e) => setFormDataDespesa({ ...formDataDespesa, data: e.target.value })}
+                  value={form.formData.data}
+                  onChange={(e) => form.handleChange('data', e.target.value)}
                   required
                 />
 
                 <Select
                   label="Categoria"
-                  value={formDataDespesa.categoria}
-                  onChange={(e) => setFormDataDespesa({ ...formDataDespesa, categoria: e.target.value })}
+                  value={form.formData.categoria}
+                  onChange={(e) => form.handleChange('categoria', e.target.value)}
                   options={categoriaOpcoes}
                 />
 
                 <Textarea
                   label="Observações"
-                  value={formDataDespesa.observacoes}
-                  onChange={(e) => setFormDataDespesa({ ...formDataDespesa, observacoes: e.target.value })}
+                  value={form.formData.observacoes}
+                  onChange={(e) => form.handleChange('observacoes', e.target.value)}
                   placeholder="Observações sobre a despesa..."
                   rows={4}
                 />
 
                 <div className="form-actions">
-                  <Button
-                    variant="secondary"
-                    onClick={fecharFormularioDespesa}
-                    disabled={salvando}
-                  >
+                  <Button variant="secondary" onClick={fecharFormulario} disabled={form.loading}>
                     Cancelar
                   </Button>
-                  <Button
-                    variant="primary"
-                    onClick={salvarDespesa}
-                    disabled={salvando}
-                    isLoading={salvando}
-                  >
+                  <Button variant="primary" onClick={() => form.handleSubmit()} disabled={form.loading} isLoading={form.loading}>
                     {despesaEditando ? 'Atualizar' : 'Criar'}
                   </Button>
                 </div>

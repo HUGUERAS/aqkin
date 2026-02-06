@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../../services/api';
+import { Button, Input, Select, Card, Badge, Textarea } from '../../components/UIComponents';
+import Icon from '../../components/Icon';
+import { DialogHeader } from '../../components/Navigation';
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
+import { LoadingState, EmptyState, ErrorState } from '../../components/StateViews';
+import './Financeiro.css';
 
 interface Despesa {
   id: number;
@@ -36,6 +41,33 @@ interface Lote {
 
 type Aba = 'DESPESAS' | 'PAGAMENTOS';
 
+const categoriaOpcoes = [
+  { value: 'MATERIAL', label: 'Material' },
+  { value: 'SERVICO', label: 'Serviço' },
+  { value: 'TRANSPORTE', label: 'Transporte' },
+  { value: 'OUTROS', label: 'Outros' },
+];
+
+const getCategoryColor = (categoria?: string): string => {
+  const cores: Record<string, string> = {
+    'MATERIAL': '#3b82f6',
+    'SERVICO': '#8b5cf6',
+    'TRANSPORTE': '#f59e0b',
+    'OUTROS': '#6b7280',
+  };
+  return cores[categoria || 'OUTROS'] || '#6b7280';
+};
+
+const getStatusBadgeVariant = (status: string): 'info' | 'success' | 'warning' | 'error' => {
+  switch (status) {
+    case 'PAGO': return 'success';
+    case 'PROCESSANDO': return 'warning';
+    case 'PENDENTE': return 'warning';
+    case 'FALHA': return 'error';
+    default: return 'warning';
+  }
+};
+
 export default function Financeiro() {
   const [abaAtiva, setAbaAtiva] = useState<Aba>('DESPESAS');
   const [despesas, setDespesas] = useState<Despesa[]>([]);
@@ -43,9 +75,12 @@ export default function Financeiro() {
   const [projetos, setProjetos] = useState<Projeto[]>([]);
   const [lotes, setLotes] = useState<Lote[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filtroProjeto, setFiltroProjeto] = useState<number | null>(null);
   const [mostrarFormularioDespesa, setMostrarFormularioDespesa] = useState(false);
   const [despesaEditando, setDespesaEditando] = useState<Despesa | null>(null);
+  const [confirmarExclusao, setConfirmarExclusao] = useState<number | null>(null);
+  const [salvando, setSalvando] = useState(false);
   const [formDataDespesa, setFormDataDespesa] = useState({
     projeto_id: '',
     descricao: '',
@@ -54,107 +89,76 @@ export default function Financeiro() {
     categoria: 'OUTROS',
     observacoes: '',
   });
-  const [salvando, setSalvando] = useState(false);
-  const [confirmarExclusao, setConfirmarExclusao] = useState<number | null>(null);
 
+  // Load data on mount
   useEffect(() => {
-    carregarProjetos();
-    carregarLotes();
-    if (abaAtiva === 'DESPESAS') {
-      carregarDespesas();
-    } else {
-      carregarPagamentos();
-    }
-  }, [abaAtiva, filtroProjeto]);
+    loadInitialData();
+  }, []);
 
-  const carregarProjetos = async () => {
-    try {
-      const response = await apiClient.getProjects();
-      if (response.data) {
-        setProjetos(response.data as Projeto[]);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar projetos:', error);
+  // Load lotes when filtering
+  useEffect(() => {
+    if (filtroProjeto) {
+      carregarLotes();
     }
+  }, [filtroProjeto]);
+
+  const loadInitialData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [projData, despData, pagData] = await Promise.all([
+        apiClient.getProjects(),
+        apiClient.getDespesas(),
+        apiClient.getPagamentos?.(),
+      ]);
+
+      if (projData?.error || despData?.error || pagData?.error) {
+        setError(projData?.error || despData?.error || pagData?.error || 'Erro ao carregar dados');
+        return;
+      }
+
+      setProjetos(Array.isArray(projData?.data) ? (projData?.data as Projeto[]) : []);
+      setDespesas(Array.isArray(despData?.data) ? (despData?.data as Despesa[]) : []);
+      setPagamentos(Array.isArray(pagData?.data) ? (pagData?.data as Pagamento[]) : []);
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+      setError('Erro ao carregar dados');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatarMoeda = (valor: number): string => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(valor || 0);
+  };
+
+  const formatarData = (data: string): string => {
+    if (!data) return '';
+    return new Date(data).toLocaleDateString('pt-BR');
+  };
+
+  const obterNomeProjeto = (id: number): string => {
+    return projetos.find((p) => p.id === id)?.nome || 'Projeto desconhecido';
   };
 
   const carregarLotes = async () => {
     try {
       if (filtroProjeto) {
-        const response = await apiClient.getLotes(filtroProjeto);
-        if (response.data) {
-          setLotes(response.data as Lote[]);
-        }
-      } else {
-        setLotes([]);
+        const resp = await apiClient.getLotes?.(filtroProjeto);
+        setLotes(Array.isArray(resp) ? resp : []);
       }
     } catch (error) {
       console.error('Erro ao carregar lotes:', error);
     }
   };
 
-  const carregarDespesas = async () => {
-    setLoading(true);
-    try {
-      const response = await apiClient.getDespesas(filtroProjeto || undefined);
-      if (response.data) {
-        setDespesas(response.data as Despesa[]);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar despesas:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const carregarPagamentos = async () => {
-    setLoading(true);
-    try {
-      const response = await apiClient.getPagamentos(filtroProjeto || undefined);
-      if (response.data) {
-        setPagamentos(response.data as Pagamento[]);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar pagamentos:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const formatarMoeda = (valor: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(valor);
-  };
-
-  const formatarData = (data?: string) => {
-    if (!data) return '-';
-    try {
-      return new Date(data).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      });
-    } catch {
-      return '-';
-    }
-  };
-
-  const obterNomeProjeto = (projetoId: number) => {
-    const projeto = projetos.find((p) => p.id === projetoId);
-    return projeto?.nome || `Projeto #${projetoId}`;
-  };
-
-  const obterNomeLote = (loteId: number) => {
-    const lote = lotes.find((l) => l.id === loteId);
-    return lote?.nome_cliente || `Lote #${loteId}`;
-  };
-
   const abrirFormularioCriarDespesa = () => {
     setDespesaEditando(null);
     setFormDataDespesa({
-      projeto_id: filtroProjeto?.toString() || '',
+      projeto_id: '',
       descricao: '',
       valor: '',
       data: new Date().toISOString().split('T')[0],
@@ -178,58 +182,61 @@ export default function Financeiro() {
   };
 
   const fecharFormularioDespesa = () => {
-    setMostrarFormularioDespesa(false);
-    setDespesaEditando(null);
-    setFormDataDespesa({
-      projeto_id: filtroProjeto?.toString() || '',
-      descricao: '',
-      valor: '',
-      data: new Date().toISOString().split('T')[0],
-      categoria: 'OUTROS',
-      observacoes: '',
-    });
+    if (!salvando) {
+      setMostrarFormularioDespesa(false);
+      setDespesaEditando(null);
+      setFormDataDespesa({
+        projeto_id: '',
+        descricao: '',
+        valor: '',
+        data: new Date().toISOString().split('T')[0],
+        categoria: 'OUTROS',
+        observacoes: '',
+      });
+    }
   };
 
   const salvarDespesa = async () => {
+    // Validate
     if (!formDataDespesa.descricao.trim()) {
       alert('Descrição é obrigatória');
       return;
     }
-    if (!formDataDespesa.valor || parseFloat(formDataDespesa.valor) <= 0) {
-      alert('Valor é obrigatório e deve ser maior que zero');
+
+    const valor = parseFloat(formDataDespesa.valor);
+    if (isNaN(valor) || valor <= 0) {
+      alert('Valor deve ser maior que 0');
       return;
     }
+
     if (!formDataDespesa.projeto_id) {
-      alert('Projeto é obrigatório');
+      alert('Selecione um projeto');
       return;
     }
 
     setSalvando(true);
     try {
-      const data = {
-        projeto_id: Number(formDataDespesa.projeto_id),
-        descricao: formDataDespesa.descricao,
-        valor: parseFloat(formDataDespesa.valor),
-        data: formDataDespesa.data,
-        categoria: formDataDespesa.categoria,
-        observacoes: formDataDespesa.observacoes || undefined,
-      };
-
       if (despesaEditando) {
-        const response = await apiClient.updateDespesa(despesaEditando.id, data);
-        if (response.error) {
-          alert(`Erro ao atualizar despesa: ${response.error}`);
-          return;
-        }
+        await apiClient.updateDespesa?.(despesaEditando.id, {
+          descricao: formDataDespesa.descricao,
+          valor,
+          data: formDataDespesa.data,
+          categoria: formDataDespesa.categoria,
+          observacoes: formDataDespesa.observacoes,
+        });
       } else {
-        const response = await apiClient.createDespesa(data);
-        if (response.error) {
-          alert(`Erro ao criar despesa: ${response.error}`);
-          return;
-        }
+        await apiClient.createDespesa?.({
+          projeto_id: parseInt(formDataDespesa.projeto_id),
+          descricao: formDataDespesa.descricao,
+          valor,
+          data: formDataDespesa.data,
+          categoria: formDataDespesa.categoria,
+          observacoes: formDataDespesa.observacoes,
+        });
       }
+
+      await loadInitialData();
       fecharFormularioDespesa();
-      carregarDespesas();
     } catch (error) {
       console.error('Erro ao salvar despesa:', error);
       alert('Erro ao salvar despesa');
@@ -241,13 +248,9 @@ export default function Financeiro() {
   const excluirDespesa = async (id: number) => {
     setSalvando(true);
     try {
-      const response = await apiClient.deleteDespesa(id);
-      if (response.error) {
-        alert(`Erro ao excluir despesa: ${response.error}`);
-        return;
-      }
+      await apiClient.deleteDespesa?.(id);
+      await loadInitialData();
       setConfirmarExclusao(null);
-      carregarDespesas();
     } catch (error) {
       console.error('Erro ao excluir despesa:', error);
       alert('Erro ao excluir despesa');
@@ -256,368 +259,256 @@ export default function Financeiro() {
     }
   };
 
-  const getStatusBadgeStyle = (status: string) => {
-    const styles: Record<string, { background: string; color: string; icon: string }> = {
-      PENDENTE: { background: '#fff3cd', color: '#856404', icon: '⏳' },
-      PAGO: { background: '#d1e7dd', color: '#0f5132', icon: '✅' },
-      FALHA: { background: '#f8d7da', color: '#842029', icon: '❌' },
-    };
-    return styles[status] || { background: '#e2e3e5', color: '#41464b', icon: '❓' };
-  };
-
   const despesasFiltradas = filtroProjeto
     ? despesas.filter((d) => d.projeto_id === filtroProjeto)
     : despesas;
 
-  const pagamentosFiltrados = filtroProjeto
-    ? pagamentos.filter((p) => {
-      const lote = lotes.find((l) => l.id === p.lote_id);
-      return lote?.projeto_id === filtroProjeto;
-    })
+  const pagamentosFiltrados = filtroProjeto && lotes.length > 0
+    ? pagamentos.filter((p) => lotes.some((l) => l.id === p.lote_id))
     : pagamentos;
 
+  const totalDespesas = despesasFiltradas.reduce((acc, d) => acc + d.valor, 0);
+  const totalPagamentos = pagamentosFiltrados.reduce((acc, p) => acc + p.valor_total, 0);
+  const totalPago = pagamentosFiltrados.reduce((acc, p) => acc + p.valor_pago, 0);
+
   return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1 style={{ margin: 0 }}>💳 Módulo Financeiro</h1>
+    <div className="financeiro-container">
+      {/* Header */}
+      <div className="financeiro-header">
+        <div className="financeiro-title">
+          <Icon name="credit-card" size="lg" color="primary" />
+          <h1>Módulo Financeiro</h1>
+        </div>
         {abaAtiva === 'DESPESAS' && (
-          <button
+          <Button
+            variant="primary"
             onClick={abrirFormularioCriarDespesa}
-            style={{
-              padding: '0.75rem 1.5rem',
-              background: '#667eea',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontSize: '1rem',
-            }}
+            icon="plus"
           >
-            ➕ Nova Despesa
-          </button>
+            Nova Despesa
+          </Button>
         )}
       </div>
 
-      {/* Filtro de Projeto */}
-      <div style={{ marginBottom: '2rem' }}>
-        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem' }}>
-          Filtrar por Projeto
-        </label>
-        <select
-          value={filtroProjeto || ''}
+      {/* Filter Section */}
+      <div className="financeiro-filter">
+        <Select
+          label="Filtrar por Projeto"
+          value={filtroProjeto?.toString() || ''}
           onChange={(e) => {
-            const val = e.target.value ? Number(e.target.value) : null;
+            const val = e.target.value ? parseInt(e.target.value) : null;
             setFiltroProjeto(val);
-            if (val) carregarLotes();
           }}
-          style={{
-            padding: '0.5rem',
-            border: '1px solid #ddd',
-            borderRadius: '6px',
-            fontSize: '0.9rem',
-            minWidth: '200px',
-          }}
-        >
-          <option value="">Todos os projetos</option>
-          {projetos.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.nome}
-            </option>
-          ))}
-        </select>
+          options={[
+            { value: '', label: 'Todos os projetos' },
+            ...projetos.map((p) => ({ value: p.id.toString(), label: p.nome }))
+          ]}
+        />
       </div>
 
-      {/* Abas */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', borderBottom: '2px solid #e0e0e0' }}>
+      {/* Tabs */}
+      <div className="financeiro-tabs">
         <button
+          className={`tab ${abaAtiva === 'DESPESAS' ? 'active' : ''}`}
           onClick={() => setAbaAtiva('DESPESAS')}
-          style={{
-            padding: '1rem 2rem',
-            background: abaAtiva === 'DESPESAS' ? '#667eea' : 'transparent',
-            color: abaAtiva === 'DESPESAS' ? 'white' : '#333',
-            border: 'none',
-            borderBottom: abaAtiva === 'DESPESAS' ? '3px solid #667eea' : '3px solid transparent',
-            cursor: 'pointer',
-            fontWeight: abaAtiva === 'DESPESAS' ? 'bold' : 'normal',
-            fontSize: '1rem',
-          }}
         >
-          💸 Despesas
+          <Icon name="credit-card" size="md" />
+          Despesas
         </button>
         <button
+          className={`tab ${abaAtiva === 'PAGAMENTOS' ? 'active' : ''}`}
           onClick={() => setAbaAtiva('PAGAMENTOS')}
-          style={{
-            padding: '1rem 2rem',
-            background: abaAtiva === 'PAGAMENTOS' ? '#667eea' : 'transparent',
-            color: abaAtiva === 'PAGAMENTOS' ? 'white' : '#333',
-            border: 'none',
-            borderBottom: abaAtiva === 'PAGAMENTOS' ? '3px solid #667eea' : '3px solid transparent',
-            cursor: 'pointer',
-            fontWeight: abaAtiva === 'PAGAMENTOS' ? 'bold' : 'normal',
-            fontSize: '1rem',
-          }}
         >
-          💰 Pagamentos Recebidos
+          <Icon name="check-circle" size="md" />
+          Pagamentos Recebidos
         </button>
       </div>
 
-      {/* Conteúdo das Abas */}
+      {/* Content */}
       {abaAtiva === 'DESPESAS' && (
-        <>
-          {/* Resumo de Despesas */}
+        <div className="financeiro-content">
+          {/* Summary Cards */}
           {despesasFiltradas.length > 0 && (
-            <div
-              style={{
-                background: 'white',
-                borderRadius: '12px',
-                padding: '1.5rem',
-                marginBottom: '2rem',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                display: 'flex',
-                gap: '2rem',
-                flexWrap: 'wrap',
-              }}
-            >
-              <div>
-                <div style={{ fontSize: '0.9rem', color: '#666', marginBottom: '0.25rem' }}>Total de Despesas</div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{despesasFiltradas.length}</div>
-              </div>
-              <div>
-                <div style={{ fontSize: '0.9rem', color: '#666', marginBottom: '0.25rem' }}>Valor Total</div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#dc3545' }}>
-                  {formatarMoeda(despesasFiltradas.reduce((acc, d) => acc + d.valor, 0))}
+            <div className="financeiro-summary">
+              <Card className="summary-card">
+                <div className="summary-item">
+                  <span className="summary-label">Total de Despesas</span>
+                  <span className="summary-value">{despesasFiltradas.length}</span>
                 </div>
-              </div>
+              </Card>
+              <Card className="summary-card">
+                <div className="summary-item">
+                  <span className="summary-label">Valor Total</span>
+                  <span className="summary-value expense">
+                    {formatarMoeda(totalDespesas)}
+                  </span>
+                </div>
+              </Card>
             </div>
           )}
 
-          {/* Lista de Despesas */}
+          {/* Expenses List */}
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
-              <p style={{ fontSize: '2rem' }}>⏳</p>
-              <p>Carregando despesas...</p>
-            </div>
+            <LoadingState title="Carregando despesas" description="Aguarde alguns segundos" />
+          ) : error ? (
+            <ErrorState
+              title="Nao foi possivel carregar despesas"
+              description={error}
+              actionLabel="Tentar novamente"
+              onAction={loadInitialData}
+            />
           ) : despesasFiltradas.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem', color: '#666', background: 'white', borderRadius: '12px' }}>
-              <p style={{ fontSize: '2rem' }}>📭</p>
-              <p>Nenhuma despesa encontrada</p>
-            </div>
+            <EmptyState title="Nenhuma despesa encontrada" />
           ) : (
-            <div style={{ display: 'grid', gap: '1rem' }}>
+            <div className="expenses-list">
               {despesasFiltradas.map((despesa) => (
-                <div
-                  key={despesa.id}
-                  style={{
-                    background: 'white',
-                    borderRadius: '12px',
-                    padding: '1.5rem',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                    border: '1px solid #e0e0e0',
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
-                        <h3 style={{ margin: 0, fontSize: '1.25rem' }}>{despesa.descricao}</h3>
-                        <span
-                          style={{
-                            padding: '0.25rem 0.75rem',
-                            borderRadius: '12px',
-                            background: '#e9ecef',
-                            color: '#495057',
-                            fontSize: '0.85rem',
-                            fontWeight: 'bold',
-                          }}
-                        >
-                          {despesa.categoria || 'OUTROS'}
-                        </span>
-                      </div>
-                      <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem', fontSize: '0.9rem', color: '#666' }}>
-                        <span>
-                          <strong>Valor:</strong>{' '}
-                          <span style={{ color: '#dc3545', fontWeight: 'bold' }}>
-                            {formatarMoeda(despesa.valor)}
-                          </span>
-                        </span>
-                        <span>
-                          <strong>Data:</strong> {formatarData(despesa.data)}
-                        </span>
-                        <span>
-                          <strong>Projeto:</strong> {obterNomeProjeto(despesa.projeto_id)}
-                        </span>
-                      </div>
-                      {despesa.observacoes && (
-                        <p style={{ color: '#666', margin: '0.5rem 0', fontSize: '0.9rem' }}>
-                          {despesa.observacoes}
-                        </p>
-                      )}
+                <Card key={despesa.id} className="expense-card">
+                  <div className="expense-header">
+                    <div className="expense-title-group">
+                      <h3>{despesa.descricao}</h3>
+                      <Badge variant="info" style={{ backgroundColor: getCategoryColor(despesa.categoria) }}>
+                        {despesa.categoria || 'OUTROS'}
+                      </Badge>
                     </div>
-                    <div style={{ display: 'flex', gap: '0.5rem', marginLeft: '1rem' }}>
-                      <button
+                    <div className="expense-actions">
+                      <Button
+                        variant="secondary"
+                        size="sm"
                         onClick={() => abrirFormularioEditarDespesa(despesa)}
-                        style={{
-                          padding: '0.5rem 1rem',
-                          background: '#667eea',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontSize: '0.9rem',
-                        }}
+                        icon="edit"
                       >
-                        ✏️ Editar
-                      </button>
-                      <button
+                        Editar
+                      </Button>
+                      <Button
+                        variant="danger"
+                        size="sm"
                         onClick={() => setConfirmarExclusao(despesa.id)}
-                        style={{
-                          padding: '0.5rem 1rem',
-                          background: '#dc3545',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontSize: '0.9rem',
-                        }}
+                        icon="trash-2"
                       >
-                        🗑️ Excluir
-                      </button>
+                        Excluir
+                      </Button>
                     </div>
                   </div>
-                </div>
+
+                  <div className="expense-details">
+                    <div className="detail-item">
+                      <span className="detail-label">Valor:</span>
+                      <span className="detail-value expense">{formatarMoeda(despesa.valor)}</span>
+                    </div>
+                    <div className="detail-item">
+                      <span className="detail-label">Data:</span>
+                      <span className="detail-value">{formatarData(despesa.data)}</span>
+                    </div>
+                    <div className="detail-item">
+                      <span className="detail-label">Projeto:</span>
+                      <span className="detail-value">{obterNomeProjeto(despesa.projeto_id)}</span>
+                    </div>
+                  </div>
+
+                  {despesa.observacoes && (
+                    <div className="expense-notes">
+                      <p>{despesa.observacoes}</p>
+                    </div>
+                  )}
+                </Card>
               ))}
             </div>
           )}
-        </>
+        </div>
       )}
 
       {abaAtiva === 'PAGAMENTOS' && (
-        <>
-          {/* Resumo de Pagamentos */}
+        <div className="financeiro-content">
+          {/* Summary Cards */}
           {pagamentosFiltrados.length > 0 && (
-            <div
-              style={{
-                background: 'white',
-                borderRadius: '12px',
-                padding: '1.5rem',
-                marginBottom: '2rem',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                display: 'flex',
-                gap: '2rem',
-                flexWrap: 'wrap',
-              }}
-            >
-              <div>
-                <div style={{ fontSize: '0.9rem', color: '#666', marginBottom: '0.25rem' }}>Total de Pagamentos</div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{pagamentosFiltrados.length}</div>
-              </div>
-              <div>
-                <div style={{ fontSize: '0.9rem', color: '#666', marginBottom: '0.25rem' }}>Valor Total</div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#0f5132' }}>
-                  {formatarMoeda(pagamentosFiltrados.reduce((acc, p) => acc + p.valor_total, 0))}
+            <div className="financeiro-summary">
+              <Card className="summary-card">
+                <div className="summary-item">
+                  <span className="summary-label">Total de Pagamentos</span>
+                  <span className="summary-value">{pagamentosFiltrados.length}</span>
                 </div>
-              </div>
-              <div>
-                <div style={{ fontSize: '0.9rem', color: '#666', marginBottom: '0.25rem' }}>Valor Pago</div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#0f5132' }}>
-                  {formatarMoeda(pagamentosFiltrados.reduce((acc, p) => acc + p.valor_pago, 0))}
+              </Card>
+              <Card className="summary-card">
+                <div className="summary-item">
+                  <span className="summary-label">Valor Total</span>
+                  <span className="summary-value income">
+                    {formatarMoeda(totalPagamentos)}
+                  </span>
                 </div>
-              </div>
-              <div>
-                <div style={{ fontSize: '0.9rem', color: '#666', marginBottom: '0.25rem' }}>Pagamentos Aprovados</div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#0f5132' }}>
-                  {pagamentosFiltrados.filter((p) => p.status === 'PAGO').length}
+              </Card>
+              <Card className="summary-card">
+                <div className="summary-item">
+                  <span className="summary-label">Valor Pago</span>
+                  <span className="summary-value income">
+                    {formatarMoeda(totalPago)}
+                  </span>
                 </div>
-              </div>
+              </Card>
+              <Card className="summary-card">
+                <div className="summary-item">
+                  <span className="summary-label">Pagamentos Aprovados</span>
+                  <span className="summary-value">
+                    {pagamentosFiltrados.filter((p) => p.status === 'PAGO').length}
+                  </span>
+                </div>
+              </Card>
             </div>
           )}
 
-          {/* Lista de Pagamentos */}
+          {/* Payments List */}
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
-              <p style={{ fontSize: '2rem' }}>⏳</p>
-              <p>Carregando pagamentos...</p>
-            </div>
+            <LoadingState title="Carregando pagamentos" description="Aguarde alguns segundos" />
+          ) : error ? (
+            <ErrorState
+              title="Nao foi possivel carregar pagamentos"
+              description={error}
+              actionLabel="Tentar novamente"
+              onAction={loadInitialData}
+            />
           ) : pagamentosFiltrados.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem', color: '#666', background: 'white', borderRadius: '12px' }}>
-              <p style={{ fontSize: '2rem' }}>📭</p>
-              <p>Nenhum pagamento encontrado</p>
-            </div>
+            <EmptyState title="Nenhum pagamento encontrado" />
           ) : (
-            <div style={{ display: 'grid', gap: '1rem' }}>
-              {pagamentosFiltrados.map((pagamento) => {
-                const statusStyle = getStatusBadgeStyle(pagamento.status);
-                const lote = lotes.find((l) => l.id === pagamento.lote_id);
-                return (
-                  <div
-                    key={pagamento.id}
-                    style={{
-                      background: 'white',
-                      borderRadius: '12px',
-                      padding: '1.5rem',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                      border: '1px solid #e0e0e0',
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
-                          <h3 style={{ margin: 0, fontSize: '1.25rem' }}>
-                            {lote ? obterNomeLote(pagamento.lote_id) : `Lote #${pagamento.lote_id}`}
-                          </h3>
-                          <span
-                            style={{
-                              padding: '0.25rem 0.75rem',
-                              borderRadius: '12px',
-                              background: statusStyle.background,
-                              color: statusStyle.color,
-                              fontSize: '0.85rem',
-                              fontWeight: 'bold',
-                            }}
-                          >
-                            {statusStyle.icon} {pagamento.status}
-                          </span>
-                        </div>
-                        <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem', fontSize: '0.9rem', color: '#666' }}>
-                          <span>
-                            <strong>Valor Total:</strong>{' '}
-                            <span style={{ color: '#667eea', fontWeight: 'bold' }}>
-                              {formatarMoeda(pagamento.valor_total)}
-                            </span>
-                          </span>
-                          <span>
-                            <strong>Valor Pago:</strong>{' '}
-                            <span style={{ color: '#0f5132', fontWeight: 'bold' }}>
-                              {formatarMoeda(pagamento.valor_pago)}
-                            </span>
-                          </span>
-                          {pagamento.data_pagamento && (
-                            <span>
-                              <strong>Data Pagamento:</strong> {formatarData(pagamento.data_pagamento)}
-                            </span>
-                          )}
-                          {lote && (
-                            <span>
-                              <strong>Projeto:</strong> {obterNomeProjeto(lote.projeto_id)}
-                            </span>
-                          )}
-                        </div>
-                        {pagamento.gateway_id && (
-                          <p style={{ color: '#666', margin: '0.5rem 0', fontSize: '0.9rem' }}>
-                            <strong>Gateway ID:</strong> {pagamento.gateway_id}
-                          </p>
-                        )}
-                      </div>
-                    </div>
+            <div className="payments-list">
+              {pagamentosFiltrados.map((pagamento) => (
+                <Card key={pagamento.id} className="payment-card">
+                  <div className="payment-header">
+                    <Badge variant={getStatusBadgeVariant(pagamento.status)}>
+                      {pagamento.status}
+                    </Badge>
                   </div>
-                );
-              })}
+
+                  <div className="payment-details">
+                    <div className="detail-item">
+                      <span className="detail-label">Valor Total:</span>
+                      <span className="detail-value">{formatarMoeda(pagamento.valor_total)}</span>
+                    </div>
+                    <div className="detail-item">
+                      <span className="detail-label">Valor Pago:</span>
+                      <span className="detail-value income">{formatarMoeda(pagamento.valor_pago)}</span>
+                    </div>
+                    {pagamento.data_pagamento && (
+                      <div className="detail-item">
+                        <span className="detail-label">Data:</span>
+                        <span className="detail-value">{formatarData(pagamento.data_pagamento)}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {pagamento.gateway_id && (
+                    <div className="payment-gateway">
+                      <p>
+                        <strong>Gateway:</strong> {pagamento.gateway_id}
+                      </p>
+                    </div>
+                  )}
+                </Card>
+              ))}
             </div>
           )}
-        </>
+        </div>
       )}
 
-      {/* Modal de Confirmação de Exclusão */}
+      {/* Delete Confirmation Modal */}
       <ConfirmDeleteModal
         open={confirmarExclusao !== null}
         busy={salvando}
@@ -626,197 +517,89 @@ export default function Financeiro() {
         onConfirm={() => confirmarExclusao !== null && excluirDespesa(confirmarExclusao)}
       />
 
-      {/* Modal de Formulário de Despesa */}
+      {/* Form Modal */}
       {mostrarFormularioDespesa && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-          }}
-          onClick={() => !salvando && fecharFormularioDespesa()}
-        >
-          <div
-            style={{
-              background: 'white',
-              borderRadius: '12px',
-              padding: '2rem',
-              maxWidth: '500px',
-              width: '90%',
-              maxHeight: '90vh',
-              overflowY: 'auto',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 style={{ marginTop: 0 }}>
-              {despesaEditando ? '✏️ Editar Despesa' : '➕ Nova Despesa'}
-            </h2>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-                  Projeto *
-                </label>
-                <select
+        <div className="modal-overlay" onClick={() => !salvando && fecharFormularioDespesa()}>
+          <Card className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <DialogHeader
+              title={despesaEditando ? 'Editar Despesa' : 'Nova Despesa'}
+              onClose={fecharFormularioDespesa}
+            >
+              <div className="form-body">
+                <Select
+                  label="Projeto *"
                   value={formDataDespesa.projeto_id}
                   onChange={(e) => setFormDataDespesa({ ...formDataDespesa, projeto_id: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '1rem',
-                  }}
-                >
-                  <option value="">Selecione um projeto</option>
-                  {projetos.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.nome}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                  required
+                  options={[
+                    { value: '', label: 'Selecione um projeto' },
+                    ...projetos.map((p) => ({ value: p.id.toString(), label: p.nome }))
+                  ]}
+                />
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-                  Descrição *
-                </label>
-                <input
+                <Input
+                  label="Descrição *"
                   type="text"
                   value={formDataDespesa.descricao}
                   onChange={(e) => setFormDataDespesa({ ...formDataDespesa, descricao: e.target.value })}
                   placeholder="Ex: Material de escritório"
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '1rem',
-                  }}
+                  required
                 />
-              </div>
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-                  Valor (R$) *
-                </label>
-                <input
+                <Input
+                  label="Valor (R$) *"
                   type="number"
                   step="0.01"
                   min="0"
                   value={formDataDespesa.valor}
                   onChange={(e) => setFormDataDespesa({ ...formDataDespesa, valor: e.target.value })}
                   placeholder="0.00"
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '1rem',
-                  }}
+                  required
                 />
-              </div>
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-                  Data *
-                </label>
-                <input
+                <Input
+                  label="Data *"
                   type="date"
                   value={formDataDespesa.data}
                   onChange={(e) => setFormDataDespesa({ ...formDataDespesa, data: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '1rem',
-                  }}
+                  required
                 />
-              </div>
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-                  Categoria
-                </label>
-                <select
+                <Select
+                  label="Categoria"
                   value={formDataDespesa.categoria}
                   onChange={(e) => setFormDataDespesa({ ...formDataDespesa, categoria: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '1rem',
-                  }}
-                >
-                  <option value="MATERIAL">Material</option>
-                  <option value="SERVICO">Serviço</option>
-                  <option value="TRANSPORTE">Transporte</option>
-                  <option value="OUTROS">Outros</option>
-                </select>
-              </div>
+                  options={categoriaOpcoes}
+                />
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-                  Observações
-                </label>
-                <textarea
+                <Textarea
+                  label="Observações"
                   value={formDataDespesa.observacoes}
                   onChange={(e) => setFormDataDespesa({ ...formDataDespesa, observacoes: e.target.value })}
                   placeholder="Observações sobre a despesa..."
                   rows={4}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '1rem',
-                    fontFamily: 'inherit',
-                  }}
                 />
-              </div>
 
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
-                <button
-                  onClick={fecharFormularioDespesa}
-                  disabled={salvando}
-                  style={{
-                    padding: '0.75rem 1.5rem',
-                    background: '#6c757d',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '6px',
-                    cursor: salvando ? 'wait' : 'pointer',
-                  }}
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={salvarDespesa}
-                  disabled={salvando}
-                  style={{
-                    padding: '0.75rem 1.5rem',
-                    background: '#667eea',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '6px',
-                    cursor: salvando ? 'wait' : 'pointer',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  {salvando ? 'Salvando...' : despesaEditando ? 'Atualizar' : 'Criar'}
-                </button>
+                <div className="form-actions">
+                  <Button
+                    variant="secondary"
+                    onClick={fecharFormularioDespesa}
+                    disabled={salvando}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    variant="primary"
+                    onClick={salvarDespesa}
+                    disabled={salvando}
+                    isLoading={salvando}
+                  >
+                    {despesaEditando ? 'Atualizar' : 'Criar'}
+                  </Button>
+                </div>
               </div>
-            </div>
-          </div>
+            </DialogHeader>
+          </Card>
         </div>
       )}
     </div>

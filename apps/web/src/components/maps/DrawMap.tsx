@@ -9,8 +9,8 @@ import Modify from 'ol/interaction/Modify';
 import Snap from 'ol/interaction/Snap';
 import { Style, Fill, Stroke } from 'ol/style';
 import { fromLonLat } from 'ol/proj';
-import type { Feature } from 'ol/Feature';
-import type { Geometry } from 'ol/geom';
+import type Feature from 'ol/Feature';
+import type Geometry from 'ol/geom/Geometry';
 import { readKML, writeKML, kmlFirstPolygonToWKT, downloadKML } from '../../lib/kml';
 import 'ol/ol.css';
 

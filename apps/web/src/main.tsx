@@ -1,10 +1,15 @@
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import App from './App';
-import './styles/design-tokens.css'; // Variáveis globais
-import './styles/index.css';         // Reset e estilos base
-import './styles.css';               // Tailwind
-import 'ol/ol.css';                  // OpenLayers CSS
+import ErrorBoundary from './components/ErrorBoundary';
+import { initTelemetry } from './utils/telemetry';
+import './styles/design-system.css';  // Design tokens & colors
+import './styles/PortalLayout.css';   // Portal layout
+import './styles/index.css';          // Reset & base styles
+import './styles.css';                // Tailwind & utilities
+import 'ol/ol.css';                   // OpenLayers CSS
+
+initTelemetry();
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
@@ -12,6 +17,8 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <StrictMode>
-    <App />
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
   </StrictMode>,
 );

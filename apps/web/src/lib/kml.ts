@@ -4,8 +4,8 @@
  * SIRGAS 2000 / WGS84 (EPSG:4326) para interoperabilidade.
  */
 import KML from 'ol/format/KML';
-import type { Feature } from 'ol/Feature';
-import type { Geometry } from 'ol/geom';
+import type Feature from 'ol/Feature';
+import type Geometry from 'ol/geom/Geometry';
 import { transform } from 'ol/proj';
 
 const EPSG4326 = 'EPSG:4326';
@@ -52,7 +52,7 @@ export function kmlFirstPolygonToWKT(kmlString: string): string | null {
       return polygonToWKT(geom);
     }
     if (type === 'MultiPolygon') {
-      const coords = geom.getCoordinates();
+      const coords = (geom as any).getCoordinates();
       if (coords.length > 0 && coords[0].length > 0) {
         return multiPolygonFirstToWKT(coords);
       }

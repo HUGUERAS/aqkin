@@ -45,21 +45,33 @@ export default function DashboardConfluencia() {
 
   const loadProjectData = async (projectId: number) => {
     try {
-      const parcelsResponse = await apiClient.getParcels(projectId);
-      if (parcelsResponse.data) {
-        setParcels(parcelsResponse.data);
-        const geomsFromParcels = parcelsResponse.data
-          .filter((p: { geom?: unknown; geometry_wkt?: string }) => p.geom || p.geometry_wkt)
-          .map((p: { id: number; geom?: { type: string; coordinates: number[][][] }; geometry_wkt?: string; status: string; nome_cliente?: string }) => ({
-            id: String(p.id),
-            geojson: p.geom,
-            wkt: p.geometry_wkt,
-            type: (p.status === 'VALIDACAO_SIGEF' || p.status === 'FINALIZADO' ? 'oficial' : 'rascunho') as const,
-            label: p.nome_cliente,
-          }));
+      const parcelsResponse = await apiClient.getParcels(String(projectId));
+      if (Array.isArray(parcelsResponse.data)) {
+        setParcels(parcelsResponse.data as unknown as Parcel[]);
+        interface Parcel {
+          id: number;
+          geom?: { type: string; coordinates: number[][][] };
+          geometry_wkt?: string;
+          status: string;
+          nome_cliente?: string;
+        }
+        const geomsFromParcels = (parcelsResponse.data as unknown as Parcel[])
+          .filter((p) => p.geom || p.geometry_wkt)
+          .map((p) => {
+            const geomType: 'oficial' | 'rascunho' = (p.status === 'VALIDACAO_SIGEF' || p.status === 'FINALIZADO') ? 'oficial' : 'rascunho';
+            return {
+              id: String(p.id),
+              geojson: p.geom,
+              wkt: p.geometry_wkt,
+              type: geomType,
+              label: p.nome_cliente,
+            };
+          });
         setGeometries(geomsFromParcels);
+      } else {
+        setParcels([]);
       }
-      const overlapsResponse = await apiClient.getOverlaps(projectId);
+      const overlapsResponse = await apiClient.getOverlaps(String(projectId));
       if (overlapsResponse.data) setOverlaps(overlapsResponse.data);
     } catch (error) {
       console.error('Erro ao carregar projeto:', error);

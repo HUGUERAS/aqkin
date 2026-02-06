@@ -1,154 +1,370 @@
+import { useState, useMemo } from 'react';
+import LayerControl, { Layer } from '../../components/LayerControl';
+import DrawMapValidation from '../../components/maps/DrawMapValidation';
+import Polygon from '@arcgis/core/geometry/Polygon';
+import Graphic from '@arcgis/core/Graphic';
+import './ValidarDesenhos.css';
+
+interface LayerState {
+  [layerId: string]: {
+    visible: boolean;
+    opacity: number;
+  };
+}
+
+// Dados de exemplo para as layers (em coordenadas Brasília)
+const createExamplePolygons = () => {
+  // Coordenadas em Web Mercator (para as layers)
+  const brasiliaLon = -47.9292;
+  const brasiliaLat = -15.7801;
+
+  // Layer 1: Desenho Cliente (polígono inicial)
+  const clientPolygon = new Polygon({
+    rings: [
+      [
+        [brasiliaLon - 0.001, brasiliaLat],
+        [brasiliaLon - 0.001, brasiliaLat - 0.001],
+        [brasiliaLon, brasiliaLat - 0.001],
+        [brasiliaLon, brasiliaLat],
+        [brasiliaLon - 0.001, brasiliaLat],
+      ],
+    ],
+  });
+
+  // Layer 2: Geometria Oficial (ajustada, com snap)
+  const oficialPolygon = new Polygon({
+    rings: [
+      [
+        [brasiliaLon - 0.0009, brasiliaLat + 0.0001],
+        [brasiliaLon - 0.00095, brasiliaLat - 0.00095],
+        [brasiliaLon + 0.0001, brasiliaLat - 0.0009],
+        [brasiliaLon + 0.0001, brasiliaLat + 0.0001],
+        [brasiliaLon - 0.0009, brasiliaLat + 0.0001],
+      ],
+    ],
+  });
+
+  // Layer 3: Sobreposições (pequeno polígono de conflito)
+  const overlapPolygon = new Polygon({
+    rings: [
+      [
+        [brasiliaLon - 0.0005, brasiliaLat - 0.0003],
+        [brasiliaLon - 0.0003, brasiliaLat - 0.0003],
+        [brasiliaLon - 0.0003, brasiliaLat - 0.0005],
+        [brasiliaLon - 0.0005, brasiliaLat - 0.0005],
+        [brasiliaLon - 0.0005, brasiliaLat - 0.0003],
+      ],
+    ],
+  });
+
+  // Layer 4: Limites Compartilhados (linha)
+  const limitsLine = new Polygon({
+    rings: [
+      [
+        [brasiliaLon + 0.0001, brasiliaLat],
+        [brasiliaLon + 0.0001, brasiliaLat - 0.0005],
+        [brasiliaLon + 0.00015, brasiliaLat - 0.0005],
+        [brasiliaLon + 0.00015, brasiliaLat],
+        [brasiliaLon + 0.0001, brasiliaLat],
+      ],
+    ],
+  });
+
+  return {
+    cliente: [new Graphic({ geometry: clientPolygon })],
+    oficial: [new Graphic({ geometry: oficialPolygon })],
+    sobreposi: [new Graphic({ geometry: overlapPolygon })],
+    limites: [new Graphic({ geometry: limitsLine })],
+  };
+};
+
 export default function ValidarDesenhos() {
+  const [layerStates, setLayerStates] = useState<LayerState>({
+    cliente: { visible: true, opacity: 50 },
+    oficial: { visible: true, opacity: 100 },
+    sobreposi: { visible: false, opacity: 70 },
+    limites: { visible: false, opacity: 80 },
+  });
+
+  const examplePolygons = useMemo(() => createExamplePolygons(), []);
+
+  const [validationChecks, setValidationChecks] = useState({
+    geometria: true,
+    snap: true,
+    sobreposicoes: false,
+    area: true,
+    crs: true,
+    confrontantes: false,
+  });
+
+  const [activeTool, setActiveTool] = useState<'snap' | 'edit' | 'measure' | 'area' | null>(null);
+  const [measurements, setMeasurements] = useState<Partial<Record<'distance' | 'area', number>>>({});
+
+  // Layers para o mapa
+  const layers = useMemo(() => [
+    {
+      id: 'cliente',
+      label: 'Desenho Cliente (rascunho)',
+      color: '#999999',
+      visible: layerStates.cliente.visible,
+      opacity: layerStates.cliente.opacity,
+      graphics: examplePolygons.cliente,
+    },
+    {
+      id: 'oficial',
+      label: 'Geometria Oficial (ajustada)',
+      color: '#667eea',
+      visible: layerStates.oficial.visible,
+      opacity: layerStates.oficial.opacity,
+      graphics: examplePolygons.oficial,
+    },
+    {
+      id: 'sobreposi',
+      label: 'Sobreposições',
+      color: '#f44336',
+      visible: layerStates.sobreposi.visible,
+      opacity: layerStates.sobreposi.opacity,
+      graphics: examplePolygons.sobreposi,
+    },
+    {
+      id: 'limites',
+      label: 'Limites Compartilhados',
+      color: '#4caf50',
+      visible: layerStates.limites.visible,
+      opacity: layerStates.limites.opacity,
+      graphics: examplePolygons.limites,
+    },
+  ], [layerStates, examplePolygons]);
+
+  const handleLayerChange = (layerId: string, visible: boolean, opacity: number) => {
+    setLayerStates((prev) => ({
+      ...prev,
+      [layerId]: { visible, opacity },
+    }));
+  };
+
+  const toggleValidationCheck = (key: keyof typeof validationChecks) => {
+    setValidationChecks((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
+
+  const allChecksComplete = Object.values(validationChecks).every((v) => v);
+
+  // Layer control definitions para o LayerControl component
+  const layerControlDefs: Layer[] = layers.map(layer => ({
+    id: layer.id,
+    label: layer.label,
+    color: layer.color,
+    initialVisible: layer.visible,
+    initialOpacity: layer.opacity,
+    description: 'Visualizar no mapa',
+  }));
+
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1 style={{ marginBottom: '2rem' }}>
-        <span role="img" aria-label="Validar Desenhos">✅</span> Validar Desenhos
-      </h1>
-
-      <div style={{
-        background: 'white',
-        borderRadius: '12px',
-        padding: '2rem',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        marginBottom: '2rem'
-      }}>
-        <h2 style={{ marginBottom: '1rem' }}>
-          <span role="img" aria-label="Ferramentas de Ajuste">🔧</span> Ferramentas de Ajuste
-        </h2>
-
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
-          <button style={{
-            padding: '0.75rem 1.5rem',
-            background: '#667eea',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            fontWeight: 'bold',
-            cursor: 'pointer'
-          }}>
-            <span role="img" aria-label="Snap Tool">🧲</span> Snap Tool (0.5m)
-          </button>
-
-          <button style={{
-            padding: '0.75rem 1.5rem',
-            background: '#4caf50',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            fontWeight: 'bold',
-            cursor: 'pointer'
-          }}>
-            <span role="img" aria-label="Editar Vértices">✏️</span> Editar Vértices
-          </button>
-
-          <button style={{
-            padding: '0.75rem 1.5rem',
-            background: '#ff9800',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            fontWeight: 'bold',
-            cursor: 'pointer'
-          }}>
-            <span role="img" aria-label="Medir Distância">📏</span> Medir Distância
-          </button>
-
-          <button style={{
-            padding: '0.75rem 1.5rem',
-            background: '#9c27b0',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            fontWeight: 'bold',
-            cursor: 'pointer'
-          }}>
-            <span role="img" aria-label="Calcular Área">📐</span> Calcular Área
-          </button>
-        </div>
-
-        {/* Mapa com Layers */}
-        <div style={{
-          width: '100%',
-          height: '600px',
-          background: '#e0e0e0',
-          borderRadius: '8px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <div style={{ textAlign: 'center', color: '#666' }}>
-            <p style={{ fontSize: '3rem' }}>
-              <span role="img" aria-label="Mapa">🗺️</span>
-            </p>
-            <p style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Mapa de Validação</p>
-            <div style={{ marginTop: '1rem' }}>
-              <p><strong>Layers Ativas:</strong></p>
-              <ul style={{ listStyle: 'none', padding: 0 }}>
-                <li style={{ opacity: 0.5 }}>▢ Desenho Cliente (rascunho)</li>
-                <li style={{ color: '#667eea' }}>▢ Geometria Oficial (ajustada)</li>
-                <li style={{ color: '#f44336' }}>▢ Sobreposições</li>
-                <li style={{ color: '#4caf50' }}>▢ Limites Compartilhados</li>
-              </ul>
-            </div>
-          </div>
-        </div>
+    <div className="validar-desenhos-container">
+      {/* Header */}
+      <div className="page-header">
+        <h1>✅ Validar Desenhos</h1>
+        <p>Revise e aprove a geometria da propriedade antes de gerar o contrato</p>
       </div>
 
-      {/* Painel de Validação */}
-      <div style={{
-        background: 'white',
-        borderRadius: '12px',
-        padding: '2rem',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-      }}>
-        <h2 style={{ marginBottom: '1rem' }}>📋 Checklist de Validação</h2>
+      {/* Layout: LayerControl + Map + Validation */}
+      <div className="validar-layout">
+        {/* 1. Layer Control Panel (Left Sidebar) */}
+        <aside className="layer-panel">
+          <LayerControl layers={layerControlDefs} onLayerChange={handleLayerChange} />
+        </aside>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {[
-            { text: 'Geometria válida (sem auto-interseções)', checked: true },
-            { text: 'Snap aplicado nos vértices', checked: true },
-            { text: 'Sem sobreposições com vizinhos', checked: false },
-            { text: 'Área calculada correta', checked: true },
-            { text: 'CRS SIRGAS 2000 (EPSG:4674)', checked: true },
-            { text: 'Confrontantes identificados', checked: false },
-          ].map((item, i) => (
-            <label key={i} style={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: '1rem',
-              background: '#f5f5f5',
-              borderRadius: '6px',
-              cursor: 'pointer'
-            }}>
+        {/* 2. Map + Tools (Center) */}
+        <main className="map-section">
+          {/* Tools Toolbar */}
+          <div className="tools-toolbar">
+            <button
+              className={`tool-btn ${activeTool === 'snap' ? 'active' : ''}`}
+              onClick={() => setActiveTool(activeTool === 'snap' ? null : 'snap')}
+              title="Snap Tool: Ajustar vértices com tolerância de 0.5m"
+            >
+              <span>🧲</span> Snap (0.5m)
+            </button>
+
+            <button
+              className={`tool-btn ${activeTool === 'edit' ? 'active' : ''}`}
+              onClick={() => setActiveTool(activeTool === 'edit' ? null : 'edit')}
+              title="Editar Vértices: Mover, adicionar ou remover pontos"
+            >
+              <span>✏️</span> Editar Vértices
+            </button>
+
+            <button
+              className={`tool-btn ${activeTool === 'measure' ? 'active' : ''}`}
+              onClick={() => setActiveTool(activeTool === 'measure' ? null : 'measure')}
+              title="Medir Distância: Medição entre pontos"
+            >
+              <span>📏</span> Medir
+            </button>
+
+            <button
+              className={`tool-btn ${activeTool === 'area' ? 'active' : ''}`}
+              onClick={() => setActiveTool(activeTool === 'area' ? null : 'area')}
+              title="Calcular Área: Área do polígono em m²"
+            >
+              <span>📐</span> Calcular Área
+            </button>
+
+            {activeTool && (
+              <div className="active-tool-info">
+                <strong>Ferramenta ativa:</strong>
+                {activeTool === 'snap' && ' Ajuste os vértices com 0.5m de tolerância'}
+                {activeTool === 'edit' && ' Clique e arraste vértices para editá-los'}
+                {activeTool === 'measure' && ' Clique para medir distâncias'}
+                {activeTool === 'area' && ' Área calculada automaticamente ao editar'}
+              </div>
+            )}
+          </div>
+
+          {/* Map Container */}
+          <div className="map-container">
+            <DrawMapValidation
+              layers={layers}
+              activeTool={activeTool}
+              onMeasurement={(distance) => {
+                setMeasurements((prev) => ({ ...prev, distance }));
+              }}
+              onAreaCalculated={(area) => {
+                setMeasurements((prev) => ({ ...prev, area }));
+              }}
+              initialCenter={[-47.9292, -15.7801]}
+              initialZoom={17}
+              basemap="topo-vector"
+            />
+          </div>
+
+          {/* Measurement Results */}
+          {(measurements.distance || measurements.area) && (
+            <div className="measurement-results">
+              {measurements.distance && (
+                <div className="measurement-item">
+                  <span className="measurement-label">📏 Distância Medida:</span>
+                  <span className="measurement-value">
+                    {measurements.distance >= 1000
+                      ? (measurements.distance / 1000).toFixed(2)
+                      : measurements.distance.toFixed(2)}{' '}
+                    {measurements.distance >= 1000 ? 'km' : 'm'}
+                  </span>
+                </div>
+              )}
+              {measurements.area && (
+                <div className="measurement-item">
+                  <span className="measurement-label">📐 Área Calculada:</span>
+                  <span className="measurement-value">
+                    {(measurements.area / 10000).toFixed(2)} hectares ({measurements.area.toFixed(0)} m²)
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+        </main>
+
+        {/* 3. Validation Panel (Right Sidebar) */}
+        <aside className="validation-panel">
+          <h3>📋 Checklist de Validação</h3>
+
+          <div className="checklist">
+            <label className="check-item">
               <input
                 type="checkbox"
-                checked={item.checked}
-                style={{ marginRight: '1rem', transform: 'scale(1.5)' }}
+                checked={validationChecks.geometria}
+                onChange={() => toggleValidationCheck('geometria')}
               />
-              <span style={{
-                color: item.checked ? '#4caf50' : '#666',
-                textDecoration: item.checked ? 'line-through' : 'none'
-              }}>
-                {item.text}
+              <span className={validationChecks.geometria ? 'completed' : ''}>
+                ✓ Geometria válida (sem auto-interseções)
               </span>
             </label>
-          ))}
-        </div>
 
-        <button style={{
-          marginTop: '2rem',
-          width: '100%',
-          padding: '1rem',
-          background: '#4caf50',
-          color: 'white',
-          border: 'none',
-          borderRadius: '6px',
-          fontSize: '1.1rem',
-          fontWeight: 'bold',
-          cursor: 'pointer'
-        }}>
-          ✅ Aprovar Geometria Oficial
-        </button>
+            <label className="check-item">
+              <input
+                type="checkbox"
+                checked={validationChecks.snap}
+                onChange={() => toggleValidationCheck('snap')}
+              />
+              <span className={validationChecks.snap ? 'completed' : ''}>
+                ✓ Snap aplicado nos vértices
+              </span>
+            </label>
+
+            <label className="check-item warning">
+              <input
+                type="checkbox"
+                checked={validationChecks.sobreposicoes}
+                onChange={() => toggleValidationCheck('sobreposicoes')}
+              />
+              <span className={validationChecks.sobreposicoes ? 'completed' : ''}>
+                ✓ Sem sobreposições com vizinhos
+              </span>
+            </label>
+
+            <label className="check-item">
+              <input
+                type="checkbox"
+                checked={validationChecks.area}
+                onChange={() => toggleValidationCheck('area')}
+              />
+              <span className={validationChecks.area ? 'completed' : ''}>
+                ✓ Área calculada corretamente
+              </span>
+            </label>
+
+            <label className="check-item">
+              <input
+                type="checkbox"
+                checked={validationChecks.crs}
+                onChange={() => toggleValidationCheck('crs')}
+              />
+              <span className={validationChecks.crs ? 'completed' : ''}>
+                ✓ CRS SIRGAS 2000 (EPSG:4674)
+              </span>
+            </label>
+
+            <label className="check-item warning">
+              <input
+                type="checkbox"
+                checked={validationChecks.confrontantes}
+                onChange={() => toggleValidationCheck('confrontantes')}
+              />
+              <span className={validationChecks.confrontantes ? 'completed' : ''}>
+                ✓ Confrontantes identificados
+              </span>
+            </label>
+          </div>
+
+          {/* Status */}
+          <div className={`validation-status ${allChecksComplete ? 'complete' : 'incomplete'}`}>
+            {allChecksComplete ? (
+              <>
+                <p className="status-icon">✅</p>
+                <p className="status-text">Tudo validado!</p>
+              </>
+            ) : (
+              <>
+                <p className="status-icon">⏳</p>
+                <p className="status-text">
+                  {Object.values(validationChecks).filter((v) => v).length}/{Object.keys(validationChecks).length}
+                </p>
+              </>
+            )}
+          </div>
+
+          {/* Action Button */}
+          <button
+            className={`approve-button ${allChecksComplete ? 'enabled' : 'disabled'}`}
+            disabled={!allChecksComplete}
+            title={allChecksComplete ? 'Aprovar geometria' : 'Complete todos os itens da validação'}
+          >
+            ✅ Aprovar Geometria
+          </button>
+        </aside>
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import uuid
 
 from db import supabase
 from auth import get_perfil, require_topografo, get_current_user_required
+from routers.contracts import router as contracts_router
 
 load_dotenv()
 
@@ -954,6 +955,10 @@ def listar_pagamentos(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# Register routers
+app.include_router(contracts_router)
 
 
 if __name__ == "__main__":

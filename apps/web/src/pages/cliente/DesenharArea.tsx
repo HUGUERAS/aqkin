@@ -53,7 +53,7 @@ export default function DesenharArea() {
       apiClient
         .validarTopologia(String(loteId), geometry)
         .then((r) => {
-          if (r.data) setValidacao({ valido: r.data.valido, erros: r.data.erros || [] });
+          if (r.data) setValidacao({ valido: r.data.valido, erros: (r.data.erros as { mensagem: string }[]) || [] });
         })
         .finally(() => setValidando(false));
     }, 500);
@@ -144,7 +144,7 @@ export default function DesenharArea() {
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button
                 onClick={handleSave}
-                disabled={loading || !geometry || (validacao && !validacao.valido)}
+                disabled={loading || !geometry || (validacao ? !validacao.valido : false)}
                 className="button-primary"
               >
                 {loading ? 'Salvando...' : saved ? 'Salvo!' : 'Salvar Desenho'}

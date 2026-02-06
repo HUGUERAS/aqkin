@@ -23,6 +23,8 @@ export default function MeusVizinhos() {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    const isDevMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
     if (tokenParam) {
       apiClient.getLotePorToken(tokenParam).then((r) => {
         if (r.data && typeof r.data === 'object' && 'id' in r.data) {
@@ -40,6 +42,11 @@ export default function MeusVizinhos() {
         setError('ID de lote inválido.');
         setLoading(false);
       }
+    } else if (isDevMode) {
+      // Em modo dev, usar lote fictício para testes
+      console.log('🔓 MODO DEV: Usando lote de teste (ID: 999)');
+      setLoteId(999);
+      setError('');
     } else {
       setError('Acesso via link do topógrafo ou ?lote=ID');
       setLoading(false);

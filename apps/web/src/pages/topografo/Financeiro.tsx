@@ -95,20 +95,20 @@ export default function Financeiro() {
 
         const response = despesaEditando
           ? await apiClient.updateDespesa?.(despesaEditando.id, {
-              descricao: data.descricao,
-              valor,
-              data: data.data,
-              categoria: data.categoria,
-              observacoes: data.observacoes,
-            })
+            descricao: data.descricao,
+            valor,
+            data: data.data,
+            categoria: data.categoria,
+            observacoes: data.observacoes,
+          })
           : await apiClient.createDespesa?.({
-              projeto_id: Number(data.projeto_id),
-              descricao: data.descricao,
-              valor,
-              data: data.data,
-              categoria: data.categoria,
-              observacoes: data.observacoes,
-            });
+            projeto_id: Number(data.projeto_id),
+            descricao: data.descricao,
+            valor,
+            data: data.data,
+            categoria: data.categoria,
+            observacoes: data.observacoes,
+          });
 
         if (response?.error) throw new Error(response.error);
 

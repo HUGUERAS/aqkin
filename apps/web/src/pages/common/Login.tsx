@@ -1,5 +1,5 @@
 import { useNavigate, Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Alert, Button, Input } from '../../components/UIComponents';
 import { supabase } from '../../lib/supabase';
 import apiClient from '../../services/api';
@@ -13,8 +13,46 @@ export default function Login() {
   const [erro, setErro] = useState('');
   const [carregando, setCarregando] = useState(false);
 
+  // Auto-login em modo dev (localhost)
+  useEffect(() => {
+    const isDevMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    if (isDevMode) {
+      // Pré-preencher com credenciais de demo
+      setEmail('demo@example.com');
+      setPassword('demo123456');
+
+      // Auto-login após um pequeno delay
+      setTimeout(() => {
+        handleLoginDemo();
+      }, 500);
+    }
+  }, []);
+
+  const handleLoginDemo = async () => {
+    setErro('');
+    setCarregando(true);
+
+    try {
+      // Em modo dev, bypass direto
+      console.log('🔓 MODO DEV: Bypass de autenticação ativado');
+      apiClient.setToken('dev-token-' + Date.now());
+      navigate('/cliente');
+    } catch (err: unknown) {
+      console.error('Erro no login demo:', err);
+      setCarregando(false);
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Em modo dev, usar bypass
+    const isDevMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    if (isDevMode) {
+      return handleLoginDemo();
+    }
+
     setErro('');
     setCarregando(true);
 
@@ -27,12 +65,14 @@ export default function Login() {
 
       apiClient.setToken(token);
 
-      // Verificar/criar perfil como proprietário
-      const perfilResponse = await apiClient.getPerfilMe();
-
-      if (perfilResponse.error || !perfilResponse.data) {
-        // Primeiro acesso: definir como proprietário
-        await apiClient.setPerfilRole('proprietario');
+      // Verificar/criar perfil como proprietário (não-bloqueante)
+      try {
+        const perfilResponse = await apiClient.getPerfilMe();
+        if (perfilResponse.error || !perfilResponse.data) {
+          await apiClient.setPerfilRole('proprietario');
+        }
+      } catch (perfilErr) {
+        console.warn('Erro ao configurar perfil, mas continuando:', perfilErr);
       }
 
       // Sempre redirecionar para área do cliente
@@ -51,6 +91,12 @@ export default function Login() {
         <div className="auth-card">
           <h2 className="auth-title">Entrar</h2>
           <p className="auth-subtitle">Acesse sua área de regularização</p>
+
+          {(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
+            <Alert type="info" title="Modo Desenvolvimento">
+              ⚡ Login automático em 1 segundo... Se não redirecionar, clique em "Entrar"
+            </Alert>
+          )}
 
           {erro && (
             <Alert type="error" title="Erro">

@@ -21,6 +21,8 @@ export default function DesenharArea() {
 
   // Carregar lote por token ou loteId
   useEffect(() => {
+    const isDevMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
     if (tokenParam) {
       apiClient.getLotePorToken(tokenParam).then((r) => {
         if (r.data && typeof r.data === 'object' && 'id' in r.data) {
@@ -34,6 +36,11 @@ export default function DesenharArea() {
       const id = parseInt(loteIdParam, 10);
       if (!isNaN(id)) setLoteId(id);
       else setError('ID de lote inválido.');
+    } else if (isDevMode) {
+      // Em modo dev, usar lote fictício para testes
+      console.log('🔓 MODO DEV: Usando lote de teste (ID: 999)');
+      setLoteId(999);
+      setError('');
     } else {
       setError('Acesso via link do topógrafo ou ?lote=ID');
     }

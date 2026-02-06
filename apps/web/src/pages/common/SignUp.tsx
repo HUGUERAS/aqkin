@@ -77,19 +77,23 @@ export default function SignUp() {
             }
             if (!authData.user) throw new Error('Erro ao criar usuário');
 
-            // 2. Definir como proprietário no backend
+            // 2. Definir como proprietário no backend (não-bloqueante)
             const token = authData.session?.access_token;
             if (token) {
-                apiClient.setToken(token);
-                await apiClient.setPerfilRole('proprietario');
-
-                // 3. Criar perfil do usuário
                 try {
-                    await supabase.auth.updateUser({
-                        data: { display_name: formData.name },
-                    });
-                } catch (err) {
-                    console.warn('Aviso ao atualizar nome:', err);
+                    apiClient.setToken(token);
+                    await apiClient.setPerfilRole('proprietario');
+
+                    // 3. Criar perfil do usuário
+                    try {
+                        await supabase.auth.updateUser({
+                            data: { display_name: formData.name },
+                        });
+                    } catch (err) {
+                        console.warn('Aviso ao atualizar nome:', err);
+                    }
+                } catch (perfilErr) {
+                    console.warn('Erro ao configurar perfil, mas continuando:', perfilErr);
                 }
             }
 

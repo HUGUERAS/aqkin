@@ -105,3 +105,72 @@ export const validateOrcamentoResponse = (data: unknown) => {
 export const validateOrcamentosResponse = (data: unknown) => {
     return z.array(OrcamentoSchema).safeParse(data);
 };
+
+// ========== DESPESA SCHEMAS ==========
+export const DespesaCategorySchema = z.enum([
+    'MATERIAL',
+    'SERVICO',
+    'TRANSPORTE',
+    'OUTROS',
+]);
+
+export const DespesaSchema = z.object({
+    id: z.number(),
+    projeto_id: z.number(),
+    descricao: z.string().min(3, 'Descrição deve ter 3+ caracteres'),
+    valor: z.number().positive('Valor deve ser positivo').max(9999999),
+    data: z.string().date(),
+    categoria: DespesaCategorySchema.default('OUTROS'),
+    observacoes: z.string().optional().nullable(),
+    criado_em: z.string().datetime().optional(),
+    atualizado_em: z.string().datetime().optional(),
+});
+
+export const DespesaCreateSchema = z.object({
+    projeto_id: z.number(),
+    descricao: z.string().min(3, 'Descrição obrigatória (3+ chars)'),
+    valor: z.number().positive('Valor deve ser > 0').max(9999999),
+    data: z.string().date(),
+    categoria: DespesaCategorySchema.default('OUTROS'),
+    observacoes: z.string().max(500).optional(),
+});
+
+export const DespesaUpdateSchema = DespesaCreateSchema.partial();
+
+export type Despesa = z.infer<typeof DespesaSchema>;
+export type DespesaCategory = z.infer<typeof DespesaCategorySchema>;
+
+// ========== PAGAMENTO SCHEMAS ==========
+export const PagamentoStatusSchema = z.enum([
+    'PAGO',
+    'PROCESSANDO',
+    'PENDENTE',
+    'FALHA',
+]);
+
+export const PagamentoSchema = z.object({
+    id: z.number(),
+    lote_id: z.number(),
+    valor_total: z.number().positive(),
+    valor_pago: z.number().nonnegative(),
+    status: PagamentoStatusSchema,
+    gateway_id: z.string().optional().nullable(),
+    data_pagamento: z.string().datetime().optional().nullable(),
+    criado_em: z.string().datetime().optional(),
+});
+
+export type Pagamento = z.infer<typeof PagamentoSchema>;
+export type PagamentoStatus = z.infer<typeof PagamentoStatusSchema>;
+
+// ========== DESPESA VALIDATION HELPERS ==========
+export const validateDespesaResponse = (data: unknown) => {
+    return DespesaSchema.safeParse(data);
+};
+
+export const validateDespesasResponse = (data: unknown) => {
+    return z.array(DespesaSchema).safeParse(data);
+};
+
+export const validatePagamentosResponse = (data: unknown) => {
+    return z.array(PagamentoSchema).safeParse(data);
+};

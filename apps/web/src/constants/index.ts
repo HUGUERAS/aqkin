@@ -113,6 +113,74 @@ export const UI_CONFIG = {
     PAGINATION_MAX_LIMIT: 100,
 } as const;
 
+// ========== DESPESA CATEGORIES ==========
+export const DESPESA_CATEGORIES = {
+    MATERIAL: {
+        label: 'Material',
+        icon: '🛠️',
+        color: '#3b82f6',
+        backgroundColor: '#eff6ff',
+        textColor: '#1e40af',
+    },
+    SERVICO: {
+        label: 'Serviço',
+        icon: '👷',
+        color: '#8b5cf6',
+        backgroundColor: '#faf5ff',
+        textColor: '#5b21b6',
+    },
+    TRANSPORTE: {
+        label: 'Transporte',
+        icon: '🚚',
+        color: '#f59e0b',
+        backgroundColor: '#fffbeb',
+        textColor: '#92400e',
+    },
+    OUTROS: {
+        label: 'Outros',
+        icon: '📋',
+        color: '#6b7280',
+        backgroundColor: '#f9fafb',
+        textColor: '#374151',
+    },
+} as const;
+
+export type DespesaCategoryKey = keyof typeof DESPESA_CATEGORIES;
+
+// ========== PAGAMENTO STATUSES ==========
+export const PAGAMENTO_STATUSES = {
+    PAGO: {
+        label: 'Pago',
+        icon: '✅',
+        color: '#4caf50',
+        backgroundColor: '#e8f5e9',
+        textColor: '#1b5e20',
+    },
+    PROCESSANDO: {
+        label: 'Processando',
+        icon: '⏳',
+        color: '#ff9800',
+        backgroundColor: '#fff3e0',
+        textColor: '#e65100',
+    },
+    PENDENTE: {
+        label: 'Pendente',
+        icon: '⏰',
+        color: '#f5c842',
+        backgroundColor: '#fffbea',
+        textColor: '#5d4e00',
+    },
+    FALHA: {
+        label: 'Falha',
+        icon: '❌',
+        color: '#f44336',
+        backgroundColor: '#ffebee',
+        textColor: '#b71c1c',
+    },
+} as const;
+
+export type PagamentoStatusKey = keyof typeof PAGAMENTO_STATUSES;
+
 // ========== ERROR MESSAGES ==========
 export const ERROR_MESSAGES = {
     REQUIRED_FIELD: (field: string) => `${field} é obrigatório`,

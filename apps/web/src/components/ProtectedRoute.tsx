@@ -3,7 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  allowedRole: 'topografo' | 'proprietario';
+  allowedRole: 'topografo' | 'proprietario' | 'vizinho';
 }
 
 export default function ProtectedRoute({ children, allowedRole }: ProtectedRouteProps) {
@@ -16,17 +16,17 @@ export default function ProtectedRoute({ children, allowedRole }: ProtectedRoute
   useEffect(() => {
     // --- BYPASS TEMPORÁRIO PARA VISUALIZAÇÃO SEM BACKEND ---
     console.warn('⚠️ MODO DE DESENVOLVIMENTO: Authentication Bypass Ativado');
+    console.log(`🔓 DEV MODE: Simulando role = ${allowedRole}`);
 
     // Simula um delay de rede para parecer real
     const timer = setTimeout(() => {
       setIsAuthenticated(true);
 
-      // Todos usuários são proprietario por padrão
-      setUserRole('proprietario');
+      // Em dev, usar a role que a rota exige (allowedRole)
+      setUserRole(allowedRole);
 
-      // TODO: Buscar do backend se usuário tem plano premium
-      // Por enquanto, simula que não tem premium
-      setHasPremium(false);
+      // Topógrafos têm premium, proprietários não
+      setHasPremium(allowedRole === 'topografo');
 
       setIsLoading(false);
     }, 500);

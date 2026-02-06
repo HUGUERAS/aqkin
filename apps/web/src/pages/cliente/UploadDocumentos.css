@@ -1,0 +1,78 @@
+.documentos-container {
+  min-height: 100vh;
+  padding: 2rem;
+  background: #f5f5f5;
+}
+
+.documentos-card {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.documentos-header h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.6rem;
+  color: #111827;
+}
+
+.documentos-header p {
+  margin: 0 0 1.5rem 0;
+  color: #6b7280;
+}
+
+.documentos-dropzone {
+  border: 2px dashed #d1d5db;
+  border-radius: 10px;
+  padding: 3rem 2rem;
+  text-align: center;
+  background: #fafafa;
+  cursor: pointer;
+  margin-bottom: 2rem;
+}
+
+.documentos-icon {
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+.documentos-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0.75rem 0 0.5rem 0;
+  color: #1f2937;
+}
+
+.documentos-subtitle {
+  margin: 0;
+  color: #6b7280;
+}
+
+.documentos-list h3 {
+  margin: 0 0 1rem 0;
+  color: #111827;
+}
+
+.documentos-empty {
+  padding: 2rem;
+  background: #f3f4f6;
+  border-radius: 8px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.documentos-needed {
+  margin: 0;
+  padding-left: 1.2rem;
+  line-height: 1.8;
+}
+
+@media (max-width: 768px) {
+  .documentos-container {
+    padding: 1.5rem;
+  }
+
+  .documentos-card {
+    padding: 1.5rem;
+  }
+}

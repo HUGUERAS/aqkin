@@ -1,0 +1,90 @@
+.vizinhos-container {
+  min-height: 100vh;
+  padding: 2rem;
+  background: #f5f5f5;
+}
+
+.vizinhos-card {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.vizinhos-header h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.6rem;
+  color: #1f2937;
+}
+
+.vizinhos-header p {
+  margin: 0 0 1.5rem 0;
+  color: #6b7280;
+}
+
+.vizinhos-muted {
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.vizinhos-form {
+  display: grid;
+  grid-template-columns: 1fr 160px auto;
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 2rem;
+}
+
+.vizinhos-form-action {
+  margin-bottom: 0.5rem;
+}
+
+.vizinhos-list h3 {
+  margin: 0 0 1rem 0;
+  color: #111827;
+}
+
+.vizinhos-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.vizinhos-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #f3f4f6;
+  border-radius: 8px;
+}
+
+.vizinhos-side {
+  margin-left: 0.75rem;
+  color: #6b7280;
+}
+
+.vizinhos-empty {
+  padding: 2rem;
+  background: #f3f4f6;
+  border-radius: 8px;
+  text-align: center;
+  color: #6b7280;
+}
+
+@media (max-width: 768px) {
+  .vizinhos-container {
+    padding: 1.5rem;
+  }
+
+  .vizinhos-card {
+    padding: 1.5rem;
+  }
+
+  .vizinhos-form {
+    grid-template-columns: 1fr;
+  }
+
+  .vizinhos-form-action {
+    width: 100%;
+  }
+}

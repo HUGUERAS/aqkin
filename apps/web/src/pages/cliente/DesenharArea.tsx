@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import DrawMapEsri from '../../components/maps/DrawMapEsri';
+import { Alert, Button } from '../../components/UIComponents';
 import apiClient from '../../services/api';
 import '../../styles/PortalLayout.css';
+import './DesenharArea.css';
 
 export default function DesenharArea() {
   const [searchParams] = useSearchParams();
@@ -105,50 +107,36 @@ export default function DesenharArea() {
 
         {!loteId && !error && <p>⏳ Carregando...</p>}
         {error && (
-          <div style={{
-            padding: '0.75rem',
-            background: '#ffebee',
-            borderRadius: '6px',
-            color: '#c62828',
-            marginBottom: '1rem',
-            fontSize: '0.9rem'
-          }}>
+          <Alert type="error" title="Erro">
             {error}
-          </div>
+          </Alert>
         )}
 
         {loteId && (
           <>
-            {validando && <p style={{ color: '#666', marginBottom: '0.5rem' }}>⏳ Validando...</p>}
+            {validando && <p className="draw-area-status">Validando...</p>}
             {validacao && !validando && (
-              <div style={{
-                marginBottom: '1rem',
-                padding: '0.75rem',
-                borderRadius: '6px',
-                background: validacao.valido ? '#e8f5e9' : '#ffebee',
-                color: validacao.valido ? '#2e7d32' : '#c62828',
-                fontSize: '0.9rem'
-              }}>
+              <Alert type={validacao.valido ? 'success' : 'error'} title={validacao.valido ? 'Desenho válido' : 'Erros encontrados'}>
                 {validacao.valido ? (
-                  <strong>✅ Desenho válido!</strong>
+                  <p>Pronto para salvar a geometria.</p>
                 ) : (
-                  <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
+                  <ul className="draw-area-error-list">
                     {validacao.erros.map((e, i) => (
                       <li key={i}>{e.mensagem}</li>
                     ))}
                   </ul>
                 )}
-              </div>
+              </Alert>
             )}
 
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button
+            <div className="draw-area-actions">
+              <Button
                 onClick={handleSave}
                 disabled={loading || !geometry || (validacao ? !validacao.valido : false)}
-                className="button-primary"
+                isLoading={loading}
               >
-                {loading ? 'Salvando...' : saved ? 'Salvo!' : 'Salvar Desenho'}
-              </button>
+                {saved ? 'Salvo!' : 'Salvar Desenho'}
+              </Button>
             </div>
           </>
         )}

@@ -9,6 +9,7 @@ import { supabase } from '../../lib/supabase';
 import { Alert, Button, Input } from '../../components/UIComponents';
 import Logo from '../../components/Logo';
 import Icon from '../../components/Icon';
+import './AuthPages.css';
 
 export default function ResetPassword() {
     const navigate = useNavigate();
@@ -63,43 +64,38 @@ export default function ResetPassword() {
 
     if (!sessionValid) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
-                <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 text-center">
-                    <Icon name="alert" size="xl" color="error" className="mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Link Inválido</h2>
-                    <p className="text-gray-600 mb-6">
-                        Este link de recuperação expirou ou é inválido. Solicite um novo link.
-                    </p>
-                    <Button
-                        variant="primary"
-                        onClick={() => navigate('/forgot-password')}
-                        className="w-full"
-                    >
-                        Solicitar Novo Link
-                    </Button>
+            <div className="auth-shell">
+                <div className="auth-content">
+                    <div className="auth-card auth-card--compact">
+                        <Icon name="alert" size="xl" color="error" className="auth-warning-icon" />
+                        <h2 className="auth-title">Link Inválido</h2>
+                        <p className="auth-subtitle">
+                            Este link de recuperação expirou ou é inválido. Solicite um novo link.
+                        </p>
+                        <Button
+                            variant="primary"
+                            onClick={() => navigate('/forgot-password')}
+                        >
+                            Solicitar Novo Link
+                        </Button>
+                    </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
-            <div className="w-full max-w-md">
-                {/* Logo */}
-                <div className="flex justify-center mb-8">
+        <div className="auth-shell">
+            <div className="auth-content">
+                <div className="auth-logo">
                     <Logo size="lg" variant="icon" />
                 </div>
 
-                {/* Card */}
-                <div className="bg-white rounded-2xl shadow-xl p-8">
+                <div className="auth-card">
                     {!success ? (
                         <>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-2 text-center">
-                                Nova Senha
-                            </h1>
-                            <p className="text-gray-600 text-center mb-6">
-                                Digite uma nova senha para sua conta
-                            </p>
+                            <h1 className="auth-title">Nova Senha</h1>
+                            <p className="auth-subtitle">Digite uma nova senha para sua conta</p>
 
                             {error && (
                                 <Alert type="error" title="Erro">
@@ -107,7 +103,7 @@ export default function ResetPassword() {
                                 </Alert>
                             )}
 
-                            <form onSubmit={handleSubmit} className="space-y-4">
+                            <form onSubmit={handleSubmit} className="auth-form">
                                 <Input
                                     type="password"
                                     placeholder="Nova senha"
@@ -133,7 +129,6 @@ export default function ResetPassword() {
                                     type="submit"
                                     variant="primary"
                                     size="lg"
-                                    className="w-full"
                                     disabled={loading}
                                     isLoading={loading}
                                 >
@@ -141,10 +136,10 @@ export default function ResetPassword() {
                                 </Button>
                             </form>
 
-                            <div className="mt-6">
+                            <div className="auth-action-row">
                                 <button
                                     onClick={() => navigate('/login')}
-                                    className="w-full flex items-center justify-center gap-2 text-blue-600 hover:text-blue-800 font-semibold transition-colors"
+                                    className="auth-text-button"
                                 >
                                     <Icon name="back" size="sm" />
                                     Voltar ao Login
@@ -152,19 +147,15 @@ export default function ResetPassword() {
                             </div>
                         </>
                     ) : (
-                        <div className="text-center">
-                                <div className="mb-4 flex justify-center">
-                                    <div className="rounded-full bg-green-100 p-4">
-                                        <Icon name="check" size="xl" color="success" />
-                                    </div>
-                                </div>
-                                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                                    Senha Redefinida!
-                                </h2>
-                                <p className="text-gray-600">
-                                    Redirecionando para login...
-                                </p>
+                        <div className="auth-success">
+                            <div className="auth-success-icon">
+                                <span>
+                                    <Icon name="check" size="xl" color="success" />
+                                </span>
                             </div>
+                            <h2 className="auth-title">Senha Redefinida!</h2>
+                            <p className="auth-subtitle">Redirecionando para login...</p>
+                        </div>
                     )}
                 </div>
             </div>

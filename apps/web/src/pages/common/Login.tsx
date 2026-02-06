@@ -1,7 +1,9 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useState } from 'react';
+import { Alert, Button, Input } from '../../components/UIComponents';
 import { supabase } from '../../lib/supabase';
 import apiClient from '../../services/api';
+import './AuthPages.css';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -44,119 +46,67 @@ export default function Login() {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-    }}>
-      <div style={{
-        background: 'white',
-        padding: '3rem',
-        borderRadius: '16px',
-        boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
-        width: '100%',
-        maxWidth: '420px'
-      }}>
-        <h2 style={{ marginBottom: '0.5rem', textAlign: 'center', fontSize: '1.8rem', color: '#1a202c' }}>
-          🔑 Entrar
-        </h2>
-        <p style={{ marginBottom: '2rem', textAlign: 'center', color: '#718096', fontSize: '0.95rem' }}>
-          Acesse sua área de regularização
-        </p>
+    <div className="auth-shell">
+      <div className="auth-content">
+        <div className="auth-card">
+          <h2 className="auth-title">Entrar</h2>
+          <p className="auth-subtitle">Acesse sua área de regularização</p>
 
-        {erro && (
-          <div style={{ padding: '0.75rem', background: '#fee', color: '#c00', borderRadius: '6px', fontSize: '0.9rem' }}>
-            {erro}
-          </div>
-        )}
-        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div>
-            <label htmlFor="email" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#2d3748' }}>
-              Email
-            </label>
-            <input
+          {erro && (
+            <Alert type="error" title="Erro">
+              {erro}
+            </Alert>
+          )}
+
+          <form onSubmit={handleLogin} className="auth-form">
+            <Input
               id="email"
               name="email"
               autoComplete="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #e2e8f0',
-                borderRadius: '8px',
-                fontSize: '1rem'
-              }}
+              label="Email"
               required
             />
-          </div>
 
-          <div>
-            <label htmlFor="password" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#2d3748' }}>
-              Senha
-            </label>
-            <input
+            <Input
               id="password"
               name="password"
               autoComplete="current-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #e2e8f0',
-                borderRadius: '8px',
-                fontSize: '1rem'
-              }}
+              label="Senha"
               required
             />
+
+            <Button
+              type="submit"
+              disabled={carregando}
+              isLoading={carregando}
+              className="auth-button"
+            >
+              Entrar
+            </Button>
+          </form>
+
+          <div className="auth-banner">
+            <strong>Quer acesso às ferramentas profissionais?</strong>
+            <div>Upgrade para Premium após login</div>
           </div>
 
-          <button
-            type="submit"
-            disabled={carregando}
-            style={{
-              padding: '1rem',
-              background: carregando ? '#a0aec0' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '1rem',
-              fontWeight: 'bold',
-              cursor: carregando ? 'not-allowed' : 'pointer',
-              marginTop: '1rem',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            {carregando ? '⏳ Entrando...' : '🚀 Entrar'}
-          </button>
-        </form>
+          <div className="auth-links">
+            <Link to="/forgot-password">Esqueci a Senha</Link>
+            <span>•</span>
+            <Link to="/signup">Criar Conta</Link>
+          </div>
 
-        <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#fef6e7', border: '1px solid #f6d365', borderRadius: '8px', fontSize: '0.85rem', color: '#744210', textAlign: 'center' }}>
-          ⭐ <strong>Quer acesso às ferramentas profissionais?</strong><br />
-          <span style={{ fontSize: '0.8rem' }}>Upgrade para Premium após login</span>
+          <div className="auth-backlink">
+            <Link to="/">Voltar para Home</Link>
+          </div>
         </div>
-
-        <p style={{ marginTop: '1.5rem', textAlign: 'center', color: '#718096', fontSize: '0.9rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-          <a href="/forgot-password" style={{ color: '#667eea', textDecoration: 'none' }}>
-            Esqueci a Senha
-          </a>
-          <span>•</span>
-          <a href="/signup" style={{ color: '#667eea', textDecoration: 'none' }}>
-            Criar Conta
-          </a>
-        </p>
-
-        <p style={{ marginTop: '1rem', textAlign: 'center' }}>
-          <a href="/" style={{ color: '#667eea', textDecoration: 'none', fontSize: '0.9rem' }}>
-            ← Voltar para Home
-          </a>
-        </p>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 }

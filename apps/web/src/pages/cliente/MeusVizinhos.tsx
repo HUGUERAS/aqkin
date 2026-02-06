@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { Alert, Button, Card, Input, Select } from '../../components/UIComponents';
 import apiClient from '../../services/api';
+import './MeusVizinhos.css';
 
 interface Vizinho {
   id: number;
@@ -74,148 +76,76 @@ export default function MeusVizinhos() {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <div
-        style={{
-          maxWidth: '800px',
-          margin: '0 auto',
-          background: 'white',
-          borderRadius: '12px',
-          padding: '2rem',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        }}
-      >
-        <h1 style={{ marginBottom: '1rem' }}>👥 Quem são seus Vizinhos?</h1>
-        <p style={{ color: '#666', marginBottom: '2rem' }}>
-          Informe o nome dos vizinhos e em qual lado da sua propriedade eles ficam.
-        </p>
+    <div className="vizinhos-container">
+      <Card className="vizinhos-card" hover={false}>
+        <div className="vizinhos-header">
+          <h1>Quem são seus Vizinhos?</h1>
+          <p>Informe o nome dos vizinhos e em qual lado da sua propriedade eles ficam.</p>
+        </div>
 
         {error && (
-          <div
-            style={{
-              padding: '1rem',
-              background: '#ffebee',
-              borderRadius: '6px',
-              color: '#c62828',
-              marginBottom: '1rem',
-            }}
-          >
+          <Alert type="error" title="Erro">
             {error}
-          </div>
+          </Alert>
         )}
 
-        {!loteId && !error && <p style={{ color: '#666' }}>⏳ Carregando...</p>}
+        {!loteId && !error && <p className="vizinhos-muted">Carregando...</p>}
 
         {loteId && (
           <>
-            <form
-              onSubmit={handleAdd}
-              style={{
-                display: 'flex',
-                gap: '1rem',
-                marginBottom: '2rem',
-                flexWrap: 'wrap',
-              }}
-            >
-              <input
-                type="text"
+            <form onSubmit={handleAdd} className="vizinhos-form">
+              <Input
+                label="Nome do vizinho"
                 placeholder="Nome do vizinho"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
-                style={{
-                  flex: '1 1 200px',
-                  padding: '0.75rem',
-                  border: '1px solid #ddd',
-                  borderRadius: '6px',
-                  fontSize: '1rem',
-                }}
                 required
               />
 
-              <select
+              <Select
+                label="Lado"
                 value={lado}
                 onChange={(e) => setLado(e.target.value)}
-                style={{
-                  flex: '0 1 150px',
-                  padding: '0.75rem',
-                  border: '1px solid #ddd',
-                  borderRadius: '6px',
-                  fontSize: '1rem',
-                }}
-              >
-                <option value="NORTE">Norte</option>
-                <option value="SUL">Sul</option>
-                <option value="LESTE">Leste</option>
-                <option value="OESTE">Oeste</option>
-              </select>
+                options={[
+                  { value: 'NORTE', label: 'Norte' },
+                  { value: 'SUL', label: 'Sul' },
+                  { value: 'LESTE', label: 'Leste' },
+                  { value: 'OESTE', label: 'Oeste' },
+                ]}
+              />
 
-              <button
-                type="submit"
-                style={{
-                  flex: '0 1 auto',
-                  padding: '0.75rem 1.5rem',
-                  background: '#667eea',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontSize: '1rem',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                }}
-              >
-                ➕ Adicionar
-              </button>
+              <div className="vizinhos-form-action">
+                <Button type="submit" variant="primary">
+                  Adicionar
+                </Button>
+              </div>
             </form>
 
             {loading ? (
-              <p>⏳ Carregando vizinhos...</p>
+              <p className="vizinhos-muted">Carregando vizinhos...</p>
             ) : vizinhos.length > 0 ? (
-              <div>
-                <h3 style={{ marginBottom: '1rem' }}>Vizinhos cadastrados:</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div className="vizinhos-list">
+                <h3>Vizinhos cadastrados:</h3>
+                <div className="vizinhos-items">
                   {vizinhos.map((v) => (
-                    <div
-                      key={v.id}
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '1rem',
-                        background: '#f5f5f5',
-                        borderRadius: '6px',
-                      }}
-                    >
+                    <div key={v.id} className="vizinhos-item">
                       <div>
                         <strong>{v.nome_vizinho}</strong>
-                        <span style={{ marginLeft: '1rem', color: '#666' }}>{v.lado}</span>
+                        <span className="vizinhos-side">{v.lado}</span>
                       </div>
-                      <button
+                      <Button
+                        variant="danger"
+                        size="sm"
                         onClick={() => handleRemove(v.id)}
-                        style={{
-                          background: '#f44336',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          padding: '0.5rem 1rem',
-                          cursor: 'pointer',
-                        }}
                       >
-                        🗑️ Remover
-                      </button>
+                        Remover
+                      </Button>
                     </div>
                   ))}
                 </div>
               </div>
             ) : (
-              <div
-                style={{
-                  padding: '2rem',
-                  background: '#f5f5f5',
-                  borderRadius: '6px',
-                  textAlign: 'center',
-                  color: '#666',
-                }}
-              >
+              <div className="vizinhos-empty">
                 <p>Nenhum vizinho cadastrado ainda.</p>
                 <p>Adicione pelo menos os vizinhos principais.</p>
               </div>
@@ -223,22 +153,11 @@ export default function MeusVizinhos() {
           </>
         )}
 
-        <div
-          style={{
-            marginTop: '2rem',
-            padding: '1rem',
-            background: '#fff3cd',
-            borderRadius: '6px',
-            border: '1px solid #ffc107',
-          }}
-        >
-          <h3>⚠️ Importante:</h3>
-          <p style={{ margin: '0.5rem 0' }}>
-            Se o vizinho também estiver cadastrando sua área no sistema, o topógrafo
-            poderá <strong>vincular automaticamente</strong> as duas propriedades.
-          </p>
-        </div>
-      </div>
+        <Alert type="warning" title="Importante">
+          Se o vizinho também estiver cadastrando sua área no sistema, o topógrafo poderá
+          <strong> vincular automaticamente</strong> as duas propriedades.
+        </Alert>
+      </Card>
     </div>
   );
 }

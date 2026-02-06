@@ -9,6 +9,7 @@ import { supabase } from '../../lib/supabase';
 import { Alert, Button, Input } from '../../components/UIComponents';
 import Logo from '../../components/Logo';
 import Icon from '../../components/Icon';
+import './AuthPages.css';
 
 export default function ForgotPassword() {
     const navigate = useNavigate();
@@ -39,21 +40,17 @@ export default function ForgotPassword() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
-            <div className="w-full max-w-md">
-                {/* Logo */}
-                <div className="flex justify-center mb-8">
+        <div className="auth-shell">
+            <div className="auth-content">
+                <div className="auth-logo">
                     <Logo size="lg" variant="icon" />
                 </div>
 
-                {/* Card */}
-                <div className="bg-white rounded-2xl shadow-xl p-8">
+                <div className="auth-card">
                     {!sent ? (
                         <>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-2 text-center">
-                                Recuperar Senha
-                            </h1>
-                            <p className="text-gray-600 text-center mb-6">
+                            <h1 className="auth-title">Recuperar Senha</h1>
+                            <p className="auth-subtitle">
                                 Digite seu email para receber um link de recuperação
                             </p>
 
@@ -63,7 +60,7 @@ export default function ForgotPassword() {
                                 </Alert>
                             )}
 
-                            <form onSubmit={handleSubmit} className="space-y-4">
+                            <form onSubmit={handleSubmit} className="auth-form">
                                 <Input
                                     type="email"
                                     placeholder="seu@email.com"
@@ -78,7 +75,6 @@ export default function ForgotPassword() {
                                     type="submit"
                                     variant="primary"
                                     size="lg"
-                                    className="w-full"
                                     disabled={loading}
                                     isLoading={loading}
                                 >
@@ -86,10 +82,10 @@ export default function ForgotPassword() {
                                 </Button>
                             </form>
 
-                            <div className="mt-6 flex gap-2">
+                            <div className="auth-action-row">
                                 <button
                                     onClick={() => navigate('/login')}
-                                    className="flex-1 flex items-center justify-center gap-2 text-blue-600 hover:text-blue-800 font-semibold transition-colors"
+                                    className="auth-text-button"
                                 >
                                     <Icon name="back" size="sm" />
                                     Voltar ao Login
@@ -97,42 +93,38 @@ export default function ForgotPassword() {
                             </div>
                         </>
                     ) : (
-                        <div className="text-center">
-                                <div className="mb-4 flex justify-center">
-                                    <div className="rounded-full bg-green-100 p-4">
-                                        <Icon name="check" size="xl" color="success" />
-                                    </div>
-                                </div>
-                                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                                    Email Enviado com Sucesso!
-                                </h2>
-                                <p className="text-gray-600 mb-4">
-                                    Clique no link enviado para <strong>{email}</strong> para redefinir sua senha
-                                </p>
-                                <p className="text-gray-500 text-sm mb-6">
-                                    Verifique também a pasta de spam se não encontrar o email
-                                </p>
-
-                                <button
-                                    onClick={() => navigate('/login')}
-                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-                                >
-                                    <Icon name="back" size="sm" />
-                                    Voltar ao Login
-                                </button>
+                        <div className="auth-success">
+                            <div className="auth-success-icon">
+                                <span>
+                                    <Icon name="check" size="xl" color="success" />
+                                </span>
                             </div>
+                            <h2 className="auth-title">Email Enviado com Sucesso!</h2>
+                            <p className="auth-subtitle">
+                                Clique no link enviado para <strong>{email}</strong> para redefinir sua senha
+                            </p>
+                            <p className="auth-subtitle">
+                                Verifique também a pasta de spam se não encontrar o email
+                            </p>
+
+                            <Button
+                                variant="primary"
+                                size="lg"
+                                onClick={() => navigate('/login')}
+                            >
+                                <Icon name="back" size="sm" />
+                                Voltar ao Login
+                            </Button>
+                        </div>
                     )}
                 </div>
 
-                {/* Help Text */}
-                <p className="text-center text-gray-600 text-sm mt-6">
+                <p className="auth-help">
                     Não consegue acessar seu email?{' '}
                     <button
                         onClick={() => {
-                            // TODO: Open support chat or contact form
                             alert('Entre em contato com o suporte: suporte@ativoreal.com');
                         }}
-                        className="text-blue-600 hover:text-blue-800 font-semibold transition-colors"
                     >
                         Contate o Suporte
                     </button>

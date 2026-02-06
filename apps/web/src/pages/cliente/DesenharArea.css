@@ -1,0 +1,19 @@
+.draw-area-status {
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.draw-area-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.draw-area-error-list {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.draw-area-error-list li {
+  margin-bottom: 0.25rem;
+}

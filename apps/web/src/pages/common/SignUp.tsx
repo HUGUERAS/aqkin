@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { Alert, Button, Input } from '../../components/UIComponents';
 import { supabase } from '../../lib/supabase';
 import apiClient from '../../services/api';
+import './AuthPages.css';
 
 export default function SignUp() {
     const navigate = useNavigate();
@@ -113,185 +115,103 @@ export default function SignUp() {
     };
 
     return (
-        <div style={{
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            padding: '20px'
-        }}>
-            <div style={{
-                background: 'white',
-                padding: '3rem',
-                borderRadius: '16px',
-                boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
-                width: '100%',
-                maxWidth: '480px'
-            }}>
-                <h2 style={{ marginBottom: '0.5rem', textAlign: 'center', fontSize: '1.8rem', color: '#1a202c' }}>
-                    ➕ Criar Conta
-                </h2>
-                <p style={{ marginBottom: '2rem', textAlign: 'center', color: '#718096', fontSize: '0.95rem' }}>
-                    Comece a regularizar sua propriedade agora
-                </p>
+        <div className="auth-shell">
+            <div className="auth-content">
+                <div className="auth-card">
+                    <h2 className="auth-title">Criar Conta</h2>
+                    <p className="auth-subtitle">Comece a regularizar sua propriedade agora</p>
 
-                {error && (
-                    <div style={{ padding: '0.75rem', background: '#fee', color: '#c00', borderRadius: '8px', fontSize: '0.9rem', marginBottom: '1rem' }}>
-                        {error}
-                    </div>
-                )}
+                    {error && (
+                        <Alert type="error" title="Erro">
+                            {error}
+                        </Alert>
+                    )}
 
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <div>
-                        <label htmlFor="name" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#2d3748' }}>
-                            Nome Completo
-                        </label>
-                        <input
+                    <form onSubmit={handleSubmit} className="auth-form">
+                        <Input
                             id="name"
                             type="text"
                             placeholder="Seu nome"
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            style={{
-                                width: '100%',
-                                padding: '0.75rem',
-                                border: '1px solid #e2e8f0',
-                                borderRadius: '8px',
-                                fontSize: '1rem'
-                            }}
+                            label="Nome Completo"
                             required
                         />
-                    </div>
 
-                    <div>
-                        <label htmlFor="email" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#2d3748' }}>
-                            Email
-                        </label>
-                        <input
+                        <Input
                             id="email"
                             type="email"
                             placeholder="seu@email.com"
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            style={{
-                                width: '100%',
-                                padding: '0.75rem',
-                                border: '1px solid #e2e8f0',
-                                borderRadius: '8px',
-                                fontSize: '1rem'
-                            }}
+                            label="Email"
                             required
                         />
-                    </div>
 
-                    <div>
-                        <label htmlFor="password" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#2d3748' }}>
-                            Senha
-                        </label>
-                        <input
+                        <Input
                             id="password"
                             type="password"
                             placeholder="Pelo menos 8 caracteres"
                             value={formData.password}
                             onChange={(e) => handlePasswordChange(e.target.value)}
-                            style={{
-                                width: '100%',
-                                padding: '0.75rem',
-                                border: passwordError ? '1px solid #f56565' : '1px solid #e2e8f0',
-                                borderRadius: '8px',
-                                fontSize: '1rem'
-                            }}
+                            label="Senha"
+                            error={passwordError || undefined}
+                            helperText={passwordError ? undefined : 'Mínimo 8 caracteres, 1 letra maiúscula, 1 número'}
                             required
                         />
-                        {passwordError && (
-                            <p style={{ marginTop: '0.25rem', fontSize: '0.85rem', color: '#e53e3e' }}>{passwordError}</p>
-                        )}
-                        {!passwordError && (
-                            <p style={{ marginTop: '0.25rem', fontSize: '0.8rem', color: '#718096', lineHeight: '1.4' }}>
-                                • Mínimo 8 caracteres • 1 letra maiúscula • 1 número
-                            </p>
-                        )}
-                    </div>
 
-                    <div>
-                        <label htmlFor="passwordConfirm" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#2d3748' }}>
-                            Confirmar Senha
-                        </label>
-                        <input
+                        <Input
                             id="passwordConfirm"
                             type="password"
                             placeholder="Repita a senha"
                             value={formData.passwordConfirm}
                             onChange={(e) => setFormData({ ...formData, passwordConfirm: e.target.value })}
-                            style={{
-                                width: '100%',
-                                padding: '0.75rem',
-                                border: '1px solid #e2e8f0',
-                                borderRadius: '8px',
-                                fontSize: '1rem'
-                            }}
+                            label="Confirmar Senha"
                             required
                         />
+
+                        <div className="auth-terms">
+                            <input
+                                type="checkbox"
+                                id="terms"
+                                checked={formData.agreeTerms}
+                                onChange={(e) => setFormData({ ...formData, agreeTerms: e.target.checked })}
+                            />
+                            <label htmlFor="terms">
+                                Concordo com os{' '}
+                                <a href="/termos" target="_blank" rel="noreferrer">
+                                    termos de serviço
+                                </a>{' '}
+                                e{' '}
+                                <a href="/privacidade" target="_blank" rel="noreferrer">
+                                    política de privacidade
+                                </a>
+                            </label>
+                        </div>
+
+                        <Button
+                            type="submit"
+                            disabled={loading || !formData.agreeTerms}
+                            isLoading={loading}
+                            className="auth-button"
+                        >
+                            Criar Conta Grátis
+                        </Button>
+                    </form>
+
+                    <div className="auth-banner">
+                        Crie sua conta e comece grátis!
+                        <div>Upgrade para Premium quando precisar</div>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'start', gap: '0.5rem' }}>
-                        <input
-                            type="checkbox"
-                            id="terms"
-                            checked={formData.agreeTerms}
-                            onChange={(e) => setFormData({ ...formData, agreeTerms: e.target.checked })}
-                            style={{ marginTop: '0.25rem' }}
-                        />
-                        <label htmlFor="terms" style={{ fontSize: '0.85rem', color: '#4a5568', cursor: 'pointer', lineHeight: '1.5' }}>
-                            Concordo com os{' '}
-                            <a href="/termos" target="_blank" style={{ color: '#667eea', fontWeight: 'bold', textDecoration: 'none' }}>
-                                termos de serviço
-                            </a>{' '}
-                            e{' '}
-                            <a href="/privacidade" target="_blank" style={{ color: '#667eea', fontWeight: 'bold', textDecoration: 'none' }}>
-                                política de privacidade
-                            </a>
-                        </label>
+                    <div className="auth-secondary">
+                        Já tem uma conta? <Link to="/login">Faça login aqui</Link>
                     </div>
 
-                    <button
-                        type="submit"
-                        disabled={loading || !formData.agreeTerms}
-                        style={{
-                            padding: '1rem',
-                            background: (loading || !formData.agreeTerms) ? '#a0aec0' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '8px',
-                            fontSize: '1rem',
-                            fontWeight: 'bold',
-                            cursor: (loading || !formData.agreeTerms) ? 'not-allowed' : 'pointer',
-                            marginTop: '0.5rem',
-                            transition: 'all 0.2s ease'
-                        }}
-                    >
-                        {loading ? '⏳ Criando conta...' : '🚀 Criar Conta Grátis'}
-                    </button>
-                </form>
-
-                <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#fef6e7', border: '1px solid #f6d365', borderRadius: '8px', fontSize: '0.85rem', color: '#744210', textAlign: 'center' }}>
-                    ⭐ Crie sua conta e comece grátis!<br />
-                    <span style={{ fontSize: '0.8rem' }}>Upgrade para Premium quando precisar</span>
+                    <div className="auth-backlink">
+                        <Link to="/">Voltar para Home</Link>
+                    </div>
                 </div>
-
-                <p style={{ marginTop: '1.5rem', textAlign: 'center', color: '#718096', fontSize: '0.9rem' }}>
-                    Já tem uma conta?{' '}
-                    <a href="/login" style={{ color: '#667eea', textDecoration: 'none', fontWeight: 'bold' }}>
-                        Faça login aqui
-                    </a>
-                </p>
-
-                <p style={{ marginTop: '1rem', textAlign: 'center' }}>
-                    <a href="/" style={{ color: '#667eea', textDecoration: 'none', fontSize: '0.9rem' }}>
-                        ← Voltar para Home
-                    </a>
-                </p>
             </div>
         </div>
     );

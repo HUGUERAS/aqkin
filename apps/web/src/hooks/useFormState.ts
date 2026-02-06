@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 
-interface FormValidation<T> {
+type FormValidation<T> = {
     [K in keyof T]?: string;
-}
+};
 
 interface UseFormStateOptions<T> {
     onSubmit: (data: T) => Promise<void>;

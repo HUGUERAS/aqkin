@@ -1,9 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import LayerControl, { Layer } from '../../components/LayerControl';
 import DrawMapValidation from '../../components/maps/DrawMapValidation';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import Graphic from '@arcgis/core/Graphic';
 import './ValidarDesenhos.css';
+
+type ValidationKey = 'geometria' | 'snap' | 'sobreposicoes' | 'area' | 'crs' | 'confrontantes';
+type ToolId = 'snap' | 'edit' | 'measure' | 'area';
 
 interface LayerState {
   [layerId: string]: {
@@ -12,13 +15,60 @@ interface LayerState {
   };
 }
 
-// Dados de exemplo para as layers (em coordenadas Brasília)
+const TOOL_DEFINITIONS: Array<{
+  id: ToolId;
+  label: string;
+  icon: string;
+  title: string;
+  description: string;
+}> = [
+    {
+      id: 'snap',
+      label: 'Snap (0.5m)',
+      icon: '🧲',
+      title: 'Snap Tool: Ajustar vértices com tolerância de 0.5m',
+      description: 'Ajuste os vértices com 0.5m de tolerância',
+    },
+    {
+      id: 'edit',
+      label: 'Editar Vértices',
+      icon: '✏️',
+      title: 'Editar Vértices: Mover, adicionar ou remover pontos',
+      description: 'Clique e arraste vértices para editá-los',
+    },
+    {
+      id: 'measure',
+      label: 'Medir',
+      icon: '📏',
+      title: 'Medir Distância: Medição entre pontos',
+      description: 'Clique para medir distâncias',
+    },
+    {
+      id: 'area',
+      label: 'Calcular Área',
+      icon: '📐',
+      title: 'Calcular Área: Área do polígono em m²',
+      description: 'Área calculada automaticamente ao editar',
+    },
+  ];
+
+const VALIDATION_ITEMS: Array<{
+  key: ValidationKey;
+  label: string;
+  warning?: boolean;
+}> = [
+    { key: 'geometria', label: '✓ Geometria válida (sem auto-interseções)' },
+    { key: 'snap', label: '✓ Snap aplicado nos vértices' },
+    { key: 'sobreposicoes', label: '✓ Sem sobreposições com vizinhos', warning: true },
+    { key: 'area', label: '✓ Área calculada corretamente' },
+    { key: 'crs', label: '✓ CRS SIRGAS 2000 (EPSG:4674)' },
+    { key: 'confrontantes', label: '✓ Confrontantes identificados', warning: true },
+  ];
+
 const createExamplePolygons = () => {
-  // Coordenadas em Web Mercator (para as layers)
   const brasiliaLon = -47.9292;
   const brasiliaLat = -15.7801;
 
-  // Layer 1: Desenho Cliente (polígono inicial)
   const clientPolygon = new Polygon({
     rings: [
       [
@@ -31,7 +81,6 @@ const createExamplePolygons = () => {
     ],
   });
 
-  // Layer 2: Geometria Oficial (ajustada, com snap)
   const oficialPolygon = new Polygon({
     rings: [
       [
@@ -44,7 +93,6 @@ const createExamplePolygons = () => {
     ],
   });
 
-  // Layer 3: Sobreposições (pequeno polígono de conflito)
   const overlapPolygon = new Polygon({
     rings: [
       [
@@ -57,7 +105,6 @@ const createExamplePolygons = () => {
     ],
   });
 
-  // Layer 4: Limites Compartilhados (linha)
   const limitsLine = new Polygon({
     rings: [
       [
@@ -88,7 +135,7 @@ export default function ValidarDesenhos() {
 
   const examplePolygons = useMemo(() => createExamplePolygons(), []);
 
-  const [validationChecks, setValidationChecks] = useState({
+  const [validationChecks, setValidationChecks] = useState<Record<ValidationKey, boolean>>({
     geometria: true,
     snap: true,
     sobreposicoes: false,
@@ -97,10 +144,9 @@ export default function ValidarDesenhos() {
     confrontantes: false,
   });
 
-  const [activeTool, setActiveTool] = useState<'snap' | 'edit' | 'measure' | 'area' | null>(null);
+  const [activeTool, setActiveTool] = useState<ToolId | null>(null);
   const [measurements, setMeasurements] = useState<Partial<Record<'distance' | 'area', number>>>({});
 
-  // Layers para o mapa
   const layers = useMemo(() => [
     {
       id: 'cliente',
@@ -136,31 +182,35 @@ export default function ValidarDesenhos() {
     },
   ], [layerStates, examplePolygons]);
 
-  const handleLayerChange = (layerId: string, visible: boolean, opacity: number) => {
-    setLayerStates((prev) => ({
-      ...prev,
-      [layerId]: { visible, opacity },
-    }));
-  };
-
-  const toggleValidationCheck = (key: keyof typeof validationChecks) => {
-    setValidationChecks((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
-  };
-
-  const allChecksComplete = Object.values(validationChecks).every((v) => v);
-
-  // Layer control definitions para o LayerControl component
-  const layerControlDefs: Layer[] = layers.map(layer => ({
+  const layerControlDefs = useMemo<Layer[]>(() => layers.map((layer) => ({
     id: layer.id,
     label: layer.label,
     color: layer.color,
     initialVisible: layer.visible,
     initialOpacity: layer.opacity,
     description: 'Visualizar no mapa',
-  }));
+  })), [layers]);
+
+  const handleLayerChange = useCallback((layerId: string, visible: boolean, opacity: number) => {
+    setLayerStates((prev) => ({
+      ...prev,
+      [layerId]: { visible, opacity },
+    }));
+  }, []);
+
+  const toggleValidationCheck = useCallback((key: ValidationKey) => {
+    setValidationChecks((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  }, []);
+
+  const completedCount = useMemo(
+    () => Object.values(validationChecks).filter(Boolean).length,
+    [validationChecks]
+  );
+
+  const allChecksComplete = completedCount === VALIDATION_ITEMS.length;
 
   return (
     <div className="validar-desenhos-container">
@@ -181,45 +231,21 @@ export default function ValidarDesenhos() {
         <main className="map-section">
           {/* Tools Toolbar */}
           <div className="tools-toolbar">
-            <button
-              className={`tool-btn ${activeTool === 'snap' ? 'active' : ''}`}
-              onClick={() => setActiveTool(activeTool === 'snap' ? null : 'snap')}
-              title="Snap Tool: Ajustar vértices com tolerância de 0.5m"
-            >
-              <span>🧲</span> Snap (0.5m)
-            </button>
-
-            <button
-              className={`tool-btn ${activeTool === 'edit' ? 'active' : ''}`}
-              onClick={() => setActiveTool(activeTool === 'edit' ? null : 'edit')}
-              title="Editar Vértices: Mover, adicionar ou remover pontos"
-            >
-              <span>✏️</span> Editar Vértices
-            </button>
-
-            <button
-              className={`tool-btn ${activeTool === 'measure' ? 'active' : ''}`}
-              onClick={() => setActiveTool(activeTool === 'measure' ? null : 'measure')}
-              title="Medir Distância: Medição entre pontos"
-            >
-              <span>📏</span> Medir
-            </button>
-
-            <button
-              className={`tool-btn ${activeTool === 'area' ? 'active' : ''}`}
-              onClick={() => setActiveTool(activeTool === 'area' ? null : 'area')}
-              title="Calcular Área: Área do polígono em m²"
-            >
-              <span>📐</span> Calcular Área
-            </button>
+            {TOOL_DEFINITIONS.map((tool) => (
+              <button
+                key={tool.id}
+                className={`tool-btn ${activeTool === tool.id ? 'active' : ''}`}
+                onClick={() => setActiveTool(activeTool === tool.id ? null : tool.id)}
+                title={tool.title}
+              >
+                <span>{tool.icon}</span> {tool.label}
+              </button>
+            ))}
 
             {activeTool && (
               <div className="active-tool-info">
                 <strong>Ferramenta ativa:</strong>
-                {activeTool === 'snap' && ' Ajuste os vértices com 0.5m de tolerância'}
-                {activeTool === 'edit' && ' Clique e arraste vértices para editá-los'}
-                {activeTool === 'measure' && ' Clique para medir distâncias'}
-                {activeTool === 'area' && ' Área calculada automaticamente ao editar'}
+                {` ${TOOL_DEFINITIONS.find((tool) => tool.id === activeTool)?.description || ''}`}
               </div>
             )}
           </div>
@@ -229,12 +255,8 @@ export default function ValidarDesenhos() {
             <DrawMapValidation
               layers={layers}
               activeTool={activeTool}
-              onMeasurement={(distance) => {
-                setMeasurements((prev) => ({ ...prev, distance }));
-              }}
-              onAreaCalculated={(area) => {
-                setMeasurements((prev) => ({ ...prev, area }));
-              }}
+              onMeasurement={(distance) => setMeasurements((prev) => ({ ...prev, distance }))}
+              onAreaCalculated={(area) => setMeasurements((prev) => ({ ...prev, area }))}
               initialCenter={[-47.9292, -15.7801]}
               initialZoom={17}
               basemap="topo-vector"
@@ -272,71 +294,21 @@ export default function ValidarDesenhos() {
           <h3>📋 Checklist de Validação</h3>
 
           <div className="checklist">
-            <label className="check-item">
-              <input
-                type="checkbox"
-                checked={validationChecks.geometria}
-                onChange={() => toggleValidationCheck('geometria')}
-              />
-              <span className={validationChecks.geometria ? 'completed' : ''}>
-                ✓ Geometria válida (sem auto-interseções)
-              </span>
-            </label>
-
-            <label className="check-item">
-              <input
-                type="checkbox"
-                checked={validationChecks.snap}
-                onChange={() => toggleValidationCheck('snap')}
-              />
-              <span className={validationChecks.snap ? 'completed' : ''}>
-                ✓ Snap aplicado nos vértices
-              </span>
-            </label>
-
-            <label className="check-item warning">
-              <input
-                type="checkbox"
-                checked={validationChecks.sobreposicoes}
-                onChange={() => toggleValidationCheck('sobreposicoes')}
-              />
-              <span className={validationChecks.sobreposicoes ? 'completed' : ''}>
-                ✓ Sem sobreposições com vizinhos
-              </span>
-            </label>
-
-            <label className="check-item">
-              <input
-                type="checkbox"
-                checked={validationChecks.area}
-                onChange={() => toggleValidationCheck('area')}
-              />
-              <span className={validationChecks.area ? 'completed' : ''}>
-                ✓ Área calculada corretamente
-              </span>
-            </label>
-
-            <label className="check-item">
-              <input
-                type="checkbox"
-                checked={validationChecks.crs}
-                onChange={() => toggleValidationCheck('crs')}
-              />
-              <span className={validationChecks.crs ? 'completed' : ''}>
-                ✓ CRS SIRGAS 2000 (EPSG:4674)
-              </span>
-            </label>
-
-            <label className="check-item warning">
-              <input
-                type="checkbox"
-                checked={validationChecks.confrontantes}
-                onChange={() => toggleValidationCheck('confrontantes')}
-              />
-              <span className={validationChecks.confrontantes ? 'completed' : ''}>
-                ✓ Confrontantes identificados
-              </span>
-            </label>
+            {VALIDATION_ITEMS.map((item) => (
+              <label
+                key={item.key}
+                className={`check-item ${item.warning ? 'warning' : ''}`}
+              >
+                <input
+                  type="checkbox"
+                  checked={validationChecks[item.key]}
+                  onChange={() => toggleValidationCheck(item.key)}
+                />
+                <span className={validationChecks[item.key] ? 'completed' : ''}>
+                  {item.label}
+                </span>
+              </label>
+            ))}
           </div>
 
           {/* Status */}
@@ -350,7 +322,7 @@ export default function ValidarDesenhos() {
               <>
                 <p className="status-icon">⏳</p>
                 <p className="status-text">
-                  {Object.values(validationChecks).filter((v) => v).length}/{Object.keys(validationChecks).length}
+                  {completedCount}/{VALIDATION_ITEMS.length}
                 </p>
               </>
             )}

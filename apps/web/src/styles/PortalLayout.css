@@ -481,3 +481,250 @@
     padding: var(--spacing-3xl);
   }
 }
+
+/* ============================================
+   TOPÓGRAFO PROFESSIONAL THEME
+   ============================================ */
+.portal-shell.topografo-pro {
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+}
+
+.portal-shell.topografo-pro .portal-header.topografo-header {
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.portal-shell.topografo-pro .portal-brand {
+  gap: 12px;
+}
+
+.portal-shell.topografo-pro .brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.portal-shell.topografo-pro .brand-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.portal-shell.topografo-pro .brand-role {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #a78bfa;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.portal-shell.topografo-pro .project-pill {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  gap: 10px;
+}
+
+.portal-shell.topografo-pro .project-label {
+  color: #a78bfa;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.portal-shell.topografo-pro .project-name {
+  color: #fff;
+  font-weight: 700;
+}
+
+.portal-shell.topografo-pro .logout-pill {
+  margin-left: auto;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+.portal-shell.topografo-pro .logout-pill:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+/* Topógrafo Sidebar */
+.portal-shell.topografo-pro .portal-sidebar.topografo-sidebar {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  border-right: 1px solid rgba(99, 102, 241, 0.15);
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+}
+
+.portal-shell.topografo-pro .portal-sidebar.topografo-sidebar nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+}
+
+/* Section Groups */
+.portal-shell.topografo-pro .sidebar-section-group {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.portal-shell.topografo-pro .section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  padding-left: 4px;
+}
+
+.portal-shell.topografo-pro .section-icon {
+  font-size: 12px;
+}
+
+/* Sidebar Links */
+.portal-shell.topografo-pro .sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.portal-shell.topografo-pro .sidebar-link:hover {
+  background: rgba(99, 102, 241, 0.1);
+  color: #c7d2fe;
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+.portal-shell.topografo-pro .sidebar-link.active {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.15) 100%);
+  color: #a78bfa;
+  border-color: rgba(139, 92, 246, 0.3);
+  font-weight: 600;
+}
+
+.portal-shell.topografo-pro .link-text {
+  flex: 1;
+}
+
+.portal-shell.topografo-pro .link-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.portal-shell.topografo-pro .link-badge.cad {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #fff;
+}
+
+/* Quick Tools Grid */
+.portal-shell.topografo-pro .tools-group {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.05) 100%);
+  border-color: rgba(16, 185, 129, 0.1);
+}
+
+.portal-shell.topografo-pro .quick-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.portal-shell.topografo-pro .quick-tool-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.portal-shell.topografo-pro .quick-tool-btn:hover {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #10b981;
+  transform: translateY(-2px);
+}
+
+.portal-shell.topografo-pro .tool-icon {
+  font-size: 16px;
+}
+
+.portal-shell.topografo-pro .tool-name {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Sidebar Footer */
+.portal-shell.topografo-pro .sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.portal-shell.topografo-pro .status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.portal-shell.topografo-pro .status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #475569;
+}
+
+.portal-shell.topografo-pro .status-dot.online {
+  background: #10b981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+}
+
+.portal-shell.topografo-pro .status-text {
+  font-size: 0.7rem;
+  color: #64748b;
+}
+
+.portal-shell.topografo-pro .version-info {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: #475569;
+  font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+}
+
+/* Main Content Area */
+.portal-shell.topografo-pro .portal-main {
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  color: #e2e8f0;
+  padding: 0;
+}
+

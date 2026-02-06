@@ -8,19 +8,23 @@ export default function TopografoLayout() {
   const isActive = (path: string) => location.pathname.includes(path);
 
   return (
-    <div className="portal-shell">
-      <header className="portal-header">
+    <div className="portal-shell topografo-pro">
+      <header className="portal-header topografo-header">
         <div className="inner">
           <div className="portal-brand">
             <Logo size="md" variant="icon" />
-            <span>AtivoReal</span>
+            <div className="brand-text">
+              <span className="brand-name">AtivoReal</span>
+              <span className="brand-role">Topógrafo</span>
+            </div>
           </div>
           <div className="portal-nav">
-            <span className="nav-pill active" style={{ pointerEvents: 'none' }}>
+            <span className="nav-pill project-pill">
               <Icon name="map" size="sm" />
-              Projeto: Loteamento XYZ
+              <span className="project-label">Projeto Ativo:</span>
+              <span className="project-name">Loteamento XYZ</span>
             </span>
-            <Link to="/" className="nav-pill">
+            <Link to="/" className="nav-pill logout-pill">
               <Icon name="logout" size="sm" />
               Sair
             </Link>
@@ -29,58 +33,100 @@ export default function TopografoLayout() {
       </header>
 
       <div className="portal-content">
-        <aside className="portal-sidebar">
+        <aside className="portal-sidebar topografo-sidebar">
           <nav>
-            <div style={{ paddingBottom: '8px', borderBottom: '1px solid #e2e8f0', marginBottom: '16px' }}>
+            {/* Seção: Visão Geral */}
+            <div className="sidebar-section-group">
+              <div className="section-label">
+                <span className="section-icon">📊</span>
+                Visão Geral
+              </div>
               <Link to="/topografo/dashboard" className={`sidebar-link ${isActive('dashboard') ? 'active' : ''}`}>
                 <Icon name="chart" size="md" />
-                Dashboard
+                <span className="link-text">Dashboard</span>
               </Link>
               <Link to="/topografo/projetos" className={`sidebar-link ${isActive('projetos') ? 'active' : ''}`}>
                 <Icon name="grid" size="md" />
-                Projetos
+                <span className="link-text">Meus Projetos</span>
               </Link>
             </div>
 
-            <div style={{ paddingBottom: '8px', borderBottom: '1px solid #e2e8f0', marginBottom: '16px' }}>
+            {/* Seção: Trabalho Técnico */}
+            <div className="sidebar-section-group">
+              <div className="section-label">
+                <span className="section-icon">🛠️</span>
+                Trabalho Técnico
+              </div>
               <Link to="/topografo/validar" className={`sidebar-link ${isActive('validar') ? 'active' : ''}`}>
                 <Icon name="check" size="md" />
-                Validar Desenhos
+                <span className="link-text">Validar Geometria</span>
+                <span className="link-badge cad">CAD</span>
               </Link>
               <Link to="/topografo/pecas" className={`sidebar-link ${isActive('pecas') ? 'active' : ''}`}>
                 <Icon name="download" size="md" />
-                Peças Técnicas
+                <span className="link-text">Peças Técnicas</span>
               </Link>
             </div>
 
-            <div className="sidebar-section">
-              <h4>⚡ Ferramentas Rápidas</h4>
-              <p className="flex items-center gap-2">
-                <Icon name="map-pin" size="sm" />
-                Snap Tool
-              </p>
-              <p className="flex items-center gap-2">
-                <Icon name="edit" size="sm" />
-                Editar Geometrias
-              </p>
-              <p className="flex items-center gap-2">
-                <Icon name="search" size="sm" />
-                Topology Check
-              </p>
+            {/* Seção: Ferramentas CAD Rápidas */}
+            <div className="sidebar-section-group tools-group">
+              <div className="section-label">
+                <span className="section-icon">⚡</span>
+                Ferramentas Rápidas
+              </div>
+              <div className="quick-tools-grid">
+                <button className="quick-tool-btn" title="Snap 0.5m">
+                  <span className="tool-icon">🧲</span>
+                  <span className="tool-name">Snap</span>
+                </button>
+                <button className="quick-tool-btn" title="Editar Vértices">
+                  <span className="tool-icon">✏️</span>
+                  <span className="tool-name">Editar</span>
+                </button>
+                <button className="quick-tool-btn" title="Medir Distância">
+                  <span className="tool-icon">📏</span>
+                  <span className="tool-name">Medir</span>
+                </button>
+                <button className="quick-tool-btn" title="Calcular Área">
+                  <span className="tool-icon">📐</span>
+                  <span className="tool-name">Área</span>
+                </button>
+                <button className="quick-tool-btn" title="Verificar Topologia">
+                  <span className="tool-icon">🔍</span>
+                  <span className="tool-name">Topo</span>
+                </button>
+                <button className="quick-tool-btn" title="Buffer">
+                  <span className="tool-icon">◎</span>
+                  <span className="tool-name">Buffer</span>
+                </button>
+              </div>
             </div>
 
-            <div className="sidebar-section">
-              <h4>💰 Gestão Financeira</h4>
+            {/* Seção: Financeiro */}
+            <div className="sidebar-section-group">
+              <div className="section-label">
+                <span className="section-icon">💰</span>
+                Gestão Financeira
+              </div>
               <Link to="/topografo/orcamentos" className={`sidebar-link ${isActive('orcamentos') ? 'active' : ''}`}>
                 <Icon name="dollar" size="md" />
-                Orçamentos
+                <span className="link-text">Orçamentos</span>
               </Link>
               <Link to="/topografo/financeiro" className={`sidebar-link ${isActive('financeiro') ? 'active' : ''}`}>
                 <Icon name="chart" size="md" />
-                Financeiro
+                <span className="link-text">Financeiro</span>
               </Link>
             </div>
           </nav>
+
+          {/* Status Footer */}
+          <div className="sidebar-footer">
+            <div className="status-indicator">
+              <span className="status-dot online"></span>
+              <span className="status-text">Sistema Online</span>
+            </div>
+            <div className="version-info">v1.2.0</div>
+          </div>
         </aside>
 
         <main className="portal-main">

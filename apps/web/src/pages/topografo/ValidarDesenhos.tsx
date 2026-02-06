@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import LayerControl, { Layer } from '../../components/LayerControl';
 import DrawMapValidation from '../../components/maps/DrawMapValidation';
+import { CADToolbar, type CADToolType } from '../../components/cad';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import Graphic from '@arcgis/core/Graphic';
 import './ValidarDesenhos.css';
@@ -15,42 +16,13 @@ interface LayerState {
   };
 }
 
-const TOOL_DEFINITIONS: Array<{
-  id: ToolId;
-  label: string;
-  icon: string;
-  title: string;
-  description: string;
-}> = [
-    {
-      id: 'snap',
-      label: 'Snap (0.5m)',
-      icon: '🧲',
-      title: 'Snap Tool: Ajustar vértices com tolerância de 0.5m',
-      description: 'Ajuste os vértices com 0.5m de tolerância',
-    },
-    {
-      id: 'edit',
-      label: 'Editar Vértices',
-      icon: '✏️',
-      title: 'Editar Vértices: Mover, adicionar ou remover pontos',
-      description: 'Clique e arraste vértices para editá-los',
-    },
-    {
-      id: 'measure',
-      label: 'Medir',
-      icon: '📏',
-      title: 'Medir Distância: Medição entre pontos',
-      description: 'Clique para medir distâncias',
-    },
-    {
-      id: 'area',
-      label: 'Calcular Área',
-      icon: '📐',
-      title: 'Calcular Área: Área do polígono em m²',
-      description: 'Área calculada automaticamente ao editar',
-    },
-  ];
+// Map CAD tool types to legacy tool types used by DrawMapValidation
+const CAD_TO_LEGACY_TOOL: Partial<Record<CADToolType, ToolId>> = {
+  'snap': 'snap',
+  'edit-vertex': 'edit',
+  'measure-distance': 'measure',
+  'measure-area': 'area',
+};
 
 const VALIDATION_ITEMS: Array<{
   key: ValidationKey;
@@ -144,8 +116,31 @@ export default function ValidarDesenhos() {
     confrontantes: false,
   });
 
-  const [activeTool, setActiveTool] = useState<ToolId | null>(null);
-  const [measurements, setMeasurements] = useState<Partial<Record<'distance' | 'area', number>>>({});
+  // CAD Toolbar state
+  const [activeCADTool, setActiveCADTool] = useState<CADToolType | null>(null);
+  const [snapEnabled, setSnapEnabled] = useState(false);
+  const [measurements, setMeasurements] = useState<{
+    distance?: number | null;
+    area?: number | null;
+    angle?: number | null;
+  }>({});
+
+  // Map CAD tool to legacy tool for DrawMapValidation
+  const activeTool: ToolId | null = useMemo(() => {
+    if (!activeCADTool) return null;
+    return CAD_TO_LEGACY_TOOL[activeCADTool] || null;
+  }, [activeCADTool]);
+
+  const handleCADToolSelect = useCallback((tool: CADToolType) => {
+    setActiveCADTool(prev => prev === tool ? null : tool);
+  }, []);
+
+  const handleSnapToggle = useCallback(() => {
+    setSnapEnabled(prev => !prev);
+    if (!snapEnabled) {
+      setActiveCADTool('snap');
+    }
+  }, [snapEnabled]);
 
   const layers = useMemo(() => [
     {
@@ -213,129 +208,143 @@ export default function ValidarDesenhos() {
   const allChecksComplete = completedCount === VALIDATION_ITEMS.length;
 
   return (
-    <div className="validar-desenhos-container">
-      {/* Header */}
-      <div className="page-header">
-        <h1>✅ Validar Desenhos</h1>
-        <p>Revise e aprove a geometria da propriedade antes de gerar o contrato</p>
-      </div>
+    <div className="validar-desenhos-container professional">
+      {/* Professional Header */}
+      <header className="validar-header">
+        <div className="validar-header-content">
+          <div className="validar-header-title">
+            <span className="validar-header-icon">🗺️</span>
+            <div>
+              <h1>Validação de Geometria</h1>
+              <p>Analise e aprove os limites da propriedade com ferramentas CAD profissionais</p>
+            </div>
+          </div>
+          <div className="validar-header-status">
+            <span className={`status-badge ${allChecksComplete ? 'complete' : 'pending'}`}>
+              {allChecksComplete ? '✓ Pronto para Aprovar' : `${completedCount}/${VALIDATION_ITEMS.length} Verificações`}
+            </span>
+          </div>
+        </div>
+      </header>
 
-      {/* Layout: LayerControl + Map + Validation */}
-      <div className="validar-layout">
-        {/* 1. Layer Control Panel (Left Sidebar) */}
-        <aside className="layer-panel">
+      {/* Professional Layout: CAD Tools + Layers + Map + Validation */}
+      <div className="validar-professional-layout">
+        {/* 1. CAD Toolbar (Left) - Professional CAD Tools */}
+        <aside className="cad-panel">
+          <CADToolbar
+            activeTool={activeCADTool}
+            onToolSelect={handleCADToolSelect}
+            snapEnabled={snapEnabled}
+            onSnapToggle={handleSnapToggle}
+            orientation="vertical"
+            measurements={measurements}
+          />
+        </aside>
+
+        {/* 2. Layer Control Panel */}
+        <aside className="layer-panel professional">
+          <div className="panel-header">
+            <span className="panel-icon">📑</span>
+            <span className="panel-title">Camadas</span>
+          </div>
           <LayerControl layers={layerControlDefs} onLayerChange={handleLayerChange} />
         </aside>
 
-        {/* 2. Map + Tools (Center) */}
-        <main className="map-section">
-          {/* Tools Toolbar */}
-          <div className="tools-toolbar">
-            {TOOL_DEFINITIONS.map((tool) => (
-              <button
-                key={tool.id}
-                className={`tool-btn ${activeTool === tool.id ? 'active' : ''}`}
-                onClick={() => setActiveTool(activeTool === tool.id ? null : tool.id)}
-                title={tool.title}
-              >
-                <span>{tool.icon}</span> {tool.label}
-              </button>
-            ))}
-
-            {activeTool && (
-              <div className="active-tool-info">
-                <strong>Ferramenta ativa:</strong>
-                {` ${TOOL_DEFINITIONS.find((tool) => tool.id === activeTool)?.description || ''}`}
+        {/* 3. Map Viewport (Center) - Full Professional Map */}
+        <main className="map-viewport-container">
+          <div className="map-chrome">
+            {/* Map Toolbar (Compact Info Bar) */}
+            <div className="map-info-bar">
+              <div className="map-info-item">
+                <span className="info-label">CRS:</span>
+                <span className="info-value">SIRGAS 2000</span>
               </div>
-            )}
-          </div>
-
-          {/* Map Container */}
-          <div className="map-container">
-            <DrawMapValidation
-              layers={layers}
-              activeTool={activeTool}
-              onMeasurement={(distance) => setMeasurements((prev) => ({ ...prev, distance }))}
-              onAreaCalculated={(area) => setMeasurements((prev) => ({ ...prev, area }))}
-              initialCenter={[-47.9292, -15.7801]}
-              initialZoom={17}
-              basemap="topo-vector"
-            />
-          </div>
-
-          {/* Measurement Results */}
-          {(measurements.distance || measurements.area) && (
-            <div className="measurement-results">
-              {measurements.distance && (
-                <div className="measurement-item">
-                  <span className="measurement-label">📏 Distância Medida:</span>
-                  <span className="measurement-value">
-                    {measurements.distance >= 1000
-                      ? (measurements.distance / 1000).toFixed(2)
-                      : measurements.distance.toFixed(2)}{' '}
-                    {measurements.distance >= 1000 ? 'km' : 'm'}
-                  </span>
-                </div>
-              )}
-              {measurements.area && (
-                <div className="measurement-item">
-                  <span className="measurement-label">📐 Área Calculada:</span>
-                  <span className="measurement-value">
-                    {(measurements.area / 10000).toFixed(2)} hectares ({measurements.area.toFixed(0)} m²)
-                  </span>
+              <div className="map-info-item">
+                <span className="info-label">Escala:</span>
+                <span className="info-value">1:500</span>
+              </div>
+              <div className="map-info-item">
+                <span className="info-label">Layers:</span>
+                <span className="info-value">{layers.filter(l => l.visible).length} ativos</span>
+              </div>
+              {activeCADTool && (
+                <div className="map-info-item tool-active">
+                  <span className="info-label">Ferramenta:</span>
+                  <span className="info-value">{activeCADTool.replace(/-/g, ' ')}</span>
                 </div>
               )}
             </div>
-          )}
+
+            {/* Main Map */}
+            <div className="map-container-pro">
+              <DrawMapValidation
+                layers={layers}
+                activeTool={activeTool}
+                onMeasurement={(distance) => setMeasurements((prev) => ({ ...prev, distance }))}
+                onAreaCalculated={(area) => setMeasurements((prev) => ({ ...prev, area }))}
+                initialCenter={[-47.9292, -15.7801]}
+                initialZoom={17}
+                basemap="satellite"
+              />
+            </div>
+          </div>
         </main>
 
-        {/* 3. Validation Panel (Right Sidebar) */}
-        <aside className="validation-panel">
-          <h3>📋 Checklist de Validação</h3>
+        {/* 4. Validation Panel (Right) - Checklist */}
+        <aside className="validation-panel professional">
+          <div className="panel-header validation-header">
+            <span className="panel-icon">✓</span>
+            <span className="panel-title">Validação</span>
+          </div>
 
-          <div className="checklist">
-            {VALIDATION_ITEMS.map((item) => (
-              <label
-                key={item.key}
-                className={`check-item ${item.warning ? 'warning' : ''}`}
-              >
-                <input
-                  type="checkbox"
-                  checked={validationChecks[item.key]}
-                  onChange={() => toggleValidationCheck(item.key)}
+          <div className="validation-content">
+            <div className="checklist professional">
+              {VALIDATION_ITEMS.map((item) => (
+                <label
+                  key={item.key}
+                  className={`check-item-pro ${validationChecks[item.key] ? 'checked' : ''} ${item.warning ? 'warning' : ''}`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={validationChecks[item.key]}
+                    onChange={() => toggleValidationCheck(item.key)}
+                  />
+                  <span className="check-icon">{validationChecks[item.key] ? '✓' : '○'}</span>
+                  <span className="check-label">{item.label.replace(/^[✓○] /, '')}</span>
+                </label>
+              ))}
+            </div>
+
+            {/* Validation Progress */}
+            <div className="validation-progress">
+              <div className="progress-bar">
+                <div 
+                  className="progress-fill" 
+                  style={{ width: `${(completedCount / VALIDATION_ITEMS.length) * 100}%` }}
                 />
-                <span className={validationChecks[item.key] ? 'completed' : ''}>
-                  {item.label}
-                </span>
-              </label>
-            ))}
-          </div>
+              </div>
+              <span className="progress-text">
+                {Math.round((completedCount / VALIDATION_ITEMS.length) * 100)}% concluído
+              </span>
+            </div>
 
-          {/* Status */}
-          <div className={`validation-status ${allChecksComplete ? 'complete' : 'incomplete'}`}>
-            {allChecksComplete ? (
-              <>
-                <p className="status-icon">✅</p>
-                <p className="status-text">Tudo validado!</p>
-              </>
-            ) : (
-              <>
-                <p className="status-icon">⏳</p>
-                <p className="status-text">
-                  {completedCount}/{VALIDATION_ITEMS.length}
-                </p>
-              </>
-            )}
+            {/* Actions */}
+            <div className="validation-actions">
+              <button
+                className={`approve-button-pro ${allChecksComplete ? 'enabled' : 'disabled'}`}
+                disabled={!allChecksComplete}
+                title={allChecksComplete ? 'Aprovar geometria e prosseguir' : 'Complete todas as verificações'}
+              >
+                <span className="btn-icon">✅</span>
+                <span className="btn-text">Aprovar Geometria</span>
+              </button>
+              
+              <button className="secondary-button">
+                <span className="btn-icon">💾</span>
+                <span className="btn-text">Salvar Rascunho</span>
+              </button>
+            </div>
           </div>
-
-          {/* Action Button */}
-          <button
-            className={`approve-button ${allChecksComplete ? 'enabled' : 'disabled'}`}
-            disabled={!allChecksComplete}
-            title={allChecksComplete ? 'Aprovar geometria' : 'Complete todos os itens da validação'}
-          >
-            ✅ Aprovar Geometria
-          </button>
         </aside>
       </div>
     </div>

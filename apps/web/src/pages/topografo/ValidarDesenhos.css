@@ -1,466 +1,548 @@
-/* ValidarDesenhos.css - Page layout com LayerControl, Map e Validation */
+/**
+ * ValidarDesenhos.css - Professional CAD Validation Layout
+ *
+ * Dark-themed professional CAD interface for surveyor validation workflow
+ */
 
-.validar-desenhos-container {
+/* ============================================
+   CONTAINER: Professional Dark Theme
+   ============================================ */
+.validar-desenhos-container.professional {
   width: 100%;
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f5f5f5;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
-}
-
-/* Header */
-.page-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 2rem;
-  box-shadow: 0 2px 12px rgba(102, 126, 234, 0.2);
-}
-
-.page-header h1 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.8rem;
-  font-weight: 600;
-}
-
-.page-header p {
-  margin: 0;
-  font-size: 1rem;
-  opacity: 0.95;
-}
-
-/* Main Layout: 3 Columns */
-.validar-layout {
-  display: grid;
-  grid-template-columns: 320px 1fr 340px;
-  gap: 1rem;
-  flex: 1;
-  padding: 1rem;
+  background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #c9d1d9;
   overflow: hidden;
 }
 
-/* Left Sidebar: Layer Control */
-.layer-panel {
-  min-width: 0;
-  max-height: 100%;
+/* ============================================
+   HEADER: Professional Compact Header
+   ============================================ */
+.validar-header {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+  border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+  padding: 12px 24px;
+  flex-shrink: 0;
+}
+
+.validar-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 100%;
+}
+
+.validar-header-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.validar-header-icon {
+  font-size: 32px;
+  filter: drop-shadow(0 4px 8px rgba(102, 126, 234, 0.4));
+}
+
+.validar-header-title h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.validar-header-title p {
+  margin: 4px 0 0 0;
+  font-size: 0.85rem;
+  color: #8b949e;
+}
+
+.validar-header-status {
+  display: flex;
+  align-items: center;
+}
+
+.status-badge {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-badge.pending {
+  background: rgba(234, 179, 8, 0.15);
+  color: #eab308;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.status-badge.complete {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* ============================================
+   LAYOUT: 4-Column Professional Grid
+   ============================================ */
+.validar-professional-layout {
+  display: grid;
+  grid-template-columns: 220px 260px 1fr 300px;
+  gap: 0;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ============================================
+   CAD PANEL (Left-most)
+   ============================================ */
+.cad-panel {
+  background: linear-gradient(180deg, #1a1f2e 0%, #0d1117 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px;
   overflow-y: auto;
-  padding-right: 0.5rem;
+  overflow-x: hidden;
 }
 
-.layer-panel::-webkit-scrollbar {
-  width: 8px;
+.cad-panel::-webkit-scrollbar {
+  width: 4px;
 }
 
-.layer-panel::-webkit-scrollbar-track {
+.cad-panel::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.layer-panel::-webkit-scrollbar-thumb {
-  background: #bdbdbd;
-  border-radius: 4px;
+.cad-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
 }
 
-.layer-panel::-webkit-scrollbar-thumb:hover {
-  background: #9e9e9e;
-}
-
-/* Center: Map Section */
-.map-section {
+/* ============================================
+   LAYER PANEL (Second from left)
+   ============================================ */
+.layer-panel.professional {
+  background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  min-width: 0;
-  min-height: 0;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
-/* Tools Toolbar */
-.tools-toolbar {
+.panel-header {
   display: flex;
-  gap: 0.5rem;
-  padding: 1rem;
-  border-bottom: 1px solid #f0f0f0;
-  flex-wrap: wrap;
   align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
 }
 
-.tool-btn {
+.panel-icon {
+  font-size: 16px;
+}
+
+.panel-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #c9d1d9;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.layer-panel.professional > :not(.panel-header) {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+/* ============================================
+   MAP VIEWPORT (Center - Main Area)
+   ============================================ */
+.map-viewport-container {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+}
+
+.map-chrome {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #000;
+}
+
+/* Map Info Bar */
+.map-info-bar {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1rem;
-  border: 2px solid #e0e0e0;
-  background: white;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  gap: 24px;
+  padding: 8px 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.map-info-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+}
+
+.map-info-item .info-label {
+  color: #6e7681;
   font-weight: 500;
-  color: #333;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
 }
 
-.tool-btn:hover {
-  border-color: #667eea;
-  color: #667eea;
-  background: #f9f9ff;
+.map-info-item .info-value {
+  color: #c9d1d9;
+  font-weight: 600;
+  font-family: 'SF Mono', Monaco, 'Courier New', monospace;
 }
 
-.tool-btn.active {
-  border-color: #667eea;
-  background: #667eea;
-  color: white;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-}
-
-.tool-btn span {
-  font-size: 1.1rem;
-}
-
-/* Active Tool Info */
-.active-tool-info {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+.map-info-item.tool-active {
   margin-left: auto;
-  padding: 0.6rem 1rem;
-  background: #f0f4ff;
-  border-left: 3px solid #667eea;
+  background: rgba(88, 166, 255, 0.15);
+  padding: 4px 10px;
   border-radius: 4px;
-  font-size: 0.9rem;
-  color: #333;
+  border: 1px solid rgba(88, 166, 255, 0.3);
 }
 
-.active-tool-info strong {
-  color: #667eea;
+.map-info-item.tool-active .info-label {
+  color: #58a6ff;
+}
+
+.map-info-item.tool-active .info-value {
+  color: #79c0ff;
+  text-transform: capitalize;
 }
 
 /* Map Container */
-.map-container {
+.map-container-pro {
   flex: 1;
-  min-height: 0;
   position: relative;
   overflow: hidden;
-  border-radius: 6px;
-  margin: 0 1rem 1rem 1rem;
+  min-height: 0;
 }
 
-/* Measurement Results */
-.measurement-results {
-  display: flex;
-  gap: 1rem;
-  padding: 1rem;
-  background: #f9f9f9;
-  border-top: 1px solid #f0f0f0;
-  flex-wrap: wrap;
+.map-container-pro > div {
+  width: 100%;
+  height: 100%;
 }
 
-.measurement-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  background: white;
-  border-radius: 6px;
-  border-left: 3px solid #667eea;
-  flex: 1;
-  min-width: 250px;
-}
-
-.measurement-label {
-  font-size: 0.9rem;
-  color: #666;
-  font-weight: 500;
-}
-
-.measurement-value {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #667eea;
-  margin-left: auto;
-}
-
-/* Right Sidebar: Validation */
-.validation-panel {
+/* ============================================
+   VALIDATION PANEL (Right)
+   ============================================ */
+.validation-panel.professional {
+  background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  background: white;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.validation-header {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+  border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.validation-header .panel-icon {
+  color: #10b981;
+}
+
+.validation-header .panel-title {
+  color: #10b981;
+}
+
+.validation-content {
+  flex: 1;
   overflow-y: auto;
-  min-width: 0;
-}
-
-.validation-panel::-webkit-scrollbar {
-  width: 8px;
-}
-
-.validation-panel::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.validation-panel::-webkit-scrollbar-thumb {
-  background: #bdbdbd;
-  border-radius: 4px;
-}
-
-.validation-panel h3 {
-  margin: 0 0 1rem 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #333;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 /* Checklist */
-.checklist {
+.checklist.professional {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 8px;
 }
 
-.check-item {
+.check-item-pro {
   display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  background: #f9f9f9;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border-left: 3px solid transparent;
-}
-
-.check-item:hover {
-  background: #f5f5f5;
-}
-
-.check-item.warning {
-  border-left-color: #ff9800;
-}
-
-.check-item.warning:hover {
-  background: #fffaf5;
-}
-
-.check-item input[type='checkbox'] {
-  width: 18px;
-  height: 18px;
-  margin-top: 2px;
-  flex-shrink: 0;
-  cursor: pointer;
-  accent-color: #667eea;
-}
-
-.check-item span {
-  font-size: 0.9rem;
-  color: #333;
-  line-height: 1.4;
-  flex: 1;
-  transition: all 0.2s ease;
-}
-
-.check-item span.completed {
-  color: #4caf50;
-  text-decoration: line-through;
-}
-
-/* Validation Status */
-.validation-status {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  padding: 1.5rem;
-  background: #f9f9f9;
-  border-radius: 6px;
-  border: 2px solid #f0f0f0;
-  transition: all 0.3s ease;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-.validation-status.complete {
-  background: #f0f8f5;
-  border-color: #4caf50;
+.check-item-pro:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
-.validation-status.incomplete {
-  background: #fffaf5;
-  border-color: #ff9800;
+.check-item-pro input[type="checkbox"] {
+  display: none;
 }
 
-.status-icon {
-  margin: 0;
-  font-size: 2rem;
-  line-height: 1;
+.check-item-pro .check-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid #6e7681;
+  border-radius: 4px;
+  color: transparent;
+  transition: all 0.15s ease;
 }
 
-.status-text {
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #333;
+.check-item-pro.checked .check-icon {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-color: #10b981;
+  color: #fff;
 }
 
-.validation-status.complete .status-text {
-  color: #4caf50;
+.check-item-pro .check-label {
+  font-size: 0.85rem;
+  color: #8b949e;
+  flex: 1;
 }
 
-.validation-status.incomplete .status-text {
-  color: #ff9800;
+.check-item-pro.checked .check-label {
+  color: #c9d1d9;
 }
 
-/* Approve Button */
-.approve-button {
-  width: 100%;
-  padding: 1rem;
+.check-item-pro.warning:not(.checked) {
+  border-color: rgba(234, 179, 8, 0.3);
+  background: rgba(234, 179, 8, 0.05);
+}
+
+.check-item-pro.warning:not(.checked) .check-icon {
+  border-color: #eab308;
+}
+
+.check-item-pro.warning:not(.checked) .check-label {
+  color: #eab308;
+}
+
+/* Progress Bar */
+.validation-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.progress-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 0.8rem;
+  color: #6e7681;
+  text-align: center;
+}
+
+/* Actions */
+.validation-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.approve-button-pro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
+  color: #fff;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-.approve-button.enabled {
-  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
-}
-
-.approve-button.enabled:hover {
+.approve-button-pro:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
 }
 
-.approve-button.enabled:active {
-  transform: translateY(0);
-}
-
-.approve-button.disabled {
-  background: #e0e0e0;
-  color: #999;
+.approve-button-pro.disabled {
+  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+  color: #6e7681;
   cursor: not-allowed;
-  opacity: 0.6;
+  box-shadow: none;
 }
 
-/* Responsive */
+.secondary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #c9d1d9;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.secondary-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.btn-icon {
+  font-size: 1.1rem;
+}
+
+.btn-text {
+  flex: 1;
+}
+
+/* ============================================
+   OVERRIDE LayerControl Styles for Dark Theme
+   ============================================ */
+.layer-panel.professional .layer-control-container {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.layer-panel.professional .layer-control-container * {
+  color: #c9d1d9;
+}
+
+.layer-panel.professional .layer-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.layer-panel.professional .layer-card:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
 @media (max-width: 1400px) {
-  .validar-layout {
-    grid-template-columns: 280px 1fr 300px;
-    gap: 0.75rem;
-    padding: 0.75rem;
-  }
-
-  .validation-panel {
-    padding: 1rem;
-  }
-
-  .layer-panel {
-    padding-right: 0;
+  .validar-professional-layout {
+    grid-template-columns: 200px 220px 1fr 280px;
   }
 }
 
 @media (max-width: 1200px) {
-  .validar-layout {
+  .validar-professional-layout {
+    grid-template-columns: 180px 1fr 260px;
+  }
+
+  .layer-panel.professional {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .validar-professional-layout {
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr auto;
   }
 
-  .layer-panel {
-    order: 1;
-    max-height: 200px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding-right: 0;
-    padding-bottom: 0.5rem;
+  .cad-panel {
+    display: none;
   }
 
-  .map-section {
-    order: 2;
-    min-height: 400px;
-  }
-
-  .validation-panel {
-    order: 3;
-    max-height: 250px;
-  }
-
-  .tools-toolbar {
-    flex-direction: row;
-    overflow-x: auto;
-  }
-
-  .active-tool-info {
-    margin-left: 0;
-    width: 100%;
-  }
-
-  .quick-stats {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
+  .validation-panel.professional {
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    max-height: 40vh;
   }
 }
 
-@media (max-width: 768px) {
-  .validar-desenhos-container {
-    height: auto;
+@media (max-width: 600px) {
+  .validar-header {
+    padding: 10px 16px;
   }
 
-  .page-header {
-    padding: 1.5rem;
-  }
-
-  .page-header h1 {
-    font-size: 1.4rem;
-  }
-
-  .page-header p {
-    font-size: 0.9rem;
-  }
-
-  .validar-layout {
-    grid-template-columns: 1fr;
-    padding: 0.5rem;
-    gap: 0.5rem;
-  }
-
-  .layer-panel,
-  .map-section,
-  .validation-panel {
-    border-radius: 6px;
-    padding: 1rem;
-  }
-
-  .map-container {
-    min-height: 300px;
-    margin: 0 1rem 1rem 1rem;
-  }
-
-  .tools-toolbar {
-    padding: 0.75rem;
-    gap: 0.25rem;
-  }
-
-  .tool-btn {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8rem;
-  }
-
-  .quick-stats {
-    grid-template-columns: repeat(3, 1fr);
-    padding: 0.75rem;
-  }
-
-  .stat-label {
-    font-size: 0.7rem;
-  }
-
-  .stat-value {
+  .validar-header-title h1 {
     font-size: 1.1rem;
   }
+
+  .validar-header-title p {
+    display: none;
+  }
+
+  .validar-header-icon {
+    font-size: 24px;
+  }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+  }
+}
+
+.approve-button-pro.enabled {
+  animation: pulse-glow 2s infinite;
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+.check-item-pro:focus-within {
+  outline: 2px solid #58a6ff;
+  outline-offset: 2px;
+}
+
+.approve-button-pro:focus-visible,
+.secondary-button:focus-visible {
+  outline: 2px solid #58a6ff;
+  outline-offset: 2px;
 }

@@ -19,6 +19,7 @@ O projeto está bem estruturado, mas há **7 áreas críticas** de melhoria para
 ## 🔴 1. Type Safety & Validação (CRÍTICO)
 
 ### Problema Atual
+
 ```typescript
 // ❌ RUIM - Tipos fracos
 const getStatusBadgeStyle = (status: string) => {
@@ -38,6 +39,7 @@ class OrcamentoCreate(BaseModel):
 ### Solução Proposta
 
 **Frontend:**
+
 ```typescript
 import { z } from 'zod';
 
@@ -91,6 +93,7 @@ const carregarProjetos = async () => {
 ```
 
 **Backend (Python):**
+
 ```python
 from enum import Enum
 from pydantic import BaseModel, Field, validator
@@ -123,6 +126,7 @@ class OrcamentoCreate(BaseModel):
 ```
 
 **Benefícios:**
+
 - ✅ TypeScript detecta erros em tempo de compilação
 - ✅ Backend rejeita dados inválidos automaticamente
 - ✅ Menos bugs silenciosos
@@ -133,6 +137,7 @@ class OrcamentoCreate(BaseModel):
 ## 🔴 2. Error Handling (CRÍTICO)
 
 ### Problema Atual
+
 ```typescript
 // ❌ RUIM - Tratamento inconsistente
 const salvarProjeto = async () => {
@@ -164,6 +169,7 @@ def get_projetos(perfil: dict = Depends(get_perfil)):
 ### Solução Proposta
 
 **Frontend:**
+
 ```typescript
 // Hook customizado para tratamento de erros
 export const useApiError = () => {
@@ -232,6 +238,7 @@ const salvarProjeto = async () => {
 ```
 
 **Backend:**
+
 ```python
 import logging
 from functools import wraps
@@ -303,6 +310,7 @@ async def get_projetos(
 ```
 
 **Benefícios:**
+
 - ✅ Mensagens de erro consistentes
 - ✅ Logging estruturado para debugging
 - ✅ Não expõe detalhes sensíveis ao usuário
@@ -313,6 +321,7 @@ async def get_projetos(
 ## 🟡 3. Code Duplication - Filtros & Status (MÉDIO)
 
 ### Problema Atual
+
 ```typescript
 // ❌ Repetido em MeusProjetos.tsx, Orcamentos.tsx, Financeiro.tsx
 type StatusFiltro = 'TODOS' | 'RASCUNHO' | 'EM_ANDAMENTO' | 'CONCLUIDO' | 'ARQUIVADO';
@@ -453,6 +462,7 @@ export const StatusFilter: React.FC<StatusFilterProps> = ({
 ```
 
 **Uso refatorado:**
+
 ```typescript
 // MeusProjetos.tsx - antes ~200 linhas de lógica, depois ~80
 import { useStatusFilter, PROJECT_STATUSES } from '../../constants/statuses';
@@ -487,6 +497,7 @@ export default function MeusProjetos() {
 ```
 
 **Benefícios:**
+
 - ✅ -200+ linhas de código duplicado
 - ✅ Mudança de estilos em 1 arquivo = refletido em toda app
 - ✅ Reutilizável em novos componentes
@@ -497,6 +508,7 @@ export default function MeusProjetos() {
 ## 🟡 4. Form Handling - Hook Reutilizável (MÉDIO)
 
 ### Problema Atual
+
 ```typescript
 // ❌ Repetido em MeusProjetos, Orcamentos, Financeiro
 const [formData, setFormData] = useState({
@@ -606,6 +618,7 @@ export const useFormState = <T extends Record<string, any>>(
 ```
 
 **Uso:**
+
 ```typescript
 const MeusProjetos = () => {
   const [projetos, setProjetos] = useState<Projeto[]>([]);
@@ -649,6 +662,7 @@ const MeusProjetos = () => {
 ## 🟡 5. Performance - Caching & Pagination (MÉDIO)
 
 ### Problema Atual
+
 ```typescript
 // ❌ Sem cache - cada load = requisição
 const carregarProjetos = async () => {
@@ -665,6 +679,7 @@ def get_projetos():
 ### Solução Proposta
 
 **Frontend - Cache com React Query:**
+
 ```typescript
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -707,6 +722,7 @@ const MeusProjetos = () => {
 ```
 
 **Backend - Pagination:**
+
 ```python
 from pydantic import BaseModel, Field
 
@@ -751,6 +767,7 @@ class Project(Base):
 ```
 
 **Benefícios:**
+
 - ✅ Requisições reduzidas 80%
 - ✅ App muito mais responsivo
 - ✅ Escala para 100k+ registros
@@ -761,6 +778,7 @@ class Project(Base):
 ## 🟡 6. Security - CORS e Rate Limiting (MÉDIO)
 
 ### Problema Atual
+
 ```python
 # ❌ CRÍTICO - CORS aberto para tudo!
 app.add_middleware(
@@ -810,6 +828,7 @@ async def create_projeto(request: Request, ...):
 ```
 
 **Configuração .env:**
+
 ```bash
 ALLOWED_ORIGINS=https://bemreal.com,https://app.bemreal.com
 allow_credentials=true
@@ -820,6 +839,7 @@ allow_credentials=true
 ## 🟢 7. Constants & Enums Centralizados (BAIXO)
 
 **Antes:**
+
 ```typescript
 // Espalhado em 3+ arquivos
 const tipos = ['INDIVIDUAL', 'DESMEMBRAMENTO', 'LOTEAMENTO', 'RETIFICACAO'];
@@ -827,6 +847,7 @@ const API_URL = import.meta.env.VITE_API_URL ?? '';
 ```
 
 **Depois:**
+
 ```typescript
 // apps/web/src/constants/index.ts
 export const PROJECT_TYPES = [
@@ -854,33 +875,41 @@ export const VALIDATION_RULES = {
 ## 📋 Plano de Implementação (Priorizado)
 
 ### Semana 1: Type Safety & Error Handling
+
 1. Adicionar Zod schemas para todas respostas de API
 2. Implementar global error handler no frontend
 3. Melhorar logging no backend
+
 - **Tiempo**: ~8-10h
 - **Impacto**: Alto (menos bugs)
 
 ### Semana 2: Code Deduplication & Hooks
+
 1. Crear centralized constants/statuses
 2. Implementar `useStatusFilter` hook
 3. Implementar `useFormState` hook
 4. Refatorar MeusProjetos, Orcamentos
+
 - **Tiempo**: ~12h
 - **Impacto**: Médio (manutenibilidade)
 
 ### Semana 3: Performance & Caching
+
 1. Instalar React Query
 2. Implementar useQuery hooks
 3. Adicionar pagination no backend
 4. Testar performance
+
 - **Tiempo**: ~8h
 - **Impacto**: Alto (UX)
 
 ### Semana 4: Security & Polish
+
 1. Configurar CORS correto
 2. Adicionar rate limiting
 3. Testar endpoints
 4. Criar docs de deployment
+
 - **Tiempo**: ~6h
 - **Impacto**: Médio-Alto (segurança)
 
@@ -907,6 +936,7 @@ export const VALIDATION_RULES = {
    - Começar com Type Safety (maior impacto)
 
 2. **Proposta:**
+
    ```bash
    git checkout -b improve/type-safety-and-errors
    # Implementar Zod validation

@@ -3,100 +3,99 @@ import apiClient from '../../services/api';
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
 import { LoadingState, EmptyState, ErrorState } from '../../components/StateViews';
 import { Select, Input, Textarea } from '../../components/UIComponents';
-
-interface Projeto {
-  id: number;
-  nome: string;
-  descricao?: string;
-  tipo: string;
-  status: 'RASCUNHO' | 'EM_ANDAMENTO' | 'CONCLUIDO' | 'ARQUIVADO';
-  criado_em?: string;
-  atualizado_em?: string;
-}
-
-type StatusFiltro = 'TODOS' | 'RASCUNHO' | 'EM_ANDAMENTO' | 'CONCLUIDO' | 'ARQUIVADO';
+import { StatusBadge, StatusFilter } from '../../components/StatusBadge';
+import { useFormState, useStatusFilter } from '../../hooks/useFormState';
+import { useApiError, useNotification, extractErrorMessage } from '../../hooks/useErrorHandler';
+import { PROJECT_TYPES, PROJECT_STATUSES, VALIDATION_RULES, ERROR_MESSAGES } from '../../constants';
+import { Projeto, ProjetoCreateSchema, ProjetoUpdateSchema } from '../../schemas';
 
 export default function MeusProjetos() {
   const [projetos, setProjetos] = useState<Projeto[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [filtroStatus, setFiltroStatus] = useState<StatusFiltro>('TODOS');
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [projetoEditando, setProjetoEditando] = useState<Projeto | null>(null);
-  const [formData, setFormData] = useState({
-    nome: '',
-    descricao: '',
-    tipo: 'INDIVIDUAL',
-    status: 'RASCUNHO' as Projeto['status'],
-  });
-  const [salvando, setSalvando] = useState(false);
   const [confirmarExclusao, setConfirmarExclusao] = useState<number | null>(null);
+
+  const { error: apiError, handleError, clearError } = useApiError();
+  const { notification, showSuccess, showError } = useNotification();
+  const { filtroStatus, setFiltroStatus, filtered: projetosFiltrados, counts } = useStatusFilter(projetos);
+
+  const form = useFormState(
+    { nome: '', descricao: '', tipo: 'INDIVIDUAL', status: 'RASCUNHO' },
+    {
+      onSubmit: async (data) => {
+        try {
+          const response = projetoEditando
+            ? await apiClient.updateProject(projetoEditando.id, data)
+            : await apiClient.createProject(data);
+
+          if (response.error) throw new Error(response.error);
+
+          showSuccess(
+            projetoEditando
+              ? 'Projeto atualizado com sucesso!'
+              : 'Projeto criado com sucesso!'
+          );
+          fecharFormulario();
+          await carregarProjetos();
+        } catch (error) {
+          throw new Error(extractErrorMessage(error));
+        }
+      },
+      validators: {
+        nome: (v) =>
+          !v?.trim()
+            ? ERROR_MESSAGES.REQUIRED_FIELD('Nome')
+            : v.length < VALIDATION_RULES.PROJECT_NAME_MIN
+              ? ERROR_MESSAGES.MIN_LENGTH('Nome', VALIDATION_RULES.PROJECT_NAME_MIN)
+              : v.length > VALIDATION_RULES.PROJECT_NAME_MAX
+                ? ERROR_MESSAGES.MAX_LENGTH('Nome', VALIDATION_RULES.PROJECT_NAME_MAX)
+                : null,
+        descricao: (v) =>
+          v && v.length > VALIDATION_RULES.DESCRIPTION_MAX
+            ? ERROR_MESSAGES.MAX_LENGTH('Descrição', VALIDATION_RULES.DESCRIPTION_MAX)
+            : null,
+      },
+      onError: (error) => showError(error.message),
+    }
+  );
 
   useEffect(() => {
     carregarProjetos();
   }, []);
 
   const carregarProjetos = async () => {
-    setError(null);
+    clearError();
+    setLoading(true);
     try {
       const response = await apiClient.getProjects();
       if (response.error) {
-        setError(response.error);
+        handleError(new Error(response.error), 'carregarProjetos');
         return;
       }
       if (response.data) {
-        setProjetos(response.data as unknown as Projeto[]);
+        setProjetos(response.data);
       }
     } catch (error) {
-      console.error('Erro ao carregar projetos:', error);
-      setError('Erro ao carregar projetos');
+      handleError(error, 'carregarProjetos');
     } finally {
       setLoading(false);
     }
   };
 
-  const projetosFiltrados = projetos.filter((p) =>
-    filtroStatus === 'TODOS' ? true : p.status === filtroStatus
-  );
-
-  const getStatusBadgeStyle = (status: Projeto['status']) => {
-    const styles: Record<Projeto['status'], { background: string; color: string; icon: string }> = {
-      RASCUNHO: { background: '#f5c842', color: '#5d4e00', icon: '📝' },
-      EM_ANDAMENTO: { background: '#2196f3', color: 'white', icon: '🚀' },
-      CONCLUIDO: { background: '#4caf50', color: 'white', icon: '✅' },
-      ARQUIVADO: { background: '#9e9e9e', color: 'white', icon: '📦' },
-    };
-    return styles[status] || styles.RASCUNHO;
-  };
-
-  const getTipoLabel = (tipo: string) => {
-    const tipos: Record<string, string> = {
-      INDIVIDUAL: 'Individual',
-      DESMEMBRAMENTO: 'Desmembramento',
-      LOTEAMENTO: 'Loteamento',
-      RETIFICACAO: 'Retificação',
-    };
-    return tipos[tipo] || tipo;
-  };
-
   const abrirFormularioCriar = () => {
     setProjetoEditando(null);
-    setFormData({
-      nome: '',
-      descricao: '',
-      tipo: 'INDIVIDUAL',
-      status: 'RASCUNHO',
-    });
+    form.reset();
     setMostrarFormulario(true);
   };
 
   const abrirFormularioEditar = (projeto: Projeto) => {
     setProjetoEditando(projeto);
-    setFormData({
+    form.setFormData({
       nome: projeto.nome,
       descricao: projeto.descricao || '',
       tipo: projeto.tipo,
-      status: projeto.status,
+      status: projeto.status as any,
     });
     setMostrarFormulario(true);
   };
@@ -104,66 +103,21 @@ export default function MeusProjetos() {
   const fecharFormulario = () => {
     setMostrarFormulario(false);
     setProjetoEditando(null);
-    setFormData({
-      nome: '',
-      descricao: '',
-      tipo: 'INDIVIDUAL',
-      status: 'RASCUNHO',
-    });
-  };
-
-  const salvarProjeto = async () => {
-    if (!formData.nome.trim()) {
-      alert('Nome do projeto é obrigatório');
-      return;
-    }
-
-    setSalvando(true);
-    try {
-      if (projetoEditando) {
-        // Atualizar projeto existente
-        const response = await apiClient.updateProject(projetoEditando.id, formData);
-        if (response.error) {
-          alert(`Erro ao atualizar projeto: ${response.error}`);
-          return;
-        }
-      } else {
-        // Criar novo projeto
-        const response = await apiClient.createProject({
-          nome: formData.nome,
-          descricao: formData.descricao || undefined,
-          tipo: formData.tipo,
-        });
-        if (response.error) {
-          alert(`Erro ao criar projeto: ${response.error}`);
-          return;
-        }
-      }
-      fecharFormulario();
-      carregarProjetos();
-    } catch (error) {
-      console.error('Erro ao salvar projeto:', error);
-      alert('Erro ao salvar projeto');
-    } finally {
-      setSalvando(false);
-    }
+    form.reset();
   };
 
   const excluirProjeto = async (id: number) => {
-    setSalvando(true);
     try {
       const response = await apiClient.deleteProject(id);
       if (response.error) {
-        alert(`Erro ao excluir projeto: ${response.error}`);
+        showError(response.error);
         return;
       }
+      showSuccess('Projeto excluído com sucesso!');
       setConfirmarExclusao(null);
-      carregarProjetos();
+      await carregarProjetos();
     } catch (error) {
-      console.error('Erro ao excluir projeto:', error);
-      alert('Erro ao excluir projeto');
-    } finally {
-      setSalvando(false);
+      showError(extractErrorMessage(error));
     }
   };
 
@@ -186,80 +140,76 @@ export default function MeusProjetos() {
       maxWidth: '1400px',
       margin: '0 auto',
     }}>
+      {/* Notificações */}
+      {notification && (
+        <div style={{
+          marginBottom: '1rem',
+          padding: '1rem',
+          borderRadius: '8px',
+          background: notification.type === 'success' ? '#d4edda' : '#f8d7da',
+          color: notification.type === 'success' ? '#155724' : '#721c24',
+          border: `1px solid ${notification.type === 'success' ? '#c3e6cb' : '#f5c6cb'}`,
+        }}>
+          {notification.message}
+        </div>
+      )}
+
+      {apiError && (
+        <div style={{
+          marginBottom: '1rem',
+          padding: '1rem',
+          borderRadius: '8px',
+          background: '#f8d7da',
+          color: '#721c24',
+          border: '1px solid #f5c6cb',
+        }}>
+          {apiError.message}
+        </div>
+      )}
+
+      {/* Header */}
       <div style={{
         display: 'flex',
-        flexDirection: 'column',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         gap: '1rem',
         marginBottom: '2rem',
       }}>
-        <div style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          gap: '1rem',
-        }}>
-          <h1 style={{ margin: 0, fontSize: 'clamp(1.25rem, 3vw, 1.5rem)' }}>📁 Meus Projetos</h1>
-          <button
-            onClick={abrirFormularioCriar}
-            style={{
-              padding: '0.75rem 1.5rem',
-              background: '#667eea',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontSize: '1rem',
-              whiteSpace: 'nowrap' as const,
-            }}
-          >
-            ➕ Novo Projeto
-          </button>
-        </div>
+        <h1 style={{ margin: 0, fontSize: 'clamp(1.25rem, 3vw, 1.5rem)' }}>📁 Meus Projetos</h1>
+        <button
+          onClick={abrirFormularioCriar}
+          style={{
+            padding: '0.75rem 1.5rem',
+            background: '#667eea',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '1rem',
+          }}
+        >
+          ➕ Novo Projeto
+        </button>
       </div>
 
-      {/* Filtros com contadores por status */}
-      <div style={{
-        marginBottom: '2rem',
-        display: 'flex',
-        gap: '0.5rem',
-        flexWrap: 'wrap',
-        alignItems: 'center',
-      }}>
-        {(['TODOS', 'RASCUNHO', 'EM_ANDAMENTO', 'CONCLUIDO', 'ARQUIVADO'] as StatusFiltro[]).map((status) => {
-          const count = status === 'TODOS' ? projetos.length : projetos.filter((p) => p.status === status).length;
-          const style = getStatusBadgeStyle(status === 'TODOS' ? 'RASCUNHO' : status);
-          const isActive = filtroStatus === status;
-          return (
-            <button
-              key={status}
-              onClick={() => setFiltroStatus(status)}
-              style={{
-                padding: '0.5rem 1rem',
-                background: isActive ? (status === 'TODOS' ? '#667eea' : style.background) : 'white',
-                color: isActive ? (status === 'TODOS' ? 'white' : style.color) : '#333',
-                border: `2px solid ${isActive ? (status === 'TODOS' ? '#667eea' : style.background) : '#ddd'}`,
-                borderRadius: '20px',
-                cursor: 'pointer',
-                fontWeight: isActive ? 'bold' : 'normal',
-                fontSize: 'clamp(0.8rem, 2vw, 0.9rem)',
-                transition: 'all 0.2s ease',
-              }}
-            >
-              {status === 'TODOS' ? '📋' : style.icon} {status === 'TODOS' ? 'Todos' : status.replace('_', ' ')} ({count})
-            </button>
-          );
-        })}
-      </div>
+      {/* Filtros */}
+      <StatusFilter
+        statuses={PROJECT_STATUSES}
+        selectedStatus={filtroStatus}
+        onStatusChange={setFiltroStatus}
+        counts={counts}
+        variant="pills"
+      />
 
       {/* Lista de Projetos */}
       {loading ? (
         <LoadingState title="Carregando projetos" description="Aguarde alguns segundos" />
-      ) : error ? (
+      ) : apiError ? (
         <ErrorState
-          title="Nao foi possivel carregar projetos"
-          description={error}
+          title="Não foi possível carregar projetos"
+          description={apiError.message}
           actionLabel="Tentar novamente"
           onAction={carregarProjetos}
         />
@@ -276,140 +226,85 @@ export default function MeusProjetos() {
           gap: '1rem',
           gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
         }}>
-          {projetosFiltrados.map((projeto) => {
-            const statusStyle = getStatusBadgeStyle(projeto.status);
-            return (
-              <div
-                key={projeto.id}
-                style={{
-                  background: 'white',
-                  borderRadius: '12px',
-                  padding: '1.5rem',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                  border: '1px solid #e0e0e0',
-                }}
-              >
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '1rem',
-                }}>
-                  <div style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    gap: '0.75rem',
-                  }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        alignItems: 'center',
-                        gap: '0.75rem',
-                        flex: 1,
-                        minWidth: 0,
-                      }}>
-                        <h3 style={{
-                          margin: 0,
-                          fontSize: 'clamp(1rem, 2.5vw, 1.25rem)',
-                          wordBreak: 'break-word' as const,
-                        }}>
-                          {projeto.nome}
-                        </h3>
-                        <span
-                          style={{
-                            padding: '0.25rem 0.75rem',
-                            borderRadius: '12px',
-                            background: statusStyle.background,
-                            color: statusStyle.color,
-                            fontSize: '0.85rem',
-                            fontWeight: 'bold',
-                            flexShrink: 0,
-                          }}
-                        >
-                          {statusStyle.icon} {projeto.status.replace('_', ' ')}
-                        </span>
-                      </div>
-                      {projeto.descricao && (
-                        <p style={{ color: '#666', margin: '0.5rem 0' }}>{projeto.descricao}</p>
-                      )}
-                      <div style={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        gap: '1rem 1.5rem',
-                        marginTop: '1rem',
-                        fontSize: 'clamp(0.8rem, 2vw, 0.9rem)',
-                        color: '#666',
-                      }}>
-                        <span>
-                          <strong>Tipo:</strong> {getTipoLabel(projeto.tipo)}
-                        </span>
-                        <span>
-                          <strong>Criado em:</strong> {formatarData(projeto.criado_em)}
-                        </span>
-                        {projeto.atualizado_em && projeto.atualizado_em !== projeto.criado_em && (
-                          <span>
-                            <strong>Atualizado em:</strong> {formatarData(projeto.atualizado_em)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div style={{
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      gap: '0.5rem',
-                    }}>
-                      <button
-                        onClick={() => abrirFormularioEditar(projeto)}
-                        style={{
-                          padding: '0.5rem 1rem',
-                          background: '#667eea',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontSize: '0.9rem',
-                        }}
-                      >
-                        ✏️ Editar
-                      </button>
-                      <button
-                        onClick={() => setConfirmarExclusao(projeto.id)}
-                        style={{
-                          padding: '0.5rem 1rem',
-                          background: '#dc3545',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontSize: '0.9rem',
-                        }}
-                      >
-                        🗑️ Excluir
-                      </button>
-                    </div>
+          {projetosFiltrados.map((projeto) => (
+            <div
+              key={projeto.id}
+              style={{
+                background: 'white',
+                borderRadius: '12px',
+                padding: '1.5rem',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                border: '1px solid #e0e0e0',
+              }}
+            >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
+                  <div>
+                    <h3 style={{ margin: '0 0 0.5rem 0', fontSize: 'clamp(1rem, 2.5vw, 1.25rem)' }}>
+                      {projeto.nome}
+                    </h3>
+                    {projeto.descricao && (
+                      <p style={{ color: '#666', margin: 0, fontSize: '0.9rem' }}>{projeto.descricao}</p>
+                    )}
                   </div>
+                  <StatusBadge status={projeto.status} size="sm" />
+                </div>
+
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', fontSize: '0.85rem', color: '#666' }}>
+                  <span><strong>Tipo:</strong> {PROJECT_TYPES[projeto.tipo as keyof typeof PROJECT_TYPES]?.label}</span>
+                  <span><strong>Criado:</strong> {formatarData(projeto.criado_em)}</span>
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <button
+                    onClick={() => abrirFormularioEditar(projeto)}
+                    style={{
+                      flex: 1,
+                      minWidth: '100px',
+                      padding: '0.5rem',
+                      background: '#667eea',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '0.9rem',
+                    }}
+                  >
+                    ✏️ Editar
+                  </button>
+                  <button
+                    onClick={() => setConfirmarExclusao(projeto.id)}
+                    style={{
+                      flex: 1,
+                      minWidth: '100px',
+                      padding: '0.5rem',
+                      background: '#dc3545',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '0.9rem',
+                    }}
+                  >
+                    🗑️ Excluir
+                  </button>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       )}
 
       {/* Modal de Confirmação de Exclusão */}
       <ConfirmDeleteModal
         open={confirmarExclusao !== null}
-        busy={salvando}
+        busy={form.loading}
         message="Tem certeza que deseja excluir este projeto? Esta ação não pode ser desfeita."
         onCancel={() => setConfirmarExclusao(null)}
         onConfirm={() => confirmarExclusao !== null && excluirProjeto(confirmarExclusao)}
-        overlayPadding="1rem"
-        width="100%"
-        boxShadow="0 8px 32px rgba(0,0,0,0.2)"
       />
 
-      {/* Modal de Formulário (Criar/Editar) */}
+      {/* Modal de Formulário */}
       {mostrarFormulario && (
         <div
           style={{
@@ -425,7 +320,7 @@ export default function MeusProjetos() {
             zIndex: 1000,
             padding: '1rem',
           }}
-          onClick={() => !salvando && fecharFormulario()}
+          onClick={() => !form.loading && fecharFormulario()}
         >
           <div
             style={{
@@ -434,8 +329,6 @@ export default function MeusProjetos() {
               padding: '2rem',
               maxWidth: '500px',
               width: '100%',
-              maxHeight: '90vh',
-              overflowY: 'auto',
               boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
             }}
             onClick={(e) => e.stopPropagation()}
@@ -444,83 +337,87 @@ export default function MeusProjetos() {
               {projetoEditando ? '✏️ Editar Projeto' : '➕ Novo Projeto'}
             </h2>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <Input
-                label="Nome do Projeto *"
-                type="text"
-                value={formData.nome}
-                onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                placeholder="Ex: Loteamento Jardim das Flores"
-              />
+            <form onSubmit={form.handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <Input
+                  label="Nome do Projeto *"
+                  type="text"
+                  value={form.formData.nome}
+                  onChange={(e) => form.handleChange('nome', e.target.value)}
+                  onBlur={() => form.handleBlur('nome')}
+                  placeholder="Ex: Loteamento Jardim das Flores"
+                />
+                {form.errors.nome && <span style={{ color: '#dc3545', fontSize: '0.85rem' }}>{form.errors.nome}</span>}
+              </div>
 
-              <Textarea
-                label="Descrição"
-                value={formData.descricao}
-                onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-                placeholder="Descrição do projeto..."
-                rows={4}
-              />
+              <div>
+                <Textarea
+                  label="Descrição"
+                  value={form.formData.descricao}
+                  onChange={(e) => form.handleChange('descricao', e.target.value)}
+                  placeholder="Descrição do projeto..."
+                  rows={3}
+                />
+                {form.errors.descricao && (
+                  <span style={{ color: '#dc3545', fontSize: '0.85rem' }}>{form.errors.descricao}</span>
+                )}
+              </div>
 
               <Select
                 label="Tipo"
-                value={formData.tipo}
-                onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
-                options={[
-                  { value: 'INDIVIDUAL', label: 'Individual' },
-                  { value: 'DESMEMBRAMENTO', label: 'Desmembramento' },
-                  { value: 'LOTEAMENTO', label: 'Loteamento' },
-                  { value: 'RETIFICACAO', label: 'Retificação' },
-                ]}
+                value={form.formData.tipo}
+                onChange={(e) => form.handleChange('tipo', e.target.value)}
+                options={Object.entries(PROJECT_TYPES).map(([key, value]) => ({
+                  value: key,
+                  label: value.label,
+                }))}
               />
 
               {projetoEditando && (
                 <Select
                   label="Status"
-                  value={formData.status}
-                  onChange={(e) =>
-                    setFormData({ ...formData, status: e.target.value as Projeto['status'] })
-                  }
-                  options={[
-                    { value: 'RASCUNHO', label: '📝 Rascunho' },
-                    { value: 'EM_ANDAMENTO', label: '🚀 Em Andamento' },
-                    { value: 'CONCLUIDO', label: '✅ Concluído' },
-                    { value: 'ARQUIVADO', label: '📦 Arquivado' },
-                  ]}
+                  value={form.formData.status}
+                  onChange={(e) => form.handleChange('status', e.target.value)}
+                  options={Object.entries(PROJECT_STATUSES).map(([key, value]) => ({
+                    value: key,
+                    label: `${value.icon} ${value.label}`,
+                  }))}
                 />
               )}
 
               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
                 <button
+                  type="button"
                   onClick={fecharFormulario}
-                  disabled={salvando}
+                  disabled={form.loading}
                   style={{
                     padding: '0.75rem 1.5rem',
                     background: '#6c757d',
                     color: 'white',
                     border: 'none',
                     borderRadius: '6px',
-                    cursor: salvando ? 'wait' : 'pointer',
+                    cursor: form.loading ? 'wait' : 'pointer',
                   }}
                 >
                   Cancelar
                 </button>
                 <button
-                  onClick={salvarProjeto}
-                  disabled={salvando}
+                  type="submit"
+                  disabled={form.loading}
                   style={{
                     padding: '0.75rem 1.5rem',
                     background: '#667eea',
                     color: 'white',
                     border: 'none',
                     borderRadius: '6px',
-                    cursor: salvando ? 'wait' : 'pointer',
+                    cursor: form.loading ? 'wait' : 'pointer',
                     fontWeight: 'bold',
                   }}
                 >
-                  {salvando ? 'Salvando...' : projetoEditando ? 'Atualizar' : 'Criar'}
+                  {form.loading ? 'Salvando...' : projetoEditando ? 'Atualizar' : 'Criar'}
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       )}

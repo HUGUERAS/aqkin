@@ -13,9 +13,11 @@
 ### 🔴 REMOVER IMEDIATAMENTE
 
 #### `axios` - NÃO USADO (0 referências)
+
 ```bash
 npm uninstall axios
 ```
+
 **Motivo:** Não há nenhum import ou uso de axios no código. O projeto usa `fetch` nativo.
 
 **Economia:** ~500KB no bundle final
@@ -27,9 +29,11 @@ npm uninstall axios
 ### 🔴 CONSOLIDAR EM 1 ARQUIVO APENAS
 
 **Manter apenas:**
+
 - `DEPLOY_GUIDE.md` (renomear para `DEPLOY.md`)
 
 **Deletar todos estes:**
+
 ```
 ❌ DEPLOY_3_PASSOS.md           (1.7KB)
 ❌ DEPLOY_AGORA.md              (1KB)
@@ -63,6 +67,7 @@ npm uninstall axios
 ### 🔴 CONSOLIDAR EM 3-4 SCRIPTS APENAS
 
 **Manter apenas:**
+
 ```bash
 ✅ scripts/deploy-vps.sh          # Deploy completo VPS
 ✅ scripts/setup-ssh.sh            # Configuração SSH inicial
@@ -70,6 +75,7 @@ npm uninstall axios
 ```
 
 **Deletar (scripts redundantes/obsoletos):**
+
 ```
 ❌ CONFIGURAR_SSH_KEY.ps1
 ❌ CONFIGURAR_SSH.ps1
@@ -144,6 +150,7 @@ npm uninstall axios
 ```
 
 **Sugestão:** Consolidar em:
+
 - `docs/ARCHITECTURE.md` (arquitetura geral)
 - `docs/BACKEND.md` (backend específico)
 - `docs/FRONTEND.md` (frontend específico)
@@ -161,18 +168,23 @@ npm uninstall axios
 **Principais duplicações:**
 
 #### A. Modal de Confirmação (7 ocorrências idênticas)
+
 **Locais:**
+
 - `Financeiro.tsx` (linhas 670, 752)
 - `MeusProjetos.tsx` (linhas 496, 521)
 - `Orcamentos.tsx` (linhas 606, 631, 681)
 
 **Solução:** Criar componente reutilizável:
+
 ```tsx
 // src/components/ConfirmDialog.tsx (já existe, mas não está sendo usado!)
 ```
 
 #### B. Select/Dropdown styling (5 ocorrências)
+
 **Locais:**
+
 - `Financeiro.tsx` (linhas 696-700, 717-721, 735-739)
 - `MeusProjetos.tsx` (linhas 459-463)
 - `Orcamentos.tsx` (linhas 662-666)
@@ -185,7 +197,7 @@ npm uninstall axios
 
 ### 🟡 VERIFICAR SE PODEM SER REMOVIDOS
 
-#### Componentes de Mapa Duplicados:
+#### Componentes de Mapa Duplicados
 
 ```
 ⚠️ apps/web/src/components/maps/DrawMapEsri.tsx
@@ -194,7 +206,7 @@ npm uninstall axios
 
 **Decisão necessária:** Usar ESRI (ArcGIS) ou OpenLayers? Escolher um e remover o outro.
 
-#### Arquivos de configuração obsoletos:
+#### Arquivos de configuração obsoletos
 
 ```
 ❌ docker-compose.prod.yml        # Docker não usado
@@ -271,12 +283,14 @@ rm CONFIGURAR_*.ps1 DEPLOY_*.ps1 deploy-docker-* ENV_VARS_* # etc...
 ### 🎨 **Fase 4: Refatorar Código Duplicado** (1-2 horas)
 
 **4.1. Criar componente de Modal unificado**
+
 ```bash
 # Reutilizar ConfirmDeleteModal.tsx existente
 # Substituir 7 ocorrências em Financeiro, MeusProjetos, Orcamentos
 ```
 
 **4.2. Criar componente Select customizado**
+
 ```tsx
 // apps/web/src/components/UIComponents.tsx
 export const Select = ({ options, value, onChange, ...props }) => {
@@ -303,7 +317,7 @@ export const Select = ({ options, value, onChange, ...props }) => {
 
 ## ⚠️ Avisos Importantes
 
-### NÃO REMOVER (em uso):
+### NÃO REMOVER (em uso)
 
 ✅ `@arcgis/core` - Usado em 20+ lugares  
 ✅ `recharts` - Usado em DashboardEnhanced  
@@ -311,7 +325,7 @@ export const Select = ({ options, value, onChange, ...props }) => {
 ✅ `zod` - Usado para validação  
 ✅ Todos arquivos em `apps/web/src/`
 
-### Verificar antes de remover:
+### Verificar antes de remover
 
 ⚠️ `DrawMapEsri.tsx` vs `DrawMap.tsx` - Qual versão está em uso?  
 ⚠️ `ViewMapEsri.tsx` vs `ViewMap.tsx` - Qual versão está em uso?

@@ -10,12 +10,6 @@
       "path": "./apps/web"
     },
     {
-      "path": "./clean-project/apps/web-e2e"
-    },
-    {
-      "path": "./clean-project/apps/web"
-    },
-    {
       "path": "./clean-project"
     }
   ]

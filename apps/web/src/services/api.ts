@@ -7,6 +7,12 @@ import {
   ProjectsSchema,
 } from './schemas';
 import type { ZodType } from 'zod';
+import {
+  validateProjectResponse,
+  validateProjectsResponse,
+  validateOrcamentoResponse,
+  validateOrcamentosResponse,
+} from '../schemas';
 
 // FastAPI Backend URL (Ativo Real) - OBRIGATÓRIO, nunca localhost
 const API_URL = import.meta.env.VITE_API_URL ?? '';

@@ -57,3 +57,5 @@ test-output
 clean-project/
 
 .env.production
+scripts/ENV_VARS_VPS-fix.sh
+scripts/deploy-completo-fix.sh

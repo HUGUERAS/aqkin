@@ -334,6 +334,7 @@ def _lote_autorizado(lote_id: int, perfil: dict, escrita: bool = False) -> dict:
 
 
 def _listar_ids_projetos_tenant(perfil: dict) -> list[int]:
+    """Retorna os IDs dos projetos associados ao tenant do perfil."""
     tenant_id = perfil.get("tenant_id")
     if not tenant_id:
         return []

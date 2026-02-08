@@ -2,7 +2,7 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import Logo from '../components/Logo';
 import Icon from '../components/Icon';
-import AIChat from '../components/chat/AIChat';
+
 import '../styles/map-focused-layout.css';
 
 export default function TopografoLayout() {
@@ -124,8 +124,6 @@ export default function TopografoLayout() {
           <Outlet />
         </main>
       </div>
-
-      <AIChat userRole="topografo" />
     </div>
   );
 }

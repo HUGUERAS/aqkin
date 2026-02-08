@@ -210,6 +210,7 @@ export default function AIChat({ userRole }: AIChatProps) {
                 onSuggestionClick={handleSuggestionClick}
               />
             ))}
+            {/* eslint-disable-next-line jsx-a11y/aria-role */}
             {isLoading && <ChatMessage role="assistant" content="" isLoading />}
             <div ref={messagesEndRef} />
           </div>

@@ -62,7 +62,7 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/cliente/bemvindo" replace />} />
+          <Route index element={<Navigate to="/cliente/desenhar" replace />} />
           <Route path="bemvindo" element={<BemVindo />} />
           <Route path="dados" element={<DadosPessoais />} />
           <Route path="desenhar" element={<DesenharArea />} />

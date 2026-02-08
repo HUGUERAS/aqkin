@@ -58,7 +58,7 @@ while ($true) {
     }
 
     Update-Status -WebStatus ($webPort -ne $null) -ApiStatus ($apiPort -ne $null) -Details $msg
-    Start-Sleep -Seconds 5
+    Start-Sleep -Seconds 20
 }
 
 

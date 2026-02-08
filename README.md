@@ -21,6 +21,8 @@ These instructions help ensure consistent code quality and adherence to project 
 - **[SUPABASE_SETUP.md](SUPABASE_SETUP.md)** - Database setup and configuration
 - **[DEPLOY_GUIDE.md](DEPLOY_GUIDE.md)** - General deployment instructions
 - **[DEPLOY_BACKEND.md](DEPLOY_BACKEND.md)** - Backend deployment specifics
+- **[DEPLOY_HOSTINGER.md](DEPLOY_HOSTINGER.md)** - VPS deployment guide
+- **[FIREWALL_CONFIGURATION.md](FIREWALL_CONFIGURATION.md)** - Firewall setup and security
 - **[SETUP_AZURE.md](SETUP_AZURE.md)** - Azure deployment guide
 - **[SECURITY.md](SECURITY.md)** - Security policies and reporting
 

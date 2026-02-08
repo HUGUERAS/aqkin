@@ -118,7 +118,7 @@ export default function SignUp() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: 'linear-gradient(135deg, #0b0f14 0%, #111827 100%)',
             padding: '20px'
         }}>
             <div style={{
@@ -130,7 +130,7 @@ export default function SignUp() {
                 maxWidth: '480px'
             }}>
                 <h2 style={{ marginBottom: '0.5rem', textAlign: 'center', fontSize: '1.8rem', color: '#1a202c' }}>
-                    ➕ Criar Conta
+                    <span role="img" aria-label="Adicionar">➕</span> Criar Conta
                 </h2>
                 <p style={{ marginBottom: '2rem', textAlign: 'center', color: '#718096', fontSize: '0.95rem' }}>
                     Comece a regularizar sua propriedade agora
@@ -245,11 +245,11 @@ export default function SignUp() {
                         />
                         <label htmlFor="terms" style={{ fontSize: '0.85rem', color: '#4a5568', cursor: 'pointer', lineHeight: '1.5' }}>
                             Concordo com os{' '}
-                            <a href="/termos" target="_blank" style={{ color: '#667eea', fontWeight: 'bold', textDecoration: 'none' }}>
+                            <a href="/termos" target="_blank" style={{ color: '#3b82f6', fontWeight: 'bold', textDecoration: 'none' }}>
                                 termos de serviço
                             </a>{' '}
                             e{' '}
-                            <a href="/privacidade" target="_blank" style={{ color: '#667eea', fontWeight: 'bold', textDecoration: 'none' }}>
+                            <a href="/privacidade" target="_blank" style={{ color: '#3b82f6', fontWeight: 'bold', textDecoration: 'none' }}>
                                 política de privacidade
                             </a>
                         </label>
@@ -260,7 +260,7 @@ export default function SignUp() {
                         disabled={loading || !formData.agreeTerms}
                         style={{
                             padding: '1rem',
-                            background: (loading || !formData.agreeTerms) ? '#a0aec0' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            background: (loading || !formData.agreeTerms) ? '#3b3b3b' : 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
                             color: 'white',
                             border: 'none',
                             borderRadius: '8px',
@@ -271,24 +271,32 @@ export default function SignUp() {
                             transition: 'all 0.2s ease'
                         }}
                     >
-                        {loading ? '⏳ Criando conta...' : '🚀 Criar Conta Grátis'}
+                        {loading ? (
+                            <>
+                                <span role="img" aria-label="Carregando">⏳</span> Criando conta...
+                            </>
+                        ) : (
+                            <>
+                                <span role="img" aria-label="Foguete">🚀</span> Criar Conta Grátis
+                            </>
+                        )}
                     </button>
                 </form>
 
                 <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#fef6e7', border: '1px solid #f6d365', borderRadius: '8px', fontSize: '0.85rem', color: '#744210', textAlign: 'center' }}>
-                    ⭐ Crie sua conta e comece grátis!<br />
+                    <span role="img" aria-label="Estrela">⭐</span> Crie sua conta e comece grátis!<br />
                     <span style={{ fontSize: '0.8rem' }}>Upgrade para Premium quando precisar</span>
                 </div>
 
                 <p style={{ marginTop: '1.5rem', textAlign: 'center', color: '#718096', fontSize: '0.9rem' }}>
                     Já tem uma conta?{' '}
-                    <a href="/login" style={{ color: '#667eea', textDecoration: 'none', fontWeight: 'bold' }}>
+                    <a href="/login" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 'bold' }}>
                         Faça login aqui
                     </a>
                 </p>
 
                 <p style={{ marginTop: '1rem', textAlign: 'center' }}>
-                    <a href="/" style={{ color: '#667eea', textDecoration: 'none', fontSize: '0.9rem' }}>
+                    <a href="/" style={{ color: '#3b82f6', textDecoration: 'none', fontSize: '0.9rem' }}>
                         ← Voltar para Home
                     </a>
                 </p>

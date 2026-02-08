@@ -52,7 +52,7 @@ export function kmlFirstPolygonToWKT(kmlString: string): string | null {
       return polygonToWKT(geom);
     }
     if (type === 'MultiPolygon') {
-      const coords = (geom as any).getCoordinates();
+      const coords = (geom as import('ol/geom/MultiPolygon').default).getCoordinates();
       if (coords.length > 0 && coords[0].length > 0) {
         return multiPolygonFirstToWKT(coords);
       }

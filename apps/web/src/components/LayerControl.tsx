@@ -57,7 +57,7 @@ export const LayerControl: React.FC<LayerControlProps> = ({
         <div className={`layer-control ${compact ? 'compact' : ''}`}>
             {/* Header */}
             <div className="layer-control-header">
-                <h3>🗺️ Layers</h3>
+                <h3><span role="img" aria-label="Mapa">🗺️</span> Layers</h3>
                 {compact && (
                     <button
                         className="expand-toggle"
@@ -136,7 +136,7 @@ export const LayerControl: React.FC<LayerControlProps> = ({
                     }}
                     title="Mostrar todas as layers"
                 >
-                    👁️ Todas
+                    <span role="img" aria-label="Visivel">👁️</span> Todas
                 </button>
 
                 <button
@@ -151,7 +151,7 @@ export const LayerControl: React.FC<LayerControlProps> = ({
                     }}
                     title="Esconder todas as layers"
                 >
-                    👁️‍🗨️ Nenhuma
+                    <span role="img" aria-label="Ocultar">👁️‍🗨️</span> Nenhuma
                 </button>
 
                 <button
@@ -169,7 +169,7 @@ export const LayerControl: React.FC<LayerControlProps> = ({
                     }}
                     title="Restaurar padrão"
                 >
-                    ↺ Padrão
+                    <span role="img" aria-label="Resetar">↺</span> Padrão
                 </button>
             </div>
         </div>

@@ -195,9 +195,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(59, 130, 246, 0.12);
   border-radius: 50%;
-  color: #667eea;
+  color: #3b82f6;
   opacity: 0;
   transform: translateX(-10px);
   transition: all 0.3s ease;
@@ -213,8 +213,8 @@
   transform: translateY(-8px);
   box-shadow: 
     0 12px 24px rgba(0, 0, 0, 0.1),
-    0 20px 40px rgba(102, 126, 234, 0.2);
-  border-color: rgba(102, 126, 234, 0.2);
+    0 20px 40px rgba(59, 130, 246, 0.25);
+  border-color: rgba(59, 130, 246, 0.3);
 }
 
 /* Active/Click effect */

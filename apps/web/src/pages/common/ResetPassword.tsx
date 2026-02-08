@@ -21,8 +21,8 @@ export default function ResetPassword() {
 
     // Verificar se o usuário veio de um link de recuperação válido
     useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            if (!session) {
+        supabase.auth.getSession().then((result) => {
+            if (!result.data.session) {
                 setSessionValid(false);
             }
         });
@@ -63,17 +63,31 @@ export default function ResetPassword() {
 
     if (!sessionValid) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
-                <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 text-center">
+            <div
+                className="min-h-screen flex items-center justify-center p-6"
+                style={{ background: 'linear-gradient(135deg, #0b0f14 0%, #111827 100%)' }}
+            >
+                <div
+                    className="w-full max-w-md rounded-2xl shadow-2xl p-8 text-center border"
+                    style={{
+                        background: 'rgba(15, 23, 42, 0.92)',
+                        borderColor: 'rgba(239, 68, 68, 0.3)',
+                        color: '#e5e7eb',
+                    }}
+                >
                     <Icon name="alert" size="xl" color="error" className="mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Link Inválido</h2>
-                    <p className="text-gray-600 mb-6">
+                    <h2 className="text-2xl font-bold text-slate-50 mb-2">Link Inválido</h2>
+                    <p className="text-slate-300 mb-6">
                         Este link de recuperação expirou ou é inválido. Solicite um novo link.
                     </p>
                     <Button
                         variant="primary"
                         onClick={() => navigate('/forgot-password')}
-                        className="w-full"
+                        className="w-full text-white font-semibold"
+                        style={{
+                            background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
+                            border: 'none',
+                        }}
                     >
                         Solicitar Novo Link
                     </Button>
@@ -83,22 +97,30 @@ export default function ResetPassword() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
-            <div className="w-full max-w-md">
-                {/* Logo */}
+        <div
+            className="min-h-screen flex items-center justify-center p-6"
+            style={{ background: 'linear-gradient(135deg, #0b0f14 0%, #111827 100%)' }}
+        >
+            <div className="w-full max-w-xl">
                 <div className="flex justify-center mb-8">
                     <Logo size="lg" variant="icon" />
                 </div>
 
-                {/* Card */}
-                <div className="bg-white rounded-2xl shadow-xl p-8">
+                <div
+                    className="rounded-2xl shadow-2xl p-10 border"
+                    style={{
+                        background: 'rgba(15, 23, 42, 0.92)',
+                        borderColor: 'rgba(59, 130, 246, 0.25)',
+                        color: '#e5e7eb',
+                    }}
+                >
                     {!success ? (
                         <>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-2 text-center">
+                            <h1 className="text-3xl font-bold text-slate-50 mb-2 text-center">
                                 Nova Senha
                             </h1>
-                            <p className="text-gray-600 text-center mb-6">
-                                Digite uma nova senha para sua conta
+                            <p className="text-slate-300 text-center mb-6">
+                                Escolha uma nova senha forte para sua conta
                             </p>
 
                             {error && (
@@ -133,7 +155,14 @@ export default function ResetPassword() {
                                     type="submit"
                                     variant="primary"
                                     size="lg"
-                                    className="w-full"
+                                    className="w-full text-white font-semibold"
+                                    style={{
+                                        background:
+                                            loading
+                                                ? '#1f2937'
+                                                : 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
+                                        border: 'none',
+                                    }}
                                     disabled={loading}
                                     isLoading={loading}
                                 >
@@ -144,7 +173,8 @@ export default function ResetPassword() {
                             <div className="mt-6">
                                 <button
                                     onClick={() => navigate('/login')}
-                                    className="w-full flex items-center justify-center gap-2 text-blue-600 hover:text-blue-800 font-semibold transition-colors"
+                                    className="w-full flex items-center justify-center gap-2 font-semibold transition-colors"
+                                    style={{ color: '#60a5fa' }}
                                 >
                                     <Icon name="back" size="sm" />
                                     Voltar ao Login
@@ -153,18 +183,18 @@ export default function ResetPassword() {
                         </>
                     ) : (
                         <div className="text-center">
-                                <div className="mb-4 flex justify-center">
-                                    <div className="rounded-full bg-green-100 p-4">
-                                        <Icon name="check" size="xl" color="success" />
-                                    </div>
+                            <div className="mb-4 flex justify-center">
+                                <div className="rounded-full bg-emerald-900/60 border border-emerald-500/40 p-4">
+                                    <Icon name="check" size="xl" color="success" />
                                 </div>
-                                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                                    Senha Redefinida!
-                                </h2>
-                                <p className="text-gray-600">
-                                    Redirecionando para login...
-                                </p>
                             </div>
+                            <h2 className="text-2xl font-bold text-slate-50 mb-2">
+                                Senha Redefinida!
+                            </h2>
+                            <p className="text-slate-300">
+                                Redirecionando para login...
+                            </p>
+                        </div>
                     )}
                 </div>
             </div>

@@ -425,6 +425,22 @@ class ApiClient {
     const response = await this.request<unknown[]>(`/api/pagamentos${query ? `?${query}` : ''}`, { method: 'GET' });
     return validateResponse(PagamentosSchema, response, 'getPagamentos');
   }
+
+  // ==================== AI CHAT ====================
+  async sendChatMessage(
+    messages: { role: string; content: string }[],
+    userRole: string,
+  ) {
+    return this.request<{ response: string; mood: string; suggested_questions: string[] }>(
+      '/api/chat',
+      {
+        method: 'POST',
+        body: JSON.stringify({ messages, user_role: userRole }),
+        timeoutMs: 30000,
+        retry: { retries: 1, retryOnStatuses: [502, 503] },
+      },
+    );
+  }
 }
 
 

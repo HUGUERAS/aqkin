@@ -35,60 +35,33 @@ export default function ConfirmDeleteModal({
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: 'rgba(0,0,0,0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000,
-        padding: overlayPadding,
-      }}
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-modal"
+      style={{ padding: overlayPadding }}
       onClick={() => !busy && onCancel()}
     >
       <div
+        className="bg-white rounded-lg p-8"
         style={{
-          background: 'white',
-          borderRadius: '12px',
-          padding: '2rem',
           maxWidth,
           width,
-          boxShadow,
+          boxShadow: boxShadow || 'var(--shadow-2xl)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 style={{ marginTop: 0 }}>{title}</h3>
-        <p>{message}</p>
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+        <h3 className="mt-0 text-lg font-semibold text-titanium-900">{title}</h3>
+        <p className="text-titanium-700">{message}</p>
+        <div className="flex gap-4 justify-end mt-6">
           <button
             onClick={onCancel}
             disabled={busy}
-            style={{
-              padding: '0.75rem 1.5rem',
-              background: '#6c757d',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: busy ? 'wait' : 'pointer',
-            }}
+            className="px-6 py-3 bg-secondary text-titanium-900 border-none rounded-md transition-all hover:bg-secondary-hover disabled:opacity-50 disabled:cursor-wait"
           >
             {cancelLabel}
           </button>
           <button
             onClick={onConfirm}
             disabled={busy}
-            style={{
-              padding: '0.75rem 1.5rem',
-              background: '#dc3545',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: busy ? 'wait' : 'pointer',
-            }}
+            className="px-6 py-3 bg-error text-white border-none rounded-md transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-wait"
           >
             {busy ? confirmingLabel : confirmLabel}
           </button>

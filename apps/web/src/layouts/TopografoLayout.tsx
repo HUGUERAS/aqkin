@@ -1,10 +1,13 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
+import { useState } from 'react';
 import Logo from '../components/Logo';
 import Icon from '../components/Icon';
-import '../styles/PortalLayout.css';
+import AIChat from '../components/chat/AIChat';
+import '../styles/map-focused-layout.css';
 
 export default function TopografoLayout() {
   const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const isActive = (path: string) => location.pathname.includes(path);
 
   return (
@@ -12,6 +15,13 @@ export default function TopografoLayout() {
       <header className="portal-header">
         <div className="inner">
           <div className="portal-brand">
+            <button
+              className="hamburger-btn"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              aria-label="Toggle menu"
+            >
+              <Icon name="menu" size="md" />
+            </button>
             <Logo size="md" variant="icon" />
             <span>AtivoReal</span>
           </div>
@@ -28,22 +38,47 @@ export default function TopografoLayout() {
         </div>
       </header>
 
+      {/* Overlay para fechar sidebar em mobile */}
+      {sidebarOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       <div className="portal-content">
-        <aside className="portal-sidebar">
+        <aside className={`portal-sidebar ${sidebarOpen ? 'open' : ''}`}>
           <nav>
-            <Link to="/topografo/dashboard" className={`sidebar-link ${isActive('dashboard') ? 'active' : ''}`}>
+            <Link
+              to="/topografo/dashboard"
+              className={`sidebar-link ${isActive('dashboard') ? 'active' : ''}`}
+              onClick={() => setSidebarOpen(false)}
+            >
               <Icon name="chart" size="md" />
               Dashboard
             </Link>
-            <Link to="/topografo/projetos" className={`sidebar-link ${isActive('projetos') ? 'active' : ''}`}>
+            <Link
+              to="/topografo/projetos"
+              className={`sidebar-link ${isActive('projetos') ? 'active' : ''}`}
+              onClick={() => setSidebarOpen(false)}
+            >
               <Icon name="grid" size="md" />
               Projetos
             </Link>
-            <Link to="/topografo/validar" className={`sidebar-link ${isActive('validar') ? 'active' : ''}`}>
+            <Link
+              to="/topografo/validar"
+              className={`sidebar-link ${isActive('validar') ? 'active' : ''}`}
+              onClick={() => setSidebarOpen(false)}
+            >
               <Icon name="check" size="md" />
               Validar
             </Link>
-            <Link to="/topografo/pecas" className={`sidebar-link ${isActive('pecas') ? 'active' : ''}`}>
+            <Link
+              to="/topografo/pecas"
+              className={`sidebar-link ${isActive('pecas') ? 'active' : ''}`}
+              onClick={() => setSidebarOpen(false)}
+            >
               <Icon name="download" size="md" />
               Peças Técnicas
             </Link>
@@ -66,11 +101,19 @@ export default function TopografoLayout() {
 
             <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid rgba(15,23,42,0.08)' }} />
 
-            <Link to="/topografo/orcamentos" className={`sidebar-link ${isActive('orcamentos') ? 'active' : ''}`}>
+            <Link
+              to="/topografo/orcamentos"
+              className={`sidebar-link ${isActive('orcamentos') ? 'active' : ''}`}
+              onClick={() => setSidebarOpen(false)}
+            >
               <Icon name="dollar" size="md" />
               Orçamentos
             </Link>
-            <Link to="/topografo/financeiro" className={`sidebar-link ${isActive('financeiro') ? 'active' : ''}`}>
+            <Link
+              to="/topografo/financeiro"
+              className={`sidebar-link ${isActive('financeiro') ? 'active' : ''}`}
+              onClick={() => setSidebarOpen(false)}
+            >
               <Icon name="chart" size="md" />
               Financeiro
             </Link>
@@ -81,6 +124,8 @@ export default function TopografoLayout() {
           <Outlet />
         </main>
       </div>
+
+      <AIChat userRole="topografo" />
     </div>
   );
 }

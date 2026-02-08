@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 export default function ProtectedRoute({ children, allowedRole }: ProtectedRouteProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const [, setUserRole] = useState<string | null>(null);
   const [hasPremium, setHasPremium] = useState(false);
   const location = useLocation();
 
@@ -21,12 +21,14 @@ export default function ProtectedRoute({ children, allowedRole }: ProtectedRoute
     const timer = setTimeout(() => {
       setIsAuthenticated(true);
 
-      // Todos usuários são proprietario por padrão
-      setUserRole('proprietario');
-
-      // TODO: Buscar do backend se usuário tem plano premium
-      // Por enquanto, simula que não tem premium
-      setHasPremium(false);
+      // MODO DEV: Define role baseado na URL acessada
+      if (allowedRole === 'topografo') {
+        setUserRole('topografo');
+        setHasPremium(true); // Topógrafo sempre tem premium em dev
+      } else {
+        setUserRole('proprietario');
+        setHasPremium(false);
+      }
 
       setIsLoading(false);
     }, 500);
@@ -42,7 +44,7 @@ export default function ProtectedRoute({ children, allowedRole }: ProtectedRoute
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#f5f5f5'
+        background: 'linear-gradient(135deg, #0b0f14 0%, #111827 100%)'
       }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>
@@ -67,37 +69,39 @@ export default function ProtectedRoute({ children, allowedRole }: ProtectedRoute
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #0b0f14 0%, #111827 100%)',
         padding: '20px'
       }}>
         <div style={{
-          background: 'white',
+          background: 'rgba(15, 23, 42, 0.95)',
           padding: '3rem',
           borderRadius: '16px',
-          boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+          boxShadow: '0 18px 50px rgba(0,0,0,0.35)',
           maxWidth: '480px',
           textAlign: 'center'
         }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⭐</div>
-          <h2 style={{ marginBottom: '1rem', color: '#1a202c', fontSize: '1.8rem' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
+            <span role="img" aria-label="Estrela">⭐</span>
+          </div>
+          <h2 style={{ marginBottom: '1rem', color: '#f8fafc', fontSize: '1.8rem' }}>
             Acesso Premium Necessário
           </h2>
-          <p style={{ color: '#718096', marginBottom: '2rem', lineHeight: '1.6' }}>
+          <p style={{ color: '#94a3b8', marginBottom: '2rem', lineHeight: '1.6' }}>
             As ferramentas profissionais de topografia estão disponíveis apenas para usuários Premium.
             Faça upgrade agora e tenha acesso a:
           </p>
-          <ul style={{ textAlign: 'left', color: '#2d3748', marginBottom: '2rem', lineHeight: '1.8' }}>
-            <li>✅ Validação de desenhos</li>
-            <li>✅ Geração de peças técnicas</li>
-            <li>✅ Gerenciamento de projetos</li>
-            <li>✅ Orçamentos e financeiro</li>
+          <ul style={{ textAlign: 'left', color: '#e5e7eb', marginBottom: '2rem', lineHeight: '1.8' }}>
+            <li><span role="img" aria-label="Sucesso">✅</span> Validação de desenhos</li>
+            <li><span role="img" aria-label="Sucesso">✅</span> Geração de peças técnicas</li>
+            <li><span role="img" aria-label="Sucesso">✅</span> Gerenciamento de projetos</li>
+            <li><span role="img" aria-label="Sucesso">✅</span> Orçamentos e financeiro</li>
           </ul>
           <button
             onClick={() => window.location.href = '/cliente'}
             style={{
               width: '100%',
               padding: '1rem',
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
               color: 'white',
               border: 'none',
               borderRadius: '8px',
@@ -107,7 +111,7 @@ export default function ProtectedRoute({ children, allowedRole }: ProtectedRoute
               marginBottom: '1rem'
             }}
           >
-            🚀 Fazer Upgrade
+            <span role="img" aria-label="Foguete">🚀</span> Fazer Upgrade
           </button>
           <button
             onClick={() => window.location.href = '/cliente'}
@@ -115,8 +119,8 @@ export default function ProtectedRoute({ children, allowedRole }: ProtectedRoute
               width: '100%',
               padding: '1rem',
               background: 'transparent',
-              color: '#667eea',
-              border: '2px solid #667eea',
+              color: '#93c5fd',
+              border: '2px solid rgba(59, 130, 246, 0.7)',
               borderRadius: '8px',
               fontSize: '1rem',
               fontWeight: 'bold',
@@ -130,5 +134,5 @@ export default function ProtectedRoute({ children, allowedRole }: ProtectedRoute
     );
   }
 
-  return <>{children}</>;
+  return children;
 }

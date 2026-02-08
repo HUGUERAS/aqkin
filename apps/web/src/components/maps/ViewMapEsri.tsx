@@ -86,12 +86,13 @@ export default function ViewMapEsri({
   }, [geometries, center, zoom, basemap]);
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative' }} className="responsive-map-container">
       <div
         ref={mapRef}
+        className="map-viewport"
         style={{
           width: '100%',
-          height: '500px',
+          height: '100%',
           borderRadius: '8px',
           overflow: 'hidden',
         }}
@@ -129,7 +130,12 @@ export default function ViewMapEsri({
 }
 
 function getSymbolForType(type: 'rascunho' | 'oficial' | 'sobreposicao'): SimpleFillSymbol {
-  const styles = {
+  type SymbolStyle = {
+    color: [number, number, number, number];
+    outline: { color: [number, number, number]; width: number; style: 'dash' | 'solid' };
+  };
+
+  const styles: Record<'rascunho' | 'oficial' | 'sobreposicao', SymbolStyle> = {
     rascunho: {
       color: [255, 193, 7, 0.3],
       outline: { color: [255, 193, 7], width: 2, style: 'dash' },
@@ -145,11 +151,11 @@ function getSymbolForType(type: 'rascunho' | 'oficial' | 'sobreposicao'): Simple
   };
   const s = styles[type];
   return new SimpleFillSymbol({
-    color: s.color as any,
+    color: s.color,
     outline: new SimpleLineSymbol({
-      color: s.outline.color as any,
+      color: s.outline.color,
       width: s.outline.width,
-      style: s.outline.style as any,
+      style: s.outline.style,
     }),
   });
 }

@@ -4,12 +4,20 @@
  */
 
 import { useState, useEffect } from 'react';
-import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, type PieLabelRenderProps } from 'recharts';
 import { Card, CardHeader, CardBody, CardFooter, Badge, Alert } from '../../components/UIComponents';
 import Icon from '../../components/Icon';
 import apiClient from '../../services/api';
 
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#60a5fa'];
+
+interface ProjectSummary {
+    id: number;
+    nome: string;
+    status: 'CONCLUIDO' | 'EM_ANDAMENTO' | 'RASCUNHO' | string;
+    criado_em: string;
+    lotes_count?: number;
+}
 
 const mockMetrics = [
     { name: 'Jan', projects: 4, lotes: 24, completos: 2 },
@@ -27,9 +35,10 @@ const mockStatusData = [
     { name: 'Completo', value: 25 },
 ];
 
+const renderStatusLabel = ({ name, value }: PieLabelRenderProps) => `${name ?? ''}: ${value ?? 0}`;
+
 export default function DashboardEnhanced() {
-    const [_loading, setLoading] = useState(true);
-    const [projects, setProjects] = useState<any[]>([]);
+    const [projects, setProjects] = useState<ProjectSummary[]>([]);
     const [stats, setStats] = useState({
         totalProjetos: 0,
         totalLotes: 0,
@@ -37,22 +46,35 @@ export default function DashboardEnhanced() {
         pendentes: 0,
     });
 
+    const statCards: Array<{
+        icon: React.ComponentProps<typeof Icon>['name'];
+        label: string;
+        value: number;
+        badgeColor: 'blue' | 'green' | 'emerald' | 'yellow';
+        iconColor: React.ComponentProps<typeof Icon>['color'];
+    }> = [
+            { icon: 'grid', label: 'Projetos', value: stats.totalProjetos, badgeColor: 'blue', iconColor: 'info' },
+            { icon: 'map-pin', label: 'Lotes', value: stats.totalLotes, badgeColor: 'green', iconColor: 'success' },
+            { icon: 'check', label: 'Completos', value: stats.concluidROS, badgeColor: 'emerald', iconColor: 'success' },
+            { icon: 'alert', label: 'Pendentes', value: stats.pendentes, badgeColor: 'yellow', iconColor: 'warning' },
+        ];
+
     useEffect(() => {
         loadData();
     }, []);
 
     const loadData = async () => {
-        setLoading(false);
         try {
             const response = await apiClient.getProjects();
             if (Array.isArray(response.data)) {
-                setProjects(response.data);
+                const projectData = response.data as unknown as ProjectSummary[];
+                setProjects(projectData);
                 // Calculate stats from projects
                 setStats({
-                    totalProjetos: response.data.length,
-                    totalLotes: response.data.reduce((acc: number, p: any) => acc + (p.lotes_count || 0), 0),
-                    concluidROS: response.data.filter((p: any) => p.status === 'CONCLUIDO').length,
-                    pendentes: response.data.filter((p: any) => p.status === 'EM_ANDAMENTO').length,
+                    totalProjetos: projectData.length,
+                    totalLotes: projectData.reduce((acc, p) => acc + (p.lotes_count || 0), 0),
+                    concluidROS: projectData.filter((p) => p.status === 'CONCLUIDO').length,
+                    pendentes: projectData.filter((p) => p.status === 'EM_ANDAMENTO').length,
                 });
             } else {
                 setProjects([]);
@@ -78,17 +100,12 @@ export default function DashboardEnhanced() {
 
             {/* Stats Cards - 4 Column Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                {[
-                    { icon: 'grid', label: 'Projetos', value: stats.totalProjetos, color: 'blue' },
-                    { icon: 'map-pin', label: 'Lotes', value: stats.totalLotes, color: 'green' },
-                    { icon: 'check', label: 'Completos', value: stats.concluidROS, color: 'emerald' },
-                    { icon: 'alert', label: 'Pendentes', value: stats.pendentes, color: 'yellow' },
-                ].map((stat, idx) => (
+                {statCards.map((stat, idx) => (
                     <Card key={idx} className="flex flex-col items-start">
                         <div className="flex items-center justify-between w-full mb-4">
                             <h3 className="text-gray-600 font-semibold text-sm">{stat.label}</h3>
-                            <div className={`p-2 rounded-lg bg-${stat.color}-100`}>
-                                <Icon name={stat.icon as any} size="lg" color={stat.color as any} />
+                            <div className={`p-2 rounded-lg bg-${stat.badgeColor}-100`}>
+                                <Icon name={stat.icon} size="lg" color={stat.iconColor} />
                             </div>
                         </div>
                         <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
@@ -135,7 +152,7 @@ export default function DashboardEnhanced() {
                                     cx="50%"
                                     cy="50%"
                                     labelLine={false}
-                                    label={({ name, value }) => `${name}: ${value}`}
+                                    label={renderStatusLabel}
                                     outerRadius={80}
                                     fill="#3b82f6"
                                     dataKey="value"

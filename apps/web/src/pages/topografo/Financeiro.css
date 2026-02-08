@@ -78,14 +78,14 @@
 }
 
 .tab:hover {
-  color: var(--color-primary-600, #2563eb);
+  color: var(--color-primary-600, #3b82f6);
   border-bottom-color: var(--color-primary-200, #dbeafe);
 }
 
 .tab.active {
   background: transparent;
-  color: var(--color-primary-600, #2563eb);
-  border-bottom-color: var(--color-primary-600, #2563eb);
+  color: var(--color-primary-600, #3b82f6);
+  border-bottom-color: var(--color-primary-600, #3b82f6);
   font-weight: 600;
 }
 

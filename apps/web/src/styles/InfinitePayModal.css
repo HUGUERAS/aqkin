@@ -5,7 +5,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(5, 10, 20, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -25,13 +25,13 @@
 
 /* Modal Container */
 .infinitepay-modal {
-  background: white;
+  background: rgba(15, 23, 42, 0.98);
   border-radius: 16px;
   max-width: 500px;
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
   animation: slideUp 0.3s ease-out;
 }
 
@@ -52,28 +52,28 @@
   justify-content: space-between;
   align-items: center;
   padding: 24px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.25);
 }
 
 .infinitepay-header h2 {
   margin: 0;
   font-size: 24px;
   font-weight: 600;
-  color: #111827;
+  color: #f8fafc;
 }
 
 .infinitepay-close {
   background: none;
   border: none;
   font-size: 32px;
-  color: #6b7280;
+  color: #94a3b8;
   cursor: pointer;
   line-height: 1;
   transition: color 0.2s;
 }
 
 .infinitepay-close:hover {
-  color: #111827;
+  color: #e5e7eb;
 }
 
 /* Content */
@@ -90,7 +90,7 @@
 .spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid #e5e7eb;
+  border: 4px solid rgba(148, 163, 184, 0.35);
   border-top-color: #3b82f6;
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -110,12 +110,12 @@
 }
 
 .infinitepay-error p {
-  color: #dc2626;
+  color: #f87171;
   margin-bottom: 16px;
 }
 
 .infinitepay-error button {
-  background: #3b82f6;
+  background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
   color: white;
   border: none;
   padding: 10px 24px;
@@ -123,11 +123,12 @@
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  transition: background 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .infinitepay-error button:hover {
-  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(59, 130, 246, 0.35);
 }
 
 /* Payment Info */
@@ -135,12 +136,12 @@
   text-align: center;
   margin-bottom: 24px;
   padding-bottom: 24px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.25);
 }
 
 .payment-info h3 {
   font-size: 18px;
-  color: #374151;
+  color: #cbd5e1;
   margin: 0 0 12px 0;
 }
 
@@ -159,8 +160,8 @@
 }
 
 .method-btn {
-  background: white;
-  border: 2px solid #e5e7eb;
+  background: #0b1220;
+  border: 2px solid rgba(59, 130, 246, 0.25);
   border-radius: 12px;
   padding: 16px 8px;
   cursor: pointer;
@@ -171,17 +172,17 @@
   gap: 8px;
   font-size: 14px;
   font-weight: 500;
-  color: #374151;
+  color: #e5e7eb;
 }
 
 .method-btn:hover {
-  border-color: #3b82f6;
-  background: #eff6ff;
+  border-color: rgba(59, 130, 246, 0.45);
+  background: #0f172a;
 }
 
 .method-btn.active {
-  border-color: #3b82f6;
-  background: #3b82f6;
+  border-color: transparent;
+  background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
   color: white;
 }
 
@@ -200,7 +201,7 @@
 
 .method-btn.active .method-badge {
   background: white;
-  color: #3b82f6;
+  color: #0f172a;
 }
 
 /* PIX Content */
@@ -209,16 +210,16 @@
 }
 
 .pix-instructions {
-  color: #6b7280;
+  color: #94a3b8;
   margin-bottom: 20px;
   font-size: 14px;
 }
 
 .qr-code-container {
-  background: white;
+  background: #0b1220;
   padding: 20px;
   border-radius: 12px;
-  border: 2px dashed #d1d5db;
+  border: 2px dashed rgba(59, 130, 246, 0.35);
   margin-bottom: 20px;
   display: inline-block;
 }
@@ -231,7 +232,7 @@
 
 .copy-btn {
   width: 100%;
-  background: #10b981;
+  background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
   color: white;
   border: none;
   padding: 14px;
@@ -239,19 +240,20 @@
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
   margin-bottom: 16px;
 }
 
 .copy-btn:hover {
-  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(59, 130, 246, 0.35);
 }
 
 .pix-status {
   padding: 12px;
-  background: #fef3c7;
+  background: rgba(251, 191, 36, 0.15);
   border-radius: 8px;
-  color: #92400e;
+  color: #fbbf24;
   font-size: 14px;
 }
 
@@ -263,14 +265,14 @@
 
 .card-content p,
 .boleto-content p {
-  color: #6b7280;
+  color: #94a3b8;
   margin-bottom: 20px;
 }
 
 .checkout-btn {
   display: block;
   width: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
   color: white;
   text-decoration: none;
   padding: 16px;
@@ -283,7 +285,7 @@
 
 .checkout-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 12px 24px rgba(59, 130, 246, 0.35);
 }
 
 .security-note,
@@ -297,11 +299,11 @@
 .payment-footer {
   margin-top: 24px;
   padding-top: 16px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid rgba(59, 130, 246, 0.25);
   text-align: center;
 }
 
 .payment-footer small {
-  color: #9ca3af;
+  color: #94a3b8;
   font-size: 12px;
 }

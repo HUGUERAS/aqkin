@@ -11,7 +11,9 @@ export default function Index() {
       {/* MAP - FULL SCREEN */}
       <div className="hero">
         <div className="map-card">
-          <div className="map-badge">🌐 Regularização fundiária visual</div>
+          <div className="map-badge">
+            <span role="img" aria-label="Globo">🌐</span> Regularização fundiária visual
+          </div>
           <div className="map-preview">
             <div className="map-grid" />
             <div className="map-overlay">
@@ -20,9 +22,9 @@ export default function Index() {
                 Desenhe sua área, gerencie documentos e regularize sua propriedade de forma simples.
               </p>
               <div className="map-tags">
-                <span>📍 Desenhar área</span>
-                <span>👥 Vizinhos</span>
-                <span>📄 Documentos</span>
+                <span><span role="img" aria-label="Localização">📍</span> Desenhar área</span>
+                <span><span role="img" aria-label="Pessoas">👥</span> Vizinhos</span>
+                <span><span role="img" aria-label="Documento">📄</span> Documentos</span>
               </div>
             </div>
           </div>
@@ -35,7 +37,11 @@ export default function Index() {
         onClick={toggleMobileMenu}
         aria-label="Menu"
       >
-        {isExpanded ? '✕' : '☰'}
+        {isExpanded ? (
+          <span role="img" aria-label="Fechar">✕</span>
+        ) : (
+          <span role="img" aria-label="Menu">☰</span>
+        )}
       </button>
 
       {/* SIDEBAR - LOGIN */}
@@ -48,21 +54,21 @@ export default function Index() {
         <div className="card-actions">
           <Link to="/login" className="option primary" onClick={() => setIsExpanded(false)}>
             <div>
-              <div className="label">🔑 Entrar na plataforma</div>
+              <div className="label"><span role="img" aria-label="Chave">🔑</span> Entrar na plataforma</div>
               <div className="desc">Acesse sua área e documentos</div>
             </div>
           </Link>
 
           <Link to="/signup" className="option secondary" onClick={() => setIsExpanded(false)}>
             <div>
-              <div className="label">➕ Criar conta grátis</div>
+              <div className="label"><span role="img" aria-label="Adicionar">➕</span> Criar conta grátis</div>
               <div className="desc">Comece agora em 2 minutos</div>
             </div>
           </Link>
         </div>
 
         <div className="premium-banner">
-          <div className="premium-icon">⭐</div>
+          <div className="premium-icon"><span role="img" aria-label="Estrela">⭐</span></div>
           <div className="premium-text">
             <strong>Acesso Premium</strong>
             <span>Ferramentas profissionais de topografia e validação</span>
@@ -71,10 +77,10 @@ export default function Index() {
 
         <div className="card-links">
           <Link to="/suporte" onClick={() => setIsExpanded(false)}>
-            ❓ Precisa de ajuda?
+            <span role="img" aria-label="Ajuda">❓</span> Precisa de ajuda?
           </Link>
           <Link to="/sobre" onClick={() => setIsExpanded(false)}>
-            ℹ️ Saiba mais
+            <span role="img" aria-label="Informação">ℹ️</span> Saiba mais
           </Link>
         </div>
       </div>

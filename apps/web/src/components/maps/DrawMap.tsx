@@ -47,10 +47,10 @@ export default function DrawMap({
       source: vectorSource,
       style: new Style({
         fill: new Fill({
-          color: 'rgba(102, 126, 234, 0.3)'
+          color: 'rgba(59, 130, 246, 0.3)'
         }),
         stroke: new Stroke({
-          color: '#667eea',
+          color: '#3b82f6',
           width: 3
         })
       })
@@ -120,7 +120,8 @@ export default function DrawMap({
 
   const handleImportKML = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !vectorSourceRef.current) return;
+    const vectorSource = vectorSourceRef.current;
+    if (!file || !vectorSource) return;
     const reader = new FileReader();
     reader.onload = () => {
       const text = reader.result as string;
@@ -130,8 +131,8 @@ export default function DrawMap({
           alert('Nenhum polígono encontrado no arquivo KML.');
           return;
         }
-        vectorSourceRef.current!.clear();
-        features.forEach((f) => vectorSourceRef.current!.addFeature(f));
+        vectorSource.clear();
+        features.forEach((f) => vectorSource.addFeature(f));
         const wkt = kmlFirstPolygonToWKT(text);
         if (wkt && onGeometryChange) onGeometryChange(wkt);
       } catch (err) {
@@ -155,12 +156,13 @@ export default function DrawMap({
   };
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative' }} className="responsive-map-container">
       <div
         ref={mapRef}
+        className="map-viewport"
         style={{
           width: '100%',
-          height: '500px',
+          height: '100%',
           borderRadius: '8px',
           overflow: 'hidden'
         }}
@@ -271,18 +273,19 @@ export default function DrawMap({
         fontSize: '12px',
         boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
       }}>
-        <strong>📍 Como usar:</strong> Clique para adicionar pontos • Clique no primeiro ponto para fechar o polígono
+        <strong><span role="img" aria-label="Localização">📍</span> Como usar:</strong> Clique para adicionar pontos • Clique no primeiro ponto para fechar o polígono
       </div>
     </div>
   );
 }
 
 // Helper: Converter geometria OpenLayers para WKT
-function geometryToWKT(geometry: any): string {
+function geometryToWKT(geometry: Geometry): string {
   const type = geometry.getType();
 
   if (type === 'Polygon') {
-    const coordinates = geometry.getCoordinates()[0]; // Anel exterior
+    const polygon = geometry as import('ol/geom/Polygon').default;
+    const coordinates = polygon.getCoordinates()[0]; // Anel exterior
     const coords = coordinates.map((coord: number[]) => {
       // Converter de Web Mercator para longlat
       const [lon, lat] = coord;

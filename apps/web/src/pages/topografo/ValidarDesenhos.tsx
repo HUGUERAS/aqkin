@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import LayerControl, { Layer } from '../../components/LayerControl';
 import DrawMapValidation from '../../components/maps/DrawMapValidation';
+import { BreadcrumbNav } from '../../components/Navigation';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import Graphic from '@arcgis/core/Graphic';
 import './ValidarDesenhos.css';
@@ -113,7 +114,7 @@ export default function ValidarDesenhos() {
     {
       id: 'oficial',
       label: 'Geometria Oficial (ajustada)',
-      color: '#667eea',
+      color: '#CD7F32', // Bronze-600 (design-tokens.css)
       visible: layerStates.oficial.visible,
       opacity: layerStates.oficial.opacity,
       graphics: examplePolygons.oficial,
@@ -121,7 +122,7 @@ export default function ValidarDesenhos() {
     {
       id: 'sobreposi',
       label: 'Sobreposições',
-      color: '#f44336',
+      color: '#E53935', // Error color (design-tokens.css)
       visible: layerStates.sobreposi.visible,
       opacity: layerStates.sobreposi.opacity,
       graphics: examplePolygons.sobreposi,
@@ -129,7 +130,7 @@ export default function ValidarDesenhos() {
     {
       id: 'limites',
       label: 'Limites Compartilhados',
-      color: '#4caf50',
+      color: '#5FB063', // Success color (design-tokens.css)
       visible: layerStates.limites.visible,
       opacity: layerStates.limites.opacity,
       graphics: examplePolygons.limites,
@@ -164,9 +165,19 @@ export default function ValidarDesenhos() {
 
   return (
     <div className="validar-desenhos-container">
+      {/* Breadcrumb Navigation */}
+      <div style={{ padding: '1rem 2rem 0' }}>
+        <BreadcrumbNav
+          items={[
+            { label: 'Dashboard', path: '/topografo/dashboard' },
+            { label: 'Validar Desenhos' },
+          ]}
+        />
+      </div>
+
       {/* Header */}
       <div className="page-header">
-        <h1>✅ Validar Desenhos</h1>
+        <h1><span role="img" aria-label="Aprovado">✅</span> Validar Desenhos</h1>
         <p>Revise e aprove a geometria da propriedade antes de gerar o contrato</p>
       </div>
 
@@ -186,7 +197,7 @@ export default function ValidarDesenhos() {
               onClick={() => setActiveTool(activeTool === 'snap' ? null : 'snap')}
               title="Snap Tool: Ajustar vértices com tolerância de 0.5m"
             >
-              <span>🧲</span> Snap (0.5m)
+              <span role="img" aria-label="Imã">🧲</span> Snap (0.5m)
             </button>
 
             <button
@@ -194,7 +205,7 @@ export default function ValidarDesenhos() {
               onClick={() => setActiveTool(activeTool === 'edit' ? null : 'edit')}
               title="Editar Vértices: Mover, adicionar ou remover pontos"
             >
-              <span>✏️</span> Editar Vértices
+              <span role="img" aria-label="Lapis">✏️</span> Editar Vértices
             </button>
 
             <button
@@ -202,7 +213,7 @@ export default function ValidarDesenhos() {
               onClick={() => setActiveTool(activeTool === 'measure' ? null : 'measure')}
               title="Medir Distância: Medição entre pontos"
             >
-              <span>📏</span> Medir
+              <span role="img" aria-label="Regua">📏</span> Medir
             </button>
 
             <button
@@ -210,7 +221,7 @@ export default function ValidarDesenhos() {
               onClick={() => setActiveTool(activeTool === 'area' ? null : 'area')}
               title="Calcular Área: Área do polígono em m²"
             >
-              <span>📐</span> Calcular Área
+              <span role="img" aria-label="Esquadro">📐</span> Calcular Área
             </button>
 
             {activeTool && (
@@ -237,7 +248,7 @@ export default function ValidarDesenhos() {
               }}
               initialCenter={[-47.9292, -15.7801]}
               initialZoom={17}
-              basemap="topo-vector"
+              basemap="streets-vector"
             />
           </div>
 
@@ -246,7 +257,9 @@ export default function ValidarDesenhos() {
             <div className="measurement-results">
               {measurements.distance && (
                 <div className="measurement-item">
-                  <span className="measurement-label">📏 Distância Medida:</span>
+                  <span className="measurement-label">
+                    <span role="img" aria-label="Regua">📏</span> Distância Medida:
+                  </span>
                   <span className="measurement-value">
                     {measurements.distance >= 1000
                       ? (measurements.distance / 1000).toFixed(2)
@@ -257,7 +270,9 @@ export default function ValidarDesenhos() {
               )}
               {measurements.area && (
                 <div className="measurement-item">
-                  <span className="measurement-label">📐 Área Calculada:</span>
+                  <span className="measurement-label">
+                    <span role="img" aria-label="Esquadro">📐</span> Área Calculada:
+                  </span>
                   <span className="measurement-value">
                     {(measurements.area / 10000).toFixed(2)} hectares ({measurements.area.toFixed(0)} m²)
                   </span>
@@ -269,7 +284,7 @@ export default function ValidarDesenhos() {
 
         {/* 3. Validation Panel (Right Sidebar) */}
         <aside className="validation-panel">
-          <h3>📋 Checklist de Validação</h3>
+          <h3><span role="img" aria-label="Checklist">📋</span> Checklist de Validação</h3>
 
           <div className="checklist">
             <label className="check-item">
@@ -343,12 +358,12 @@ export default function ValidarDesenhos() {
           <div className={`validation-status ${allChecksComplete ? 'complete' : 'incomplete'}`}>
             {allChecksComplete ? (
               <>
-                <p className="status-icon">✅</p>
+                <p className="status-icon"><span role="img" aria-label="Sucesso">✅</span></p>
                 <p className="status-text">Tudo validado!</p>
               </>
             ) : (
               <>
-                <p className="status-icon">⏳</p>
+                <p className="status-icon"><span role="img" aria-label="Carregando">⏳</span></p>
                 <p className="status-text">
                   {Object.values(validationChecks).filter((v) => v).length}/{Object.keys(validationChecks).length}
                 </p>
@@ -362,7 +377,7 @@ export default function ValidarDesenhos() {
             disabled={!allChecksComplete}
             title={allChecksComplete ? 'Aprovar geometria' : 'Complete todos os itens da validação'}
           >
-            ✅ Aprovar Geometria
+            <span role="img" aria-label="Aprovar">✅</span> Aprovar Geometria
           </button>
         </aside>
       </div>

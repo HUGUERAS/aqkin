@@ -1,7 +1,8 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import Logo from '../components/Logo';
 import Icon from '../components/Icon';
-import '../styles/PortalLayout.css';
+import AIChat from '../components/chat/AIChat';
+import '../styles/map-focused-layout.css';
 
 export default function ClienteLayout() {
   const location = useLocation();
@@ -41,6 +42,8 @@ export default function ClienteLayout() {
           <Outlet />
         </main>
       </div>
+
+      <AIChat userRole="proprietario" />
     </div>
   );
 }

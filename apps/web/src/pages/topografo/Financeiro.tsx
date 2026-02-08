@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import apiClient from '../../services/api';
 import { Button, Input, Select, Card, Badge, Textarea } from '../../components/UIComponents';
 import Icon from '../../components/Icon';
@@ -51,7 +51,7 @@ const categoriaOpcoes = [
 const getCategoryColor = (categoria?: string): string => {
   const cores: Record<string, string> = {
     'MATERIAL': '#3b82f6',
-    'SERVICO': '#8b5cf6',
+    'SERVICO': '#10b981',
     'TRANSPORTE': '#f59e0b',
     'OUTROS': '#6b7280',
   };
@@ -95,12 +95,23 @@ export default function Financeiro() {
     loadInitialData();
   }, []);
 
+  const carregarLotes = useCallback(async () => {
+    try {
+      if (filtroProjeto) {
+        const resp = await apiClient.getLotes?.(filtroProjeto);
+        setLotes(Array.isArray(resp) ? resp : []);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar lotes:', error);
+    }
+  }, [filtroProjeto]);
+
   // Load lotes when filtering
   useEffect(() => {
     if (filtroProjeto) {
       carregarLotes();
     }
-  }, [filtroProjeto]);
+  }, [filtroProjeto, carregarLotes]);
 
   const loadInitialData = async () => {
     setLoading(true);
@@ -142,17 +153,6 @@ export default function Financeiro() {
 
   const obterNomeProjeto = (id: number): string => {
     return projetos.find((p) => p.id === id)?.nome || 'Projeto desconhecido';
-  };
-
-  const carregarLotes = async () => {
-    try {
-      if (filtroProjeto) {
-        const resp = await apiClient.getLotes?.(filtroProjeto);
-        setLotes(Array.isArray(resp) ? resp : []);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar lotes:', error);
-    }
   };
 
   const abrirFormularioCriarDespesa = () => {
@@ -383,7 +383,7 @@ export default function Financeiro() {
                         variant="danger"
                         size="sm"
                         onClick={() => setConfirmarExclusao(despesa.id)}
-                        icon="trash-2"
+                        icon="trash"
                       >
                         Excluir
                       </Button>

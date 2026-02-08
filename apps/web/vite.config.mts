@@ -1,6 +1,7 @@
 /// <reference types='vitest' />
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig(() => ({
   root: import.meta.dirname,
@@ -12,6 +13,11 @@ export default defineConfig(() => ({
     port: 4300,
   },
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(import.meta.dirname, 'src'),
+    },
+  },
   // Uncomment this if you are using workers.
   // worker: {
   //  plugins: [],

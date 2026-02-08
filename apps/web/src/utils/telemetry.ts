@@ -36,6 +36,5 @@ export function reportError(error: unknown, context?: TelemetryContext): void {
     LogRocket.captureException(error as Error, { extra: tags });
   }
 
-  // eslint-disable-next-line no-console
   console.error('ClientError', payload);
 }

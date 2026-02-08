@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import apiClient from '../../services/api';
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
 
@@ -57,17 +57,7 @@ export default function Financeiro() {
   const [salvando, setSalvando] = useState(false);
   const [confirmarExclusao, setConfirmarExclusao] = useState<number | null>(null);
 
-  useEffect(() => {
-    carregarProjetos();
-    carregarLotes();
-    if (abaAtiva === 'DESPESAS') {
-      carregarDespesas();
-    } else {
-      carregarPagamentos();
-    }
-  }, [abaAtiva, filtroProjeto]);
-
-  const carregarProjetos = async () => {
+  const carregarProjetos = useCallback(async () => {
     try {
       const response = await apiClient.getProjects();
       if (response.data) {
@@ -76,9 +66,9 @@ export default function Financeiro() {
     } catch (error) {
       console.error('Erro ao carregar projetos:', error);
     }
-  };
+  }, []);
 
-  const carregarLotes = async () => {
+  const carregarLotes = useCallback(async () => {
     try {
       if (filtroProjeto) {
         const response = await apiClient.getLotes(filtroProjeto);
@@ -91,9 +81,9 @@ export default function Financeiro() {
     } catch (error) {
       console.error('Erro ao carregar lotes:', error);
     }
-  };
+  }, [filtroProjeto]);
 
-  const carregarDespesas = async () => {
+  const carregarDespesas = useCallback(async () => {
     setLoading(true);
     try {
       const response = await apiClient.getDespesas(filtroProjeto || undefined);
@@ -105,9 +95,9 @@ export default function Financeiro() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filtroProjeto]);
 
-  const carregarPagamentos = async () => {
+  const carregarPagamentos = useCallback(async () => {
     setLoading(true);
     try {
       const response = await apiClient.getPagamentos(filtroProjeto || undefined);
@@ -119,7 +109,17 @@ export default function Financeiro() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filtroProjeto]);
+
+  useEffect(() => {
+    carregarProjetos();
+    carregarLotes();
+    if (abaAtiva === 'DESPESAS') {
+      carregarDespesas();
+    } else {
+      carregarPagamentos();
+    }
+  }, [abaAtiva, carregarDespesas, carregarLotes, carregarPagamentos, carregarProjetos]);
 
   const formatarMoeda = (valor: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -279,13 +279,15 @@ export default function Financeiro() {
   return (
     <div style={{ padding: '2rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1 style={{ margin: 0 }}>💳 Módulo Financeiro</h1>
+        <h1 style={{ margin: 0 }}>
+          <span role="img" aria-label="Pagamento">💳</span> Módulo Financeiro
+        </h1>
         {abaAtiva === 'DESPESAS' && (
           <button
             onClick={abrirFormularioCriarDespesa}
             style={{
               padding: '0.75rem 1.5rem',
-              background: '#667eea',
+              background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
               color: 'white',
               border: 'none',
               borderRadius: '8px',
@@ -294,7 +296,7 @@ export default function Financeiro() {
               fontSize: '1rem',
             }}
           >
-            ➕ Nova Despesa
+            <span role="img" aria-label="Adicionar">➕</span> Nova Despesa
           </button>
         )}
       </div>
@@ -334,31 +336,31 @@ export default function Financeiro() {
           onClick={() => setAbaAtiva('DESPESAS')}
           style={{
             padding: '1rem 2rem',
-            background: abaAtiva === 'DESPESAS' ? '#667eea' : 'transparent',
+            background: abaAtiva === 'DESPESAS' ? '#3b82f6' : 'transparent',
             color: abaAtiva === 'DESPESAS' ? 'white' : '#333',
             border: 'none',
-            borderBottom: abaAtiva === 'DESPESAS' ? '3px solid #667eea' : '3px solid transparent',
+            borderBottom: abaAtiva === 'DESPESAS' ? '3px solid #3b82f6' : '3px solid transparent',
             cursor: 'pointer',
             fontWeight: abaAtiva === 'DESPESAS' ? 'bold' : 'normal',
             fontSize: '1rem',
           }}
         >
-          💸 Despesas
+          <span role="img" aria-label="Despesas">💸</span> Despesas
         </button>
         <button
           onClick={() => setAbaAtiva('PAGAMENTOS')}
           style={{
             padding: '1rem 2rem',
-            background: abaAtiva === 'PAGAMENTOS' ? '#667eea' : 'transparent',
+            background: abaAtiva === 'PAGAMENTOS' ? '#3b82f6' : 'transparent',
             color: abaAtiva === 'PAGAMENTOS' ? 'white' : '#333',
             border: 'none',
-            borderBottom: abaAtiva === 'PAGAMENTOS' ? '3px solid #667eea' : '3px solid transparent',
+            borderBottom: abaAtiva === 'PAGAMENTOS' ? '3px solid #3b82f6' : '3px solid transparent',
             cursor: 'pointer',
             fontWeight: abaAtiva === 'PAGAMENTOS' ? 'bold' : 'normal',
             fontSize: '1rem',
           }}
         >
-          💰 Pagamentos Recebidos
+          <span role="img" aria-label="Pagamentos">💰</span> Pagamentos Recebidos
         </button>
       </div>
 
@@ -395,12 +397,12 @@ export default function Financeiro() {
           {/* Lista de Despesas */}
           {loading ? (
             <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
-              <p style={{ fontSize: '2rem' }}>⏳</p>
+              <p style={{ fontSize: '2rem' }}><span role="img" aria-label="Carregando">⏳</span></p>
               <p>Carregando despesas...</p>
             </div>
           ) : despesasFiltradas.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '3rem', color: '#666', background: 'white', borderRadius: '12px' }}>
-              <p style={{ fontSize: '2rem' }}>📭</p>
+              <p style={{ fontSize: '2rem' }}><span role="img" aria-label="Sem dados">📭</span></p>
               <p>Nenhuma despesa encontrada</p>
             </div>
           ) : (
@@ -458,7 +460,7 @@ export default function Financeiro() {
                         onClick={() => abrirFormularioEditarDespesa(despesa)}
                         style={{
                           padding: '0.5rem 1rem',
-                          background: '#667eea',
+                          background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
                           color: 'white',
                           border: 'none',
                           borderRadius: '6px',
@@ -466,7 +468,7 @@ export default function Financeiro() {
                           fontSize: '0.9rem',
                         }}
                       >
-                        ✏️ Editar
+                        <span role="img" aria-label="Editar">✏️</span> Editar
                       </button>
                       <button
                         onClick={() => setConfirmarExclusao(despesa.id)}
@@ -480,7 +482,7 @@ export default function Financeiro() {
                           fontSize: '0.9rem',
                         }}
                       >
-                        🗑️ Excluir
+                        <span role="img" aria-label="Excluir">🗑️</span> Excluir
                       </button>
                     </div>
                   </div>
@@ -535,12 +537,12 @@ export default function Financeiro() {
           {/* Lista de Pagamentos */}
           {loading ? (
             <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
-              <p style={{ fontSize: '2rem' }}>⏳</p>
+              <p style={{ fontSize: '2rem' }}><span role="img" aria-label="Carregando">⏳</span></p>
               <p>Carregando pagamentos...</p>
             </div>
           ) : pagamentosFiltrados.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '3rem', color: '#666', background: 'white', borderRadius: '12px' }}>
-              <p style={{ fontSize: '2rem' }}>📭</p>
+              <p style={{ fontSize: '2rem' }}><span role="img" aria-label="Sem dados">📭</span></p>
               <p>Nenhum pagamento encontrado</p>
             </div>
           ) : (
@@ -581,7 +583,7 @@ export default function Financeiro() {
                         <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem', fontSize: '0.9rem', color: '#666' }}>
                           <span>
                             <strong>Valor Total:</strong>{' '}
-                            <span style={{ color: '#667eea', fontWeight: 'bold' }}>
+                            <span style={{ color: '#3b82f6', fontWeight: 'bold' }}>
                               {formatarMoeda(pagamento.valor_total)}
                             </span>
                           </span>
@@ -804,7 +806,7 @@ export default function Financeiro() {
                   disabled={salvando}
                   style={{
                     padding: '0.75rem 1.5rem',
-                    background: '#667eea',
+                    background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
                     color: 'white',
                     border: 'none',
                     borderRadius: '6px',

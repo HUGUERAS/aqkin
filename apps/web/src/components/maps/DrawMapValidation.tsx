@@ -7,9 +7,9 @@
  * - Feedback visual de medições
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import MapView from '@arcgis/core/views/MapView';
-import Map from '@arcgis/core/Map';
+import ArcGISMap from '@arcgis/core/Map';
 import Sketch from '@arcgis/core/widgets/Sketch';
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
 import Graphic from '@arcgis/core/Graphic';
@@ -46,6 +46,44 @@ interface MapState {
     selectedFeature: __esri.Graphic | null;
 }
 
+const hexToRgb = (hex: string) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result
+        ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16),
+        }
+        : { r: 59, g: 130, b: 246 };
+};
+
+const calculateDistance = (point1: [number, number], point2: [number, number]) => {
+    const [lon1, lat1] = point1;
+    const [lon2, lat2] = point2;
+
+    const R = 6371000;
+    const phi1 = (lat1 * Math.PI) / 180;
+    const phi2 = (lat2 * Math.PI) / 180;
+    const deltaPhi = ((lat2 - lat1) * Math.PI) / 180;
+    const deltaLambda = ((lon2 - lon1) * Math.PI) / 180;
+
+    const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+        Math.cos(phi1) * Math.cos(phi2) * Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c;
+};
+
+const calculatePolygonArea = (polygon: __esri.Polygon) => {
+    if (!polygon || !polygon.rings || polygon.rings.length === 0) return 0;
+    try {
+        const area = geometryEngine.planarArea(polygon, 'square-meters');
+        return Math.abs(area);
+    } catch {
+        return 0;
+    }
+};
+
 export default function DrawMapValidation({
     layers,
     activeTool = null,
@@ -57,8 +95,7 @@ export default function DrawMapValidation({
 }: DrawMapValidationProps) {
     const mapRef = useRef<HTMLDivElement>(null);
     const viewRef = useRef<MapView | null>(null);
-    // Using any to avoid conflict with ArcGIS Map type
-    const layersRef = useRef<any>(new globalThis.Map<string, GraphicsLayer>());
+    const layersRef = useRef<Map<string, GraphicsLayer>>(new Map());
     const [state, setState] = useState<MapState>({
         measurementPoints: [],
         measurementDistance: null,
@@ -66,7 +103,7 @@ export default function DrawMapValidation({
     });
 
     // Criar símbolos para cada layer
-    const getSymbolForLayer = (layerData: LayerData) => {
+    const getSymbolForLayer = useCallback((layerData: LayerData) => {
         const rgb = hexToRgb(layerData.color);
         const alpha = layerData.opacity / 100;
 
@@ -91,49 +128,88 @@ export default function DrawMapValidation({
                 }),
             }),
         };
-    };
+    }, []);
 
-    // Converter Hex para RGB
-    const hexToRgb = (hex: string) => {
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result
-            ? {
-                r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16),
+    // Ferramenta: Medir distância
+    const handleMeasureTool = useCallback((view: MapView) => {
+        const measureLayer = new GraphicsLayer({ id: 'measurements-layer' });
+        if (view.map) view.map.add(measureLayer);
+
+        view.on('click', (event) => {
+            const coords: [number, number] = [event.mapPoint.longitude, event.mapPoint.latitude];
+
+            setState((prev) => {
+                const newPoints = [...prev.measurementPoints, coords];
+
+                if (newPoints.length >= 2) {
+                    const distance = calculateDistance(newPoints[newPoints.length - 2], coords);
+                    if (onMeasurement) onMeasurement(distance);
+
+                    // Renderizar linha de medição
+                    const polyline = new Polyline({
+                        paths: [newPoints],
+                    });
+
+                    const lineGraphic = new Graphic({
+                        geometry: polyline,
+                        symbol: new SimpleLineSymbol({
+                            color: [76, 175, 80, 255],
+                            width: 3,
+                        }),
+                    });
+
+                    measureLayer.add(lineGraphic);
+                }
+
+                return { ...prev, measurementPoints: newPoints };
+            });
+        });
+    }, [onMeasurement]);
+
+    // Ferramenta: Calcular área
+    const handleAreaTool = useCallback((view: MapView) => {
+        const areaLayer = new GraphicsLayer({ id: 'area-layer' });
+        if (view.map) view.map.add(areaLayer);
+
+        // Pegar primeiro polígono selecionado
+        view.when(() => {
+            if (view.map) {
+                view.map.allLayers.forEach((layer) => {
+                    if (layer instanceof GraphicsLayer && layer.id !== 'area-layer' && layer.id !== 'measurements-layer') {
+                        layer.graphics.forEach((graphic) => {
+                            if (graphic.geometry && graphic.geometry.type === 'polygon') {
+                                const area = calculatePolygonArea(graphic.geometry as __esri.Polygon);
+                                if (onAreaCalculated) onAreaCalculated(area);
+                            }
+                        });
+                    }
+                });
             }
-            : { r: 102, g: 126, b: 234 };
-    };
+        });
+    }, [onAreaCalculated]);
 
-    // Calcular distância entre dois pontos (em metros)
-    const calculateDistance = (point1: [number, number], point2: [number, number]) => {
-        const [lon1, lat1] = point1;
-        const [lon2, lat2] = point2;
+    // Ferramenta: Snap (0.5m tolerância)
+    const handleSnapTool = useCallback((view: MapView) => {
+        view.on('click', () => {
+            console.log('Snap tool: Digite ou arraste vértices para snappear com 0.5m de tolerância');
+        });
+    }, []);
 
-        // Haversine formula
-        const R = 6371000; // Earth radius in meters
-        const φ1 = (lat1 * Math.PI) / 180;
-        const φ2 = (lat2 * Math.PI) / 180;
-        const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-        const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+    // Ferramenta: Editar vértices
+    const handleEditTool = useCallback((view: MapView) => {
+        // Ativar Sketch para edição
+        const editLayer = new GraphicsLayer({ id: 'edit-layer' });
+        if (view.map) view.map.add(editLayer);
 
-        const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-            Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const sketch = new Sketch({
+            view,
+            layer: editLayer,
+            availableCreateTools: [],
+            creationMode: 'update', // Apenas edição
+        });
 
-        return R * c; // Distance in meters
-    };
-
-    // Calcular área de um polígono
-    const calculatePolygonArea = (polygon: __esri.Polygon) => {
-        if (!polygon || !polygon.rings || polygon.rings.length === 0) return 0;
-        try {
-            const area = geometryEngine.planarArea(polygon, 'square-meters');
-            return Math.abs(area);
-        } catch {
-            return 0;
-        }
-    };
+        view.ui.add(sketch, 'top-right');
+    }, []);
 
     // Inicializar mapa
     useEffect(() => {
@@ -143,10 +219,10 @@ export default function DrawMapValidation({
         if (apiKey) esriConfig.apiKey = apiKey;
 
         // Criar mapa
-        const map = new Map({ basemap });
+        const map = new ArcGISMap({ basemap });
 
         // Criar GraphicsLayer para cada layer definida
-        const layerInstances = new globalThis.Map<string, GraphicsLayer>();
+        const layerInstances = new Map<string, GraphicsLayer>();
         layers.forEach((layerData) => {
             const graphicsLayer = new GraphicsLayer({
                 id: layerData.id,
@@ -198,7 +274,7 @@ export default function DrawMapValidation({
         return () => {
             view.destroy();
         };
-    }, [initialCenter, initialZoom, basemap, layers, activeTool]);
+    }, [activeTool, basemap, getSymbolForLayer, handleAreaTool, handleEditTool, handleMeasureTool, handleSnapTool, initialCenter, initialZoom, layers]);
 
     // Atualizar opacidade de layer quando state muda
     useEffect(() => {
@@ -210,87 +286,6 @@ export default function DrawMapValidation({
             }
         });
     }, [layers]);
-
-    // Ferramenta: Medir distância
-    const handleMeasureTool = (view: MapView) => {
-        const measureLayer = new GraphicsLayer({ id: 'measurements-layer' });
-        if (view.map) view.map.add(measureLayer);
-
-        view.on('click', (event) => {
-            const coords: [number, number] = [event.mapPoint.longitude, event.mapPoint.latitude];
-
-            setState((prev) => {
-                const newPoints = [...prev.measurementPoints, coords];
-
-                if (newPoints.length >= 2) {
-                    const distance = calculateDistance(newPoints[newPoints.length - 2], coords);
-                    if (onMeasurement) onMeasurement(distance);
-
-                    // Renderizar linha de medição
-                    const polyline = new Polyline({
-                        paths: [newPoints],
-                    });
-
-                    const lineGraphic = new Graphic({
-                        geometry: polyline,
-                        symbol: new SimpleLineSymbol({
-                            color: [76, 175, 80, 255],
-                            width: 3,
-                        }),
-                    });
-
-                    measureLayer.add(lineGraphic);
-                }
-
-                return { ...prev, measurementPoints: newPoints };
-            });
-        });
-    };
-
-    // Ferramenta: Calcular área
-    const handleAreaTool = (view: MapView) => {
-        const areaLayer = new GraphicsLayer({ id: 'area-layer' });
-        if (view.map) view.map.add(areaLayer);
-
-        // Pegar primeiro polígono selecionado
-        view.when(() => {
-            if (view.map) {
-                view.map.allLayers.forEach((layer) => {
-                    if (layer instanceof GraphicsLayer && layer.id !== 'area-layer' && layer.id !== 'measurements-layer') {
-                        layer.graphics.forEach((graphic) => {
-                            if (graphic.geometry && graphic.geometry.type === 'polygon') {
-                                const area = calculatePolygonArea(graphic.geometry as __esri.Polygon);
-                                if (onAreaCalculated) onAreaCalculated(area);
-                            }
-                        });
-                    }
-                });
-            }
-        });
-    };
-
-    // Ferramenta: Snap (0.5m tolerância)
-    const handleSnapTool = (view: MapView) => {
-        view.on('click', () => {
-            console.log('Snap tool: Digite ou arraste vértices para snappear com 0.5m de tolerância');
-        });
-    };
-
-    // Ferramenta: Editar vértices
-    const handleEditTool = (view: MapView) => {
-        // Ativar Sketch para edição
-        const editLayer = new GraphicsLayer({ id: 'edit-layer' });
-        if (view.map) view.map.add(editLayer);
-
-        const sketch = new Sketch({
-            view,
-            layer: editLayer,
-            availableCreateTools: [],
-            creationMode: 'update', // Apenas edição
-        });
-
-        view.ui.add(sketch, 'top-right');
-    };
 
     return (
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -320,7 +315,7 @@ export default function DrawMapValidation({
                         maxWidth: '300px',
                     }}
                 >
-                    <strong>🛠️ Ferramenta Ativa:</strong>
+                    <strong><span role="img" aria-label="Ferramenta">🛠️</span> Ferramenta Ativa:</strong>
                     {activeTool === 'measure' && ' Clique para medir distâncias'}
                     {activeTool === 'area' && ' Área do polígono será calculada automaticamente'}
                     {activeTool === 'snap' && ' Vértices serão snappados com tolerância de 0.5m'}
@@ -328,7 +323,8 @@ export default function DrawMapValidation({
 
                     {state.measurementDistance !== null && activeTool === 'measure' && (
                         <div style={{ marginTop: '8px', fontSize: '0.85rem' }}>
-                            📏 Distância: <strong>{(state.measurementDistance / 1000).toFixed(2)} km</strong>
+                            <span role="img" aria-label="Regua">📏</span> Distância:{' '}
+                            <strong>{(state.measurementDistance / 1000).toFixed(2)} km</strong>
                         </div>
                     )}
                 </div>
@@ -347,7 +343,7 @@ export default function DrawMapValidation({
                     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
                 }}
             >
-                <strong>📍 Layers:</strong> {layers.filter((l) => l.visible).length}/{layers.length} visíveis
+                <strong><span role="img" aria-label="Localização">📍</span> Layers:</strong> {layers.filter((l) => l.visible).length}/{layers.length} visíveis
             </div>
         </div>
     );

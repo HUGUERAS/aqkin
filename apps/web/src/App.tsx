@@ -34,7 +34,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then((result) => {
+      const session = result.data.session;
       if (session?.access_token) apiClient.setToken(session.access_token);
     });
   }, []);

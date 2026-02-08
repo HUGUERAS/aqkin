@@ -1,16 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import DrawMapEsri from '../../components/maps/DrawMapEsri';
 import FloatingToolbar from '../../components/FloatingToolbar';
+import { useClientToken } from '../../hooks/useClientToken';
 import apiClient from '../../services/api';
 import '../../styles/map-focused-layout.css';
 
 export default function DesenharArea() {
-  const [searchParams] = useSearchParams();
-  const tokenParam = searchParams.get('token');
-  const loteIdParam = searchParams.get('lote');
+  const { loteId, error: tokenError } = useClientToken();
 
-  const [loteId, setLoteId] = useState<number | null>(null);
   const [geometry, setGeometry] = useState<string>('');
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -19,25 +16,10 @@ export default function DesenharArea() {
   const [validando, setValidando] = useState(false);
   const [activeMode, setActiveMode] = useState<'draw' | 'measure' | 'validate' | null>(null);
 
-  // Carregar lote por token ou loteId
+  // Sync token error to local error state
   useEffect(() => {
-    if (tokenParam) {
-      apiClient.getLotePorToken(tokenParam).then((r) => {
-        if (r.data && typeof r.data === 'object' && 'id' in r.data) {
-          setLoteId((r.data as { id: number }).id);
-          setError('');
-        } else {
-          setError('Link inválido ou expirado.');
-        }
-      });
-    } else if (loteIdParam) {
-      const id = parseInt(loteIdParam, 10);
-      if (!isNaN(id)) setLoteId(id);
-      else setError('ID de lote inválido.');
-    } else {
-      setError('Acesso via link do topógrafo ou ?lote=ID');
-    }
-  }, [tokenParam, loteIdParam]);
+    if (tokenError) setError(tokenError);
+  }, [tokenError]);
 
   const handleGeometryChange = (wkt: string) => {
     setGeometry(wkt);

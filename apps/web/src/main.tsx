@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
+import { registerSW } from 'virtual:pwa-register';
 import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
 import { initTelemetry } from './utils/telemetry';
@@ -10,6 +11,7 @@ import './styles.css';                     // Tailwind & utilities
 import 'ol/ol.css';                        // OpenLayers CSS
 
 initTelemetry();
+registerSW({ immediate: true });
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,

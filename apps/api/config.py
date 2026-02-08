@@ -26,11 +26,19 @@ class Settings:
     # CORS
     CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")
     
-    # AWS/S3 (for documents)
+    # AWS/S3 (for documents) - Legacy
     S3_BUCKET = os.getenv("S3_BUCKET", "bem-real-docs")
     S3_REGION = os.getenv("S3_REGION", "us-east-1")
     AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY", "")
     AWS_SECRET_KEY = os.getenv("AWS_SECRET_KEY", "")
+
+    # Supabase Storage (for documents)
+    SUPABASE_STORAGE_BUCKET = os.getenv("SUPABASE_STORAGE_BUCKET", "documentos")
+    MAX_UPLOAD_SIZE_MB = int(os.getenv("MAX_UPLOAD_SIZE_MB", "10"))
+    ALLOWED_MIME_TYPES = [
+        "image/jpeg", "image/png", "image/webp",
+        "application/pdf",
+    ]
     
     # Payments
     STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")

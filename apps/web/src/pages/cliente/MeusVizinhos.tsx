@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useClientToken } from '../../hooks/useClientToken';
 import apiClient from '../../services/api';
 
 interface Vizinho {
@@ -9,40 +9,13 @@ interface Vizinho {
 }
 
 export default function MeusVizinhos() {
-  const [searchParams] = useSearchParams();
-  const tokenParam = searchParams.get('token');
-  const loteIdParam = searchParams.get('lote');
+  const { loteId } = useClientToken();
 
-  const [loteId, setLoteId] = useState<number | null>(null);
   const [vizinhos, setVizinhos] = useState<Vizinho[]>([]);
   const [nome, setNome] = useState('');
   const [lado, setLado] = useState('NORTE');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (tokenParam) {
-      apiClient.getLotePorToken(tokenParam).then((r) => {
-        if (r.data && typeof r.data === 'object' && 'id' in r.data) {
-          setLoteId((r.data as { id: number }).id);
-          setError('');
-        } else {
-          setError('Link inválido ou expirado.');
-          setLoading(false);
-        }
-      });
-    } else if (loteIdParam) {
-      const id = parseInt(loteIdParam, 10);
-      if (!isNaN(id)) setLoteId(id);
-      else {
-        setError('ID de lote inválido.');
-        setLoading(false);
-      }
-    } else {
-      setError('Acesso via link do topógrafo ou ?lote=ID');
-      setLoading(false);
-    }
-  }, [tokenParam, loteIdParam]);
 
   useEffect(() => {
     if (!loteId) return;

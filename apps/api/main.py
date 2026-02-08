@@ -10,6 +10,8 @@ from db import supabase
 from auth import get_perfil, require_topografo, get_current_user_required
 from routers.contracts import router as contracts_router
 from routers.ai import router as ai_router
+from routers.documents import router as documents_router
+from routers.intake import router as intake_router
 
 load_dotenv()
 
@@ -961,6 +963,8 @@ def listar_pagamentos(
 # Register routers
 app.include_router(contracts_router)
 app.include_router(ai_router)
+app.include_router(documents_router)
+app.include_router(intake_router)
 
 
 if __name__ == "__main__":

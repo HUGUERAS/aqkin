@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, useSearchParams } from 'react-router-dom';
+import apiClient from '../services/api';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -12,19 +13,34 @@ export default function ProtectedRoute({ children, allowedRole }: ProtectedRoute
   const [, setUserRole] = useState<string | null>(null);
   const [hasPremium, setHasPremium] = useState(false);
   const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    // --- BYPASS TEMPORÁRIO PARA VISUALIZAÇÃO SEM BACKEND ---
-    console.warn('⚠️ MODO DE DESENVOLVIMENTO: Authentication Bypass Ativado');
+    const token = searchParams.get('token');
 
-    // Simula um delay de rede para parecer real
+    // Se tem token de acesso (magic link), permite acesso como proprietario
+    if (allowedRole === 'proprietario' && token) {
+      apiClient.getLotePorToken(token).then((r) => {
+        if (r.data && typeof r.data === 'object') {
+          setIsAuthenticated(true);
+          setUserRole('proprietario');
+        } else {
+          setIsAuthenticated(false);
+        }
+        setIsLoading(false);
+      });
+      return;
+    }
+
+    // --- BYPASS TEMPORARIO PARA VISUALIZACAO SEM BACKEND ---
+    console.warn('MODO DE DESENVOLVIMENTO: Authentication Bypass Ativado');
+
     const timer = setTimeout(() => {
       setIsAuthenticated(true);
 
-      // MODO DEV: Define role baseado na URL acessada
       if (allowedRole === 'topografo') {
         setUserRole('topografo');
-        setHasPremium(true); // Topógrafo sempre tem premium em dev
+        setHasPremium(true);
       } else {
         setUserRole('proprietario');
         setHasPremium(false);
@@ -34,9 +50,8 @@ export default function ProtectedRoute({ children, allowedRole }: ProtectedRoute
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [allowedRole]);
+  }, [allowedRole, searchParams]);
 
-  // Mostrar loading enquanto verifica autenticação
   if (isLoading) {
     return (
       <div style={{
@@ -48,20 +63,18 @@ export default function ProtectedRoute({ children, allowedRole }: ProtectedRoute
       }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>
-            <span role="img" aria-label="Carregando">⏳</span>
+            <span role="img" aria-label="Carregando">&#x23F3;</span>
           </div>
-          <div>Verificando acesso (Modo Dev)...</div>
+          <div style={{ color: '#e5e7eb' }}>Verificando acesso...</div>
         </div>
       </div>
     );
   }
 
-  // Usuário não autenticado → redirecionar para login
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
 
-  // Se tentar acessar área de topógrafo mas não tem plano premium
   if (allowedRole === 'topografo' && !hasPremium) {
     return (
       <div style={{
@@ -80,22 +93,12 @@ export default function ProtectedRoute({ children, allowedRole }: ProtectedRoute
           maxWidth: '480px',
           textAlign: 'center'
         }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
-            <span role="img" aria-label="Estrela">⭐</span>
-          </div>
           <h2 style={{ marginBottom: '1rem', color: '#f8fafc', fontSize: '1.8rem' }}>
-            Acesso Premium Necessário
+            Acesso Premium Necessario
           </h2>
           <p style={{ color: '#94a3b8', marginBottom: '2rem', lineHeight: '1.6' }}>
-            As ferramentas profissionais de topografia estão disponíveis apenas para usuários Premium.
-            Faça upgrade agora e tenha acesso a:
+            As ferramentas profissionais de topografia estao disponiveis apenas para usuarios Premium.
           </p>
-          <ul style={{ textAlign: 'left', color: '#e5e7eb', marginBottom: '2rem', lineHeight: '1.8' }}>
-            <li><span role="img" aria-label="Sucesso">✅</span> Validação de desenhos</li>
-            <li><span role="img" aria-label="Sucesso">✅</span> Geração de peças técnicas</li>
-            <li><span role="img" aria-label="Sucesso">✅</span> Gerenciamento de projetos</li>
-            <li><span role="img" aria-label="Sucesso">✅</span> Orçamentos e financeiro</li>
-          </ul>
           <button
             onClick={() => window.location.href = '/cliente'}
             style={{
@@ -111,7 +114,7 @@ export default function ProtectedRoute({ children, allowedRole }: ProtectedRoute
               marginBottom: '1rem'
             }}
           >
-            <span role="img" aria-label="Foguete">🚀</span> Fazer Upgrade
+            Fazer Upgrade
           </button>
           <button
             onClick={() => window.location.href = '/cliente'}
@@ -127,7 +130,7 @@ export default function ProtectedRoute({ children, allowedRole }: ProtectedRoute
               cursor: 'pointer'
             }}
           >
-            ← Voltar para minha área
+            Voltar para minha area
           </button>
         </div>
       </div>

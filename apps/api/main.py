@@ -241,13 +241,7 @@ def listar_lotes(projeto_id: Optional[int] = None, perfil: dict = Depends(get_pe
             if projeto_id:
                 query = query.eq("projeto_id", projeto_id)
             if perfil.get("role") == "topografo" and perfil.get("tenant_id"):
-                projs = (
-                    supabase.table("projetos")
-                    .select("id")
-                    .eq("tenant_id", perfil["tenant_id"])
-                    .execute()
-                )
-                ids = [p["id"] for p in (projs.data or [])]
+                ids = _listar_ids_projetos_tenant(perfil)
                 if ids:
                     query = query.in_("projeto_id", ids)
                 else:
@@ -337,6 +331,16 @@ def _lote_autorizado(lote_id: int, perfil: dict, escrita: bool = False) -> dict:
                 status_code=403, detail="Proprietário tem acesso apenas visual"
             )
     return lote
+
+
+def _listar_ids_projetos_tenant(perfil: dict) -> list[int]:
+    tenant_id = perfil.get("tenant_id")
+    if not tenant_id:
+        return []
+    projs = (
+        supabase.table("projetos").select("id").eq("tenant_id", tenant_id).execute()
+    )
+    return [projeto["id"] for projeto in (projs.data or [])]
 
 
 @app.get("/api/lotes/{lote_id}")
@@ -535,13 +539,7 @@ def listar_orcamentos(
                 query = query.eq("lote_id", lote_id)
             else:
                 # Listar todos os orçamentos dos projetos do tenant
-                projs = (
-                    supabase.table("projetos")
-                    .select("id")
-                    .eq("tenant_id", perfil["tenant_id"])
-                    .execute()
-                )
-                ids = [p["id"] for p in (projs.data or [])]
+                ids = _listar_ids_projetos_tenant(perfil)
                 if ids:
                     query = query.in_("projeto_id", ids)
                 else:
@@ -727,13 +725,7 @@ def listar_despesas(
             query = query.eq("projeto_id", projeto_id)
         else:
             # Listar todas as despesas dos projetos do tenant
-            projs = (
-                supabase.table("projetos")
-                .select("id")
-                .eq("tenant_id", perfil["tenant_id"])
-                .execute()
-            )
-            ids = [p["id"] for p in (projs.data or [])]
+            ids = _listar_ids_projetos_tenant(perfil)
             if ids:
                 query = query.in_("projeto_id", ids)
             else:
@@ -901,13 +893,7 @@ def listar_pagamentos(
                 query = query.eq("lote_id", lote_id)
             else:
                 # Listar todos os pagamentos dos projetos do tenant
-                projs = (
-                    supabase.table("projetos")
-                    .select("id")
-                    .eq("tenant_id", perfil["tenant_id"])
-                    .execute()
-                )
-                ids = [p["id"] for p in (projs.data or [])]
+                ids = _listar_ids_projetos_tenant(perfil)
                 if ids:
                     lotes = (
                         supabase.table("lotes")

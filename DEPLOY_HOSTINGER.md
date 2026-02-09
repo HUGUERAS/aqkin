@@ -81,6 +81,10 @@ sudo bash configure-firewall.sh
 # Instalar UFW se necessário
 apt install -y ufw
 
+# Set default policies (deny incoming, allow outgoing)
+ufw default deny incoming
+ufw default allow outgoing
+
 # Permitir SSH (CRÍTICO: faça isso primeiro para não perder acesso)
 ufw allow 22/tcp
 
@@ -96,12 +100,14 @@ ufw status verbose
 ```
 
 **Portas configuradas:**
+
 - ✅ **22 (SSH)**: Acesso remoto ao servidor
 - ✅ **80 (HTTP)**: Tráfego web
 - ✅ **443 (HTTPS)**: Tráfego web seguro
 - ✅ **8000 (API)**: Acessível apenas via localhost (Nginx faz proxy)
 
 **Política padrão:**
+
 - 🔒 Entrada: DENY (seguro por padrão)
 - ✅ Saída: ALLOW (servidor pode fazer requisições externas)
 
@@ -341,7 +347,7 @@ systemctl restart ativo-real-api
 | **Não consigo conectar via SSH** | Certifique-se que porta 22 está permitida: `sudo ufw allow 22/tcp` |
 | **Site não carrega** | 1. Verificar firewall: `sudo ufw status`<br>2. Verificar Nginx: `systemctl status nginx`<br>3. Verificar DNS |
 
-### Comandos úteis de firewall:
+### Comandos úteis de firewall
 
 ```bash
 # Ver status do firewall
@@ -363,7 +369,7 @@ sudo ufw disable
 sudo ufw reload
 ```
 
-### Verificação rápida de conectividade:
+### Verificação rápida de conectividade
 
 ```bash
 # Testar se portas estão abertas (de outro computador)
@@ -374,4 +380,3 @@ nc -zv SEU_IP 443
 curl localhost:8000
 curl localhost:80
 ```
-

@@ -29,6 +29,9 @@ export default function DashboardConfluencia() {
   const [novoProjeto, setNovoProjeto] = useState('');
   const [novoLote, setNovoLote] = useState({ nome: '', email: '' });
   const [criando, setCriando] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768);
+  const [drawMode, setDrawMode] = useState<'line' | 'polyline' | 'polygon' | null>(null);
 
   const loadProjectData = useCallback(async (projectId: number) => {
     try {
@@ -89,6 +92,17 @@ export default function DashboardConfluencia() {
     loadData();
   }, [loadData]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      const desktop = window.innerWidth > 768;
+      setIsDesktop(desktop);
+      if (desktop) setSidebarOpen(true);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
 
   const handleCriarProjeto = async () => {
     if (!novoProjeto.trim()) return;
@@ -134,241 +148,456 @@ export default function DashboardConfluencia() {
     (p: { status: string }) => p.status === 'VALIDACAO_SIGEF' || p.status === 'FINALIZADO'
   ).length;
 
-  const handleAprovar = async (loteId: number) => {
-    const r = await apiClient.updateLoteStatus(loteId, 'VALIDACAO_SIGEF');
-    if (!r.error) loadData();
-  };
-
-  const surface = 'rgba(15, 23, 42, 0.92)';
-  const border = 'rgba(59, 130, 246, 0.25)';
+  const border = 'rgba(148, 163, 184, 0.2)';
   const text = '#e5e7eb';
   const muted = '#94a3b8';
-  const gradient = 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)';
 
   return (
-    <div style={{ padding: '2rem', minHeight: '100vh', background: 'linear-gradient(135deg, #0b0f14 0%, #111827 100%)', color: text }}>
-      <h1 style={{ marginBottom: '2rem', color: '#f8fafc' }}>
-        <span role="img" aria-label="Dashboard">📊</span> Dashboard de Confluência
-        {loading && (
-          <span style={{ fontSize: '0.8rem', marginLeft: '1rem' }}>
-            <span role="img" aria-label="Carregando">⏳</span> Carregando...
-          </span>
-        )}
-      </h1>
-
-      {/* Resumo */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '1rem',
-        marginBottom: '2rem'
-      }}>
-        <div style={{
-          background: gradient,
-          color: 'white',
-          padding: '1.5rem',
-          borderRadius: '12px',
-          boxShadow: '0 14px 30px rgba(16,185,129,0.25)'
-        }}>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: 0 }}>{totalParcels}</p>
-          <p style={{ margin: '0.5rem 0 0 0' }}>Imóveis Totais</p>
-        </div>
-
-        <div style={{
-          background: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)',
-          color: 'white',
-          padding: '1.5rem',
-          borderRadius: '12px',
-          boxShadow: '0 14px 30px rgba(239,68,68,0.25)'
-        }}>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: 0 }}>{totalOverlaps}</p>
-          <p style={{ margin: '0.5rem 0 0 0' }}>Sobreposições</p>
-        </div>
-
-        <div style={{
-          background: 'linear-gradient(135deg, #22c55e 0%, #15803d 100%)',
-          color: 'white',
-          padding: '1.5rem',
-          borderRadius: '12px',
-          boxShadow: '0 14px 30px rgba(34,197,94,0.25)'
-        }}>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: 0 }}>{validatedParcels}</p>
-          <p style={{ margin: '0.5rem 0 0 0' }}>Validados</p>
-        </div>
-      </div>
-
-      {/* Mapa de Confluência */}
-      <div style={{
-        background: surface,
-        borderRadius: '14px',
-        padding: '2rem',
-        boxShadow: '0 18px 50px rgba(0,0,0,0.35)',
-        marginBottom: '2rem',
-        border: `1px solid ${border}`
-      }}>
-        <h2 style={{ marginBottom: '1rem', color: '#f8fafc' }}>
-          <span role="img" aria-label="Mapa">🗺️</span> Mapa de Confluência
-        </h2>
-        <p style={{ color: muted, marginBottom: '1rem' }}>
-          Dados em tempo real do Supabase + PostGIS
-        </p>
-
-        {/* Mapa ArcGIS com dados reais */}
+    <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: isDesktop ? 'row' : 'column', background: '#0f0f0f', overflow: 'hidden' }}>
+      {/* Mapa Fullscreen */}
+      <div style={{ flex: 1, position: 'relative' }}>
         {!loading && geometries.length > 0 ? (
           <ViewMapEsri geometries={geometries} />
         ) : loading ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: muted }}>
-            <p style={{ fontSize: '2rem' }}><span role="img" aria-label="Carregando">⏳</span></p>
-            <p>Carregando dados...</p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: muted, background: '#0f0f0f' }}>
+            <div style={{ textAlign: 'center' }}>
+              <p style={{ fontSize: '2rem', margin: 0 }}><span role="img" aria-label="Carregando">⏳</span></p>
+              <p style={{ marginTop: '0.5rem' }}>Carregando...</p>
+            </div>
           </div>
         ) : (
-          <div style={{ textAlign: 'center', padding: '3rem', color: muted }}>
-            <p style={{ fontSize: '2rem' }}><span role="img" aria-label="Sem dados">📭</span></p>
-            <p>Nenhuma parcela cadastrada ainda</p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: muted, background: '#0f0f0f' }}>
+            <div style={{ textAlign: 'center' }}>
+              <p style={{ fontSize: '2rem', margin: 0 }}><span role="img" aria-label="Sem dados">📭</span></p>
+              <p style={{ marginTop: '0.5rem' }}>Nenhuma parcela cadastrada</p>
+            </div>
           </div>
+        )}
+
+        {/* FAB Hamburger (Mobile Only) */}
+        {!isDesktop && (
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            style={{
+              position: 'absolute',
+              bottom: '1rem',
+              right: '1rem',
+              width: '56px',
+              height: '56px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, rgba(147,197,253,0.4) 0%, rgba(96,165,250,0.5) 100%)',
+              border: '1px solid rgba(147,197,253,0.4)',
+              color: '#bfdbfe',
+              fontSize: '1.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+              zIndex: 20
+            }}
+          >
+            {sidebarOpen ? '↓' : '☰'}
+          </button>
         )}
       </div>
 
-      {/* Criar Projeto / Lote */}
-      <div style={{ background: surface, borderRadius: '14px', padding: '2rem', boxShadow: '0 18px 50px rgba(0,0,0,0.35)', marginBottom: '2rem', border: `1px solid ${border}` }}>
-        <h2 style={{ marginBottom: '1rem' }}>
-          <span role="img" aria-label="Adicionar">➕</span> Criar
-        </h2>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Novo Projeto</label>
-            <input
-              type="text"
-              placeholder="Nome do projeto"
-              value={novoProjeto}
-              onChange={(e) => setNovoProjeto(e.target.value)}
-              style={{ padding: '0.5rem 1rem', border: `1px solid ${border}`, borderRadius: '8px', marginRight: '0.5rem', background: '#0b1220', color: text }}
-            />
-            <button onClick={handleCriarProjeto} disabled={criando} style={{ padding: '0.5rem 1rem', background: criando ? '#1f2937' : gradient, color: 'white', border: 'none', borderRadius: '10px', cursor: criando ? 'wait' : 'pointer', boxShadow: '0 10px 24px rgba(59,130,246,0.3)' }}>
-              Criar Projeto
+      {/* Sidebar / Drawer */}
+      <div style={{
+        width: isDesktop ? '400px' : '100%',
+        height: isDesktop ? '100%' : (sidebarOpen ? '70vh' : '0'),
+        background: 'rgba(15, 23, 42, 0.98)',
+        backdropFilter: 'blur(8px)',
+        borderLeft: isDesktop ? '1px solid rgba(148, 163, 184, 0.2)' : 'none',
+        borderTop: !isDesktop ? '1px solid rgba(148, 163, 184, 0.2)' : 'none',
+        overflow: 'hidden',
+        transition: 'height 0.3s ease',
+        display: 'flex',
+        flexDirection: 'column',
+        position: isDesktop ? 'relative' : 'fixed',
+        bottom: isDesktop ? 'auto' : 0,
+        left: isDesktop ? 'auto' : 0,
+        right: isDesktop ? 'auto' : 0,
+        zIndex: 30
+      }}>
+        {/* Header do Sidebar */}
+        <div style={{
+          padding: '1rem 1.5rem',
+          borderBottom: '1px solid rgba(148, 163, 184, 0.2)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <h2 style={{ margin: 0, fontSize: '1.1rem', color: text }}>
+            <span role="img" aria-label="Dashboard">📊</span> Dashboard
+          </h2>
+          {!isDesktop && (
+            <button
+              onClick={() => setSidebarOpen(false)}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: muted,
+                fontSize: '1.5rem',
+                cursor: 'pointer',
+                padding: '0.25rem'
+              }}
+            >
+              ↓
             </button>
-          </div>
-          {selectedProjectId && (
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Novo Lote</label>
-                <input
-                  type="text"
-                  placeholder="Nome do cliente"
-                  value={novoLote.nome}
-                  onChange={(e) => setNovoLote((p) => ({ ...p, nome: e.target.value }))}
-                  style={{ padding: '0.5rem 1rem', border: `1px solid ${border}`, borderRadius: '8px', marginRight: '0.5rem', background: '#0b1220', color: text }}
-                />
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={novoLote.email}
-                  onChange={(e) => setNovoLote((p) => ({ ...p, email: e.target.value }))}
-                  style={{ padding: '0.5rem 1rem', border: `1px solid ${border}`, borderRadius: '8px', marginRight: '0.5rem', background: '#0b1220', color: text }}
-                />
-              </div>
-              <button onClick={handleCriarLote} disabled={criando} style={{ padding: '0.5rem 1rem', background: criando ? '#1f2937' : 'linear-gradient(135deg, #22c55e 0%, #15803d 100%)', color: 'white', border: 'none', borderRadius: '10px', cursor: criando ? 'wait' : 'pointer', boxShadow: '0 10px 24px rgba(34,197,94,0.25)' }}>
-                Criar Lote
-              </button>
-            </div>
           )}
         </div>
-        {projects.length > 1 && (
-          <div style={{ marginTop: '1rem' }}>
-            <label style={{ marginRight: '0.5rem' }}>Projeto:</label>
-            <select value={selectedProjectId ?? ''} onChange={(e) => { const id = Number(e.target.value); setSelectedProjectId(id); loadProjectData(id); }} style={{ padding: '0.5rem', borderRadius: '8px', border: `1px solid ${border}`, background: '#0b1220', color: text }}>
-              {projects.map((p) => (
-                <option key={p.id} value={p.id}>{p.nome}</option>
-              ))}
-            </select>
+
+        {/* Conteúdo do Sidebar - Scrollable */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>
+          {/* Cards de Resumo */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <h3 style={{ fontSize: '0.85rem', fontWeight: '700', color: muted, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '1rem' }}>
+              RESUMO DO PROJETO
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(147,197,253,0.25) 0%, rgba(96,165,250,0.3) 100%)',
+                padding: '0.75rem 1rem',
+                borderRadius: '8px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                border: '1px solid rgba(147,197,253,0.3)',
+                boxShadow: '0 2px 8px rgba(147,197,253,0.15)'
+              }}>
+                <div>
+                  <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold', color: '#bfdbfe' }}>
+                    {totalParcels}
+                  </p>
+                  <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.75rem', color: muted }}>
+                    Imóveis
+                  </p>
+                </div>
+                <span role="img" aria-label="Imóveis" style={{ fontSize: '1.75rem' }}>📦</span>
+              </div>
+
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(253,186,116,0.25) 0%, rgba(251,146,60,0.3) 100%)',
+                padding: '0.75rem 1rem',
+                borderRadius: '8px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                border: '1px solid rgba(253,186,116,0.3)',
+                boxShadow: '0 2px 8px rgba(253,186,116,0.15)'
+              }}>
+                <div>
+                  <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold', color: '#fed7aa' }}>
+                    {totalOverlaps}
+                  </p>
+                  <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.75rem', color: muted }}>
+                    Conflitos
+                  </p>
+                </div>
+                <span role="img" aria-label="Conflitos" style={{ fontSize: '1.75rem' }}>⚠️</span>
+              </div>
+
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(134,239,172,0.25) 0%, rgba(74,222,128,0.3) 100%)',
+                padding: '0.75rem 1rem',
+                borderRadius: '8px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                border: '1px solid rgba(134,239,172,0.3)',
+                boxShadow: '0 2px 8px rgba(134,239,172,0.15)'
+              }}>
+                <div>
+                  <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold', color: '#bbf7d0' }}>
+                    {validatedParcels}
+                  </p>
+                  <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.75rem', color: muted }}>
+                    Validados
+                  </p>
+                </div>
+                <span role="img" aria-label="Validados" style={{ fontSize: '1.75rem' }}>✅</span>
+              </div>
+            </div>
           </div>
-        )}
-      </div>
 
-      {/* Lista de Imóveis */}
-      <div style={{
-        background: surface,
-        borderRadius: '14px',
-        padding: '2rem',
-        boxShadow: '0 18px 50px rgba(0,0,0,0.35)',
-        border: `1px solid ${border}`
-      }}>
-        <h2 style={{ marginBottom: '1rem', color: '#f8fafc' }}>
-          <span role="img" aria-label="Lista">📋</span> Imóveis do Projeto
-        </h2>
+          {/* Ferramentas de Desenho */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <h3 style={{ fontSize: '0.85rem', fontWeight: '700', color: muted, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '1rem' }}>
+              <span role="img" aria-label="Ferramentas">✏️</span> FERRAMENTAS DE DESENHO
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+              <button
+                onClick={() => setDrawMode(drawMode === 'line' ? null : 'line')}
+                style={{
+                  padding: '0.75rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.25rem',
+                  background: drawMode === 'line' ? 'rgba(147,197,253,0.25)' : 'rgba(30, 41, 59, 0.4)',
+                  border: `1px solid ${drawMode === 'line' ? 'rgba(147,197,253,0.5)' : border}`,
+                  borderRadius: '8px',
+                  color: drawMode === 'line' ? '#bfdbfe' : muted,
+                  cursor: 'pointer',
+                  fontSize: '1.5rem',
+                  transition: 'all 150ms'
+                }}
+                title="Linha"
+              >
+                <span role="img" aria-label="Linha">📏</span>
+                <span style={{ fontSize: '0.7rem', fontWeight: '600' }}>Linha</span>
+              </button>
+              <button
+                onClick={() => setDrawMode(drawMode === 'polyline' ? null : 'polyline')}
+                style={{
+                  padding: '0.75rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.25rem',
+                  background: drawMode === 'polyline' ? 'rgba(253,186,116,0.25)' : 'rgba(30, 41, 59, 0.4)',
+                  border: `1px solid ${drawMode === 'polyline' ? 'rgba(253,186,116,0.5)' : border}`,
+                  borderRadius: '8px',
+                  color: drawMode === 'polyline' ? '#fed7aa' : muted,
+                  cursor: 'pointer',
+                  fontSize: '1.5rem',
+                  transition: 'all 150ms'
+                }}
+                title="Polilinha"
+              >
+                <span role="img" aria-label="Polilinha">↗️</span>
+                <span style={{ fontSize: '0.7rem', fontWeight: '600' }}>Polilinha</span>
+              </button>
+              <button
+                onClick={() => setDrawMode(drawMode === 'polygon' ? null : 'polygon')}
+                style={{
+                  padding: '0.75rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.25rem',
+                  background: drawMode === 'polygon' ? 'rgba(134,239,172,0.25)' : 'rgba(30, 41, 59, 0.4)',
+                  border: `1px solid ${drawMode === 'polygon' ? 'rgba(134,239,172,0.5)' : border}`,
+                  borderRadius: '8px',
+                  color: drawMode === 'polygon' ? '#bbf7d0' : muted,
+                  cursor: 'pointer',
+                  fontSize: '1.5rem',
+                  transition: 'all 150ms'
+                }}
+                title="Polígono"
+              >
+                <span role="img" aria-label="Polígono">◼️</span>
+                <span style={{ fontSize: '0.7rem', fontWeight: '600' }}>Polígono</span>
+              </button>
+            </div>
+          </div>
 
-        {parcels.length > 0 ? (
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ background: '#0b1220' }}>
-                <th style={{ padding: '1rem', textAlign: 'left', color: '#cbd5e1' }}>ID</th>
-                <th style={{ padding: '1rem', textAlign: 'left', color: '#cbd5e1' }}>Proprietário</th>
-                <th style={{ padding: '1rem', textAlign: 'left', color: '#cbd5e1' }}>Status</th>
-                <th style={{ padding: '1rem', textAlign: 'left', color: '#cbd5e1' }}>Link Cliente</th>
-                <th style={{ padding: '1rem', textAlign: 'left', color: '#cbd5e1' }}>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {parcels.map((parcel) => (
-                <tr key={parcel.id} style={{ borderBottom: `1px solid ${border}` }}>
-                  <td style={{ padding: '1rem', color: text }}>#{parcel.id}</td>
-                  <td style={{ padding: '1rem', color: text }}>{parcel.nome_cliente || '-'}</td>
-                  <td style={{ padding: '1rem' }}>
-                    <span style={{
-                      padding: '0.25rem 0.75rem',
-                      borderRadius: '12px',
-                      background: parcel.status === 'VALIDACAO_SIGEF' || parcel.status === 'FINALIZADO' ? '#d4edda' : '#fff3cd',
-                      color: parcel.status === 'VALIDACAO_SIGEF' || parcel.status === 'FINALIZADO' ? '#155724' : '#856404',
+          {/* Criar Projeto / Lote */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <h3 style={{ fontSize: '0.85rem', fontWeight: '700', color: muted, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '1rem' }}>
+              <span role="img" aria-label="Criar">➕</span> CRIAR
+            </h3>
+            
+            {/* Criar Projeto */}
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: muted }}>Novo Projeto</label>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <input
+                  type="text"
+                  placeholder="Nome do projeto"
+                  value={novoProjeto}
+                  onChange={(e) => setNovoProjeto(e.target.value)}
+                  style={{
+                    flex: 1,
+                    padding: '0.5rem 0.75rem',
+                    border: `1px solid ${border}`,
+                    borderRadius: '6px',
+                    background: 'rgba(15, 23, 42, 0.6)',
+                    color: text,
+                    fontSize: '0.9rem'
+                  }}
+                />
+                <button
+                  onClick={handleCriarProjeto}
+                  disabled={criando}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    background: criando ? '#1f2937' : 'linear-gradient(135deg, rgba(147,197,253,0.4) 0%, rgba(96,165,250,0.5) 100%)',
+                    color: '#bfdbfe',
+                    border: '1px solid rgba(147,197,253,0.4)',
+                    borderRadius: '6px',
+                    cursor: criando ? 'wait' : 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '600',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  Criar
+                </button>
+              </div>
+            </div>
+
+            {/* Seletor de Projeto */}
+            {projects.length > 1 && (
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: muted }}>Projeto Ativo</label>
+                <select
+                  value={selectedProjectId ?? ''}
+                  onChange={(e) => { const id = Number(e.target.value); setSelectedProjectId(id); loadProjectData(id); }}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem 0.75rem',
+                    borderRadius: '6px',
+                    border: `1px solid ${border}`,
+                    background: 'rgba(15, 23, 42, 0.6)',
+                    color: text,
+                    fontSize: '0.9rem'
+                  }}
+                >
+                  {projects.map((p) => (
+                    <option key={p.id} value={p.id}>{p.nome}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Criar Lote */}
+            {selectedProjectId && (
+              <>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: muted }}>Novo Lote</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <input
+                    type="text"
+                    placeholder="Nome do cliente"
+                    value={novoLote.nome}
+                    onChange={(e) => setNovoLote((p) => ({ ...p, nome: e.target.value }))}
+                    style={{
+                      padding: '0.5rem 0.75rem',
+                      border: `1px solid ${border}`,
+                      borderRadius: '6px',
+                      background: 'rgba(15, 23, 42, 0.6)',
+                      color: text,
                       fontSize: '0.9rem'
-                    }}>
-                      {parcel.status}
-                    </span>
-                  </td>
-                  <td style={{ padding: '1rem' }}>
-                    <button onClick={() => copiarLink(parcel)} style={{ padding: '0.5rem 1rem', background: gradient, color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', boxShadow: '0 8px 18px rgba(59,130,246,0.28)' }}>
-                      <span role="img" aria-label="Copiar">📋</span> Copiar link
-                    </button>
-                  </td>
-                  <td style={{ padding: '1rem' }}>
-                    <a href={`/topografo/validar?lote=${parcel.id}`} style={{
+                    }}
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={novoLote.email}
+                    onChange={(e) => setNovoLote((p) => ({ ...p, email: e.target.value }))}
+                    style={{
+                      padding: '0.5rem 0.75rem',
+                      border: `1px solid ${border}`,
+                      borderRadius: '6px',
+                      background: 'rgba(15, 23, 42, 0.6)',
+                      color: text,
+                      fontSize: '0.9rem'
+                    }}
+                  />
+                  <button
+                    onClick={handleCriarLote}
+                    disabled={criando}
+                    style={{
                       padding: '0.5rem 1rem',
-                      background: gradient,
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      marginRight: '0.5rem',
-                      textDecoration: 'none',
-                      display: 'inline-block',
-                      boxShadow: '0 8px 18px rgba(59,130,246,0.28)'
-                    }}>
-                      Ver
-                    </a>
-                    <button
-                      onClick={() => handleAprovar(parcel.id)}
-                      disabled={parcel.status === 'VALIDACAO_SIGEF' || parcel.status === 'FINALIZADO'}
-                      style={{
-                        padding: '0.5rem 1rem',
-                        background: parcel.status === 'VALIDACAO_SIGEF' || parcel.status === 'FINALIZADO' ? '#1f2937' : 'linear-gradient(135deg, #22c55e 0%, #15803d 100%)',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '8px',
-                        cursor: parcel.status === 'VALIDACAO_SIGEF' || parcel.status === 'FINALIZADO' ? 'default' : 'pointer',
-                        opacity: parcel.status === 'VALIDACAO_SIGEF' || parcel.status === 'FINALIZADO' ? 0.7 : 1
-                      }}
-                    >
-                      Aprovar
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <div style={{ textAlign: 'center', padding: '2rem', color: muted }}>
-            Nenhuma parcela cadastrada
+                      background: criando ? '#1f2937' : 'linear-gradient(135deg, rgba(134,239,172,0.4) 0%, rgba(74,222,128,0.5) 100%)',
+                      color: '#bbf7d0',
+                      border: '1px solid rgba(134,239,172,0.4)',
+                      borderRadius: '6px',
+                      cursor: criando ? 'wait' : 'pointer',
+                      fontSize: '0.85rem',
+                      fontWeight: '600'
+                    }}
+                  >
+                    Criar Lote
+                  </button>
+                </div>
+              </>
+            )}
           </div>
-        )}
+
+          {/* Lista de Lotes */}
+          <div>
+            <h3 style={{ fontSize: '0.85rem', fontWeight: '700', color: muted, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '1rem' }}>
+              <span role="img" aria-label="Lista">📋</span> LOTES ({parcels.length})
+            </h3>
+            {parcels.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {parcels.map((parcel) => (
+                  <div
+                    key={parcel.id}
+                    style={{
+                      background: 'rgba(30, 41, 59, 0.4)',
+                      border: `1px solid ${border}`,
+                      borderRadius: '8px',
+                      padding: '0.75rem',
+                      fontSize: '0.85rem'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <span style={{ fontWeight: '600', color: text }}>#{parcel.id}</span>
+                      <span style={{
+                        padding: '0.25rem 0.5rem',
+                        borderRadius: '4px',
+                        background: parcel.status === 'VALIDACAO_SIGEF' || parcel.status === 'FINALIZADO' ? 'rgba(134,239,172,0.2)' : 'rgba(253,186,116,0.2)',
+                        color: parcel.status === 'VALIDACAO_SIGEF' || parcel.status === 'FINALIZADO' ? '#bbf7d0' : '#fed7aa',
+                        fontSize: '0.75rem',
+                        fontWeight: '600'
+                      }}>
+                        {parcel.status}
+                      </span>
+                    </div>
+                    <p style={{ margin: '0 0 0.5rem 0', color: muted }}>{parcel.nome_cliente || '-'}</p>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button
+                        onClick={() => copiarLink(parcel)}
+                        style={{
+                          flex: 1,
+                          padding: '0.4rem 0.75rem',
+                          background: 'linear-gradient(135deg, rgba(147,197,253,0.3) 0%, rgba(96,165,250,0.4) 100%)',
+                          color: '#bfdbfe',
+                          border: '1px solid rgba(147,197,253,0.3)',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontSize: '0.8rem',
+                          fontWeight: '600'
+                        }}
+                      >
+                        <span role="img" aria-label="Copiar">📋</span> Link
+                      </button>
+                      <a
+                        href={`/topografo/validar?lote=${parcel.id}`}
+                        style={{
+                          flex: 1,
+                          padding: '0.4rem 0.75rem',
+                          background: 'linear-gradient(135deg, rgba(147,197,253,0.3) 0%, rgba(96,165,250,0.4) 100%)',
+                          color: '#bfdbfe',
+                          border: '1px solid rgba(147,197,253,0.3)',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontSize: '0.8rem',
+                          fontWeight: '600',
+                          textDecoration: 'none',
+                          textAlign: 'center',
+                          display: 'block'
+                        }}
+                      >
+                        Ver
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p style={{ color: muted, fontSize: '0.85rem', textAlign: 'center', padding: '1rem' }}>
+                Nenhum lote cadastrado
+              </p>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

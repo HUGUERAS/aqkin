@@ -343,6 +343,28 @@ export default function DrawMapValidation({
     view.ui.add(sketch, 'top-right');
   }, []);
 
+  const handleDrawLineTool = useCallback((view: MapView) => {
+    const drawLayer = getOrCreateToolLayer(view, 'draw-line-layer');
+    const sketch = new Sketch({
+      view,
+      layer: drawLayer,
+      availableCreateTools: ['polyline'],
+      creationMode: 'create',
+    });
+    view.ui.add(sketch, 'top-right');
+  }, []);
+
+  const handleDrawPolylineTool = useCallback((view: MapView) => {
+    const drawLayer = getOrCreateToolLayer(view, 'draw-polyline-layer');
+    const sketch = new Sketch({
+      view,
+      layer: drawLayer,
+      availableCreateTools: ['polyline'],
+      creationMode: 'create',
+    });
+    view.ui.add(sketch, 'top-right');
+  }, []);
+
   // ==================== DRAWING TOOL HANDLERS (7) ====================
 
   const handleSplitTool = useCallback((view: MapView) => {
@@ -1576,6 +1598,10 @@ export default function DrawMapValidation({
         case 'snap': handleSnapTool(view); break;
         case 'edit': handleEditTool(view); break;
 
+        // Simple Drawing (2)
+        case 'draw-line': handleDrawLineTool(view); break;
+        case 'draw-polyline': handleDrawPolylineTool(view); break;
+
         // Drawing (7)
         case 'split': handleSplitTool(view); break;
         case 'merge': handleMergeTool(view); break;
@@ -1672,31 +1698,7 @@ export default function DrawMapValidation({
         }}
       />
 
-      {/* Tool Info Overlay */}
-      {activeTool && toolDescription && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '10px',
-            right: '10px',
-            background: 'rgba(102, 126, 234, 0.95)',
-            color: 'white',
-            padding: '12px 16px',
-            borderRadius: '6px',
-            fontSize: '0.9rem',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-            maxWidth: '300px',
-          }}
-        >
-          <strong>Ferramenta Ativa:</strong> {toolDescription}
-
-          {state.measurementDistance !== null && activeTool === 'measure' && (
-            <div style={{ marginTop: '8px', fontSize: '0.85rem' }}>
-              Distancia: <strong>{(state.measurementDistance / 1000).toFixed(2)} km</strong>
-            </div>
-          )}
-        </div>
-      )}
+      {/* Tool Info Overlay - REMOVED */}
 
       {/* Help Text */}
       <div

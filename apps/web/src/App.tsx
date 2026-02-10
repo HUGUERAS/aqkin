@@ -85,9 +85,18 @@ function App() {
           <Route path="projetos" element={<MeusProjetos />} />
           <Route path="orcamentos" element={<Orcamentos />} />
           <Route path="financeiro" element={<Financeiro />} />
-          <Route path="validar" element={<ValidarDesenhos />} />
           <Route path="pecas" element={<GerarPecas />} />
         </Route>
+
+        {/* Validar Desenhos - Fullscreen sem layout wrapper */}
+        <Route
+          path="/topografo/validar"
+          element={
+            <ProtectedRoute allowedRole="topografo">
+              <ValidarDesenhos />
+            </ProtectedRoute>
+          }
+        />
 
         {/* 404 */}
         <Route path="*" element={<NotFound />} />

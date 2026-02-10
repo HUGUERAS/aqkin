@@ -10,7 +10,7 @@
   "private": true,
   "dependencies": {
     "@supabase/supabase-js": "^2.93.3",
-    "axios": "^1.13.4",
+    "axios": "^1.13.5",
     "class-variance-authority": "^0.7.1",
     "ol": "^10.7.0",
     "react": "^19.0.0",

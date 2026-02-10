@@ -2,6 +2,20 @@ import { useState, useMemo } from 'react';
 import LayerControl, { Layer } from '../../components/LayerControl';
 import DrawMapValidation from '../../components/maps/DrawMapValidation';
 import { BreadcrumbNav } from '../../components/Navigation';
+import ToolbarTabs from '../../components/tools/ToolbarTabs';
+import type { ToolCategory, ToolId } from '../../components/tools/ToolbarTabs';
+import {
+  DrawingTools,
+  AnalysisTools,
+  MeasurementTools,
+  TopologyTools,
+  AnnotationTools,
+  SelectionTools,
+  ImportExportTools,
+  CoordinateTools,
+  SIGEFTools,
+} from '../../components/tools/categories';
+import useToolShortcuts from '../../hooks/useToolShortcuts';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import Graphic from '@arcgis/core/Graphic';
 import './ValidarDesenhos.css';
@@ -13,13 +27,11 @@ interface LayerState {
   };
 }
 
-// Dados de exemplo para as layers (em coordenadas Brasília)
+// Dados de exemplo para as layers (em coordenadas Brasilia)
 const createExamplePolygons = () => {
-  // Coordenadas em Web Mercator (para as layers)
   const brasiliaLon = -47.9292;
   const brasiliaLat = -15.7801;
 
-  // Layer 1: Desenho Cliente (polígono inicial)
   const clientPolygon = new Polygon({
     rings: [
       [
@@ -32,7 +44,6 @@ const createExamplePolygons = () => {
     ],
   });
 
-  // Layer 2: Geometria Oficial (ajustada, com snap)
   const oficialPolygon = new Polygon({
     rings: [
       [
@@ -45,7 +56,6 @@ const createExamplePolygons = () => {
     ],
   });
 
-  // Layer 3: Sobreposições (pequeno polígono de conflito)
   const overlapPolygon = new Polygon({
     rings: [
       [
@@ -58,7 +68,6 @@ const createExamplePolygons = () => {
     ],
   });
 
-  // Layer 4: Limites Compartilhados (linha)
   const limitsLine = new Polygon({
     rings: [
       [
@@ -98,10 +107,20 @@ export default function ValidarDesenhos() {
     confrontantes: false,
   });
 
-  const [activeTool, setActiveTool] = useState<'snap' | 'edit' | 'measure' | 'area' | null>(null);
-  const [measurements, setMeasurements] = useState<Partial<Record<'distance' | 'area', number>>>({});
+  // Tool system state
+  const [activeCategory, setActiveCategory] = useState<ToolCategory>('drawing');
+  const [activeTool, setActiveTool] = useState<ToolId | 'snap' | 'edit' | 'measure' | 'area' | null>(null);
+  const [measurements, setMeasurements] = useState<Partial<Record<'distance' | 'area' | 'angle' | 'azimuth' | 'perimeter', number>>>({});
 
-  // Layers para o mapa
+  // Keyboard shortcuts
+  useToolShortcuts({
+    activeCategory,
+    activeTool,
+    onCategoryChange: setActiveCategory,
+    onToolActivate: (tool) => setActiveTool(tool),
+  });
+
+  // Layers for map
   const layers = useMemo(() => [
     {
       id: 'cliente',
@@ -114,15 +133,15 @@ export default function ValidarDesenhos() {
     {
       id: 'oficial',
       label: 'Geometria Oficial (ajustada)',
-      color: '#CD7F32', // Bronze-600 (design-tokens.css)
+      color: '#CD7F32',
       visible: layerStates.oficial.visible,
       opacity: layerStates.oficial.opacity,
       graphics: examplePolygons.oficial,
     },
     {
       id: 'sobreposi',
-      label: 'Sobreposições',
-      color: '#E53935', // Error color (design-tokens.css)
+      label: 'Sobreposicoes',
+      color: '#E53935',
       visible: layerStates.sobreposi.visible,
       opacity: layerStates.sobreposi.opacity,
       graphics: examplePolygons.sobreposi,
@@ -130,7 +149,7 @@ export default function ValidarDesenhos() {
     {
       id: 'limites',
       label: 'Limites Compartilhados',
-      color: '#5FB063', // Success color (design-tokens.css)
+      color: '#5FB063',
       visible: layerStates.limites.visible,
       opacity: layerStates.limites.opacity,
       graphics: examplePolygons.limites,
@@ -153,7 +172,6 @@ export default function ValidarDesenhos() {
 
   const allChecksComplete = Object.values(validationChecks).every((v) => v);
 
-  // Layer control definitions para o LayerControl component
   const layerControlDefs: Layer[] = layers.map(layer => ({
     id: layer.id,
     label: layer.label,
@@ -162,6 +180,27 @@ export default function ValidarDesenhos() {
     initialOpacity: layer.opacity,
     description: 'Visualizar no mapa',
   }));
+
+  // Render category tools based on active category
+  const renderCategoryTools = () => {
+    const props = {
+      activeTool: activeTool as ToolId | null,
+      onToolActivate: (tool: ToolId | null) => setActiveTool(tool),
+    };
+
+    switch (activeCategory) {
+      case 'drawing': return <DrawingTools {...props} />;
+      case 'analysis': return <AnalysisTools {...props} />;
+      case 'measurement': return <MeasurementTools {...props} />;
+      case 'topology': return <TopologyTools {...props} />;
+      case 'annotation': return <AnnotationTools {...props} />;
+      case 'selection': return <SelectionTools {...props} />;
+      case 'import-export': return <ImportExportTools {...props} />;
+      case 'coordinates': return <CoordinateTools {...props} />;
+      case 'sigef': return <SIGEFTools {...props} />;
+      default: return null;
+    }
+  };
 
   return (
     <div className="validar-desenhos-container">
@@ -177,9 +216,19 @@ export default function ValidarDesenhos() {
 
       {/* Header */}
       <div className="page-header">
-        <h1><span role="img" aria-label="Aprovado">✅</span> Validar Desenhos</h1>
+        <h1>Validar Desenhos</h1>
         <p>Revise e aprove a geometria da propriedade antes de gerar o contrato</p>
       </div>
+
+      {/* Toolbar Tabs */}
+      <ToolbarTabs
+        activeCategory={activeCategory}
+        activeTool={activeTool as ToolId | null}
+        onCategoryChange={setActiveCategory}
+        onToolActivate={(tool) => setActiveTool(tool)}
+      >
+        {renderCategoryTools()}
+      </ToolbarTabs>
 
       {/* Layout: LayerControl + Map + Validation */}
       <div className="validar-layout">
@@ -190,61 +239,35 @@ export default function ValidarDesenhos() {
 
         {/* 2. Map + Tools (Center) */}
         <main className="map-section">
-          {/* Tools Toolbar */}
-          <div className="tools-toolbar">
-            <button
-              className={`tool-btn ${activeTool === 'snap' ? 'active' : ''}`}
-              onClick={() => setActiveTool(activeTool === 'snap' ? null : 'snap')}
-              title="Snap Tool: Ajustar vértices com tolerância de 0.5m"
-            >
-              <span role="img" aria-label="Imã">🧲</span> Snap (0.5m)
-            </button>
-
-            <button
-              className={`tool-btn ${activeTool === 'edit' ? 'active' : ''}`}
-              onClick={() => setActiveTool(activeTool === 'edit' ? null : 'edit')}
-              title="Editar Vértices: Mover, adicionar ou remover pontos"
-            >
-              <span role="img" aria-label="Lapis">✏️</span> Editar Vértices
-            </button>
-
-            <button
-              className={`tool-btn ${activeTool === 'measure' ? 'active' : ''}`}
-              onClick={() => setActiveTool(activeTool === 'measure' ? null : 'measure')}
-              title="Medir Distância: Medição entre pontos"
-            >
-              <span role="img" aria-label="Regua">📏</span> Medir
-            </button>
-
-            <button
-              className={`tool-btn ${activeTool === 'area' ? 'active' : ''}`}
-              onClick={() => setActiveTool(activeTool === 'area' ? null : 'area')}
-              title="Calcular Área: Área do polígono em m²"
-            >
-              <span role="img" aria-label="Esquadro">📐</span> Calcular Área
-            </button>
-
-            {activeTool && (
-              <div className="active-tool-info">
-                <strong>Ferramenta ativa:</strong>
-                {activeTool === 'snap' && ' Ajuste os vértices com 0.5m de tolerância'}
-                {activeTool === 'edit' && ' Clique e arraste vértices para editá-los'}
-                {activeTool === 'measure' && ' Clique para medir distâncias'}
-                {activeTool === 'area' && ' Área calculada automaticamente ao editar'}
-              </div>
-            )}
-          </div>
-
           {/* Map Container */}
           <div className="map-container">
             <DrawMapValidation
               layers={layers}
               activeTool={activeTool}
-              onMeasurement={(distance) => {
-                setMeasurements((prev) => ({ ...prev, distance }));
-              }}
-              onAreaCalculated={(area) => {
-                setMeasurements((prev) => ({ ...prev, area }));
+              onMeasurement={(distance) => setMeasurements((prev) => ({ ...prev, distance }))}
+              onAreaCalculated={(area) => setMeasurements((prev) => ({ ...prev, area }))}
+              onAngleMeasured={(angle) => setMeasurements((prev) => ({ ...prev, angle }))}
+              onAzimuthCalculated={(azimuth) => setMeasurements((prev) => ({ ...prev, azimuth }))}
+              onPerimeterCalculated={(perimeter) => setMeasurements((prev) => ({ ...prev, perimeter }))}
+              onPolygonSplit={(polygons) => console.log('Poligonos divididos:', polygons)}
+              onPolygonsMerged={(polygon) => console.log('Poligonos unidos:', polygon)}
+              onBufferCreated={(buffer) => console.log('Buffer criado:', buffer)}
+              onIntersectionFound={(geom) => console.log('Interseccao:', geom)}
+              onGeometriesUnited={(polygon) => console.log('Uniao:', polygon)}
+              onDifferenceCalculated={(geom) => console.log('Diferenca:', geom)}
+              onSymmetricDiff={(geom) => console.log('Diferenca simetrica:', geom)}
+              onConvexHullCreated={(polygon) => console.log('Envoltoria convexa:', polygon)}
+              onCentroidCalculated={(point) => console.log('Centroide:', point)}
+              onTopologyValidated={(result) => console.log('Topologia:', result)}
+              onGeometrySimplified={(geom) => console.log('Simplificado:', geom)}
+              onGeometryDensified={(geom) => console.log('Densificado:', geom)}
+              onFeaturesSelected={(features) => console.log('Selecionados:', features.length)}
+              onGeoJSONExported={(geojson) => console.log('GeoJSON exportado:', geojson.length, 'chars')}
+              onCoordsConverted={(result) => console.log('Coordenadas:', result)}
+              onPointAdded={(point) => console.log('Ponto adicionado:', point)}
+              onCoordsDisplayed={(coords) => {
+                // Update coords display without flooding state
+                document.title = `${coords.lat.toFixed(6)}, ${coords.lon.toFixed(6)}`;
               }}
               initialCenter={[-47.9292, -15.7801]}
               initialZoom={17}
@@ -253,13 +276,11 @@ export default function ValidarDesenhos() {
           </div>
 
           {/* Measurement Results */}
-          {(measurements.distance || measurements.area) && (
+          {(measurements.distance || measurements.area || measurements.angle || measurements.azimuth || measurements.perimeter) && (
             <div className="measurement-results">
               {measurements.distance && (
                 <div className="measurement-item">
-                  <span className="measurement-label">
-                    <span role="img" aria-label="Regua">📏</span> Distância Medida:
-                  </span>
+                  <span className="measurement-label">Distancia Medida:</span>
                   <span className="measurement-value">
                     {measurements.distance >= 1000
                       ? (measurements.distance / 1000).toFixed(2)
@@ -270,12 +291,28 @@ export default function ValidarDesenhos() {
               )}
               {measurements.area && (
                 <div className="measurement-item">
-                  <span className="measurement-label">
-                    <span role="img" aria-label="Esquadro">📐</span> Área Calculada:
-                  </span>
+                  <span className="measurement-label">Area Calculada:</span>
                   <span className="measurement-value">
-                    {(measurements.area / 10000).toFixed(2)} hectares ({measurements.area.toFixed(0)} m²)
+                    {(measurements.area / 10000).toFixed(2)} hectares ({measurements.area.toFixed(0)} m2)
                   </span>
+                </div>
+              )}
+              {measurements.angle && (
+                <div className="measurement-item">
+                  <span className="measurement-label">Angulo:</span>
+                  <span className="measurement-value">{measurements.angle.toFixed(2)}deg</span>
+                </div>
+              )}
+              {measurements.azimuth && (
+                <div className="measurement-item">
+                  <span className="measurement-label">Azimute:</span>
+                  <span className="measurement-value">{measurements.azimuth.toFixed(2)}deg</span>
+                </div>
+              )}
+              {measurements.perimeter && (
+                <div className="measurement-item">
+                  <span className="measurement-label">Perimetro:</span>
+                  <span className="measurement-value">{measurements.perimeter.toFixed(2)} m</span>
                 </div>
               )}
             </div>
@@ -284,7 +321,7 @@ export default function ValidarDesenhos() {
 
         {/* 3. Validation Panel (Right Sidebar) */}
         <aside className="validation-panel">
-          <h3><span role="img" aria-label="Checklist">📋</span> Checklist de Validação</h3>
+          <h3>Checklist de Validacao</h3>
 
           <div className="checklist">
             <label className="check-item">
@@ -294,7 +331,7 @@ export default function ValidarDesenhos() {
                 onChange={() => toggleValidationCheck('geometria')}
               />
               <span className={validationChecks.geometria ? 'completed' : ''}>
-                ✓ Geometria válida (sem auto-interseções)
+                Geometria valida (sem auto-interseccoes)
               </span>
             </label>
 
@@ -305,7 +342,7 @@ export default function ValidarDesenhos() {
                 onChange={() => toggleValidationCheck('snap')}
               />
               <span className={validationChecks.snap ? 'completed' : ''}>
-                ✓ Snap aplicado nos vértices
+                Snap aplicado nos vertices
               </span>
             </label>
 
@@ -316,7 +353,7 @@ export default function ValidarDesenhos() {
                 onChange={() => toggleValidationCheck('sobreposicoes')}
               />
               <span className={validationChecks.sobreposicoes ? 'completed' : ''}>
-                ✓ Sem sobreposições com vizinhos
+                Sem sobreposicoes com vizinhos
               </span>
             </label>
 
@@ -327,7 +364,7 @@ export default function ValidarDesenhos() {
                 onChange={() => toggleValidationCheck('area')}
               />
               <span className={validationChecks.area ? 'completed' : ''}>
-                ✓ Área calculada corretamente
+                Area calculada corretamente
               </span>
             </label>
 
@@ -338,7 +375,7 @@ export default function ValidarDesenhos() {
                 onChange={() => toggleValidationCheck('crs')}
               />
               <span className={validationChecks.crs ? 'completed' : ''}>
-                ✓ CRS SIRGAS 2000 (EPSG:4674)
+                CRS SIRGAS 2000 (EPSG:4674)
               </span>
             </label>
 
@@ -349,7 +386,7 @@ export default function ValidarDesenhos() {
                 onChange={() => toggleValidationCheck('confrontantes')}
               />
               <span className={validationChecks.confrontantes ? 'completed' : ''}>
-                ✓ Confrontantes identificados
+                Confrontantes identificados
               </span>
             </label>
           </div>
@@ -358,12 +395,12 @@ export default function ValidarDesenhos() {
           <div className={`validation-status ${allChecksComplete ? 'complete' : 'incomplete'}`}>
             {allChecksComplete ? (
               <>
-                <p className="status-icon"><span role="img" aria-label="Sucesso">✅</span></p>
+                <p className="status-icon">OK</p>
                 <p className="status-text">Tudo validado!</p>
               </>
             ) : (
               <>
-                <p className="status-icon"><span role="img" aria-label="Carregando">⏳</span></p>
+                <p className="status-icon">...</p>
                 <p className="status-text">
                   {Object.values(validationChecks).filter((v) => v).length}/{Object.keys(validationChecks).length}
                 </p>
@@ -375,9 +412,9 @@ export default function ValidarDesenhos() {
           <button
             className={`approve-button ${allChecksComplete ? 'enabled' : 'disabled'}`}
             disabled={!allChecksComplete}
-            title={allChecksComplete ? 'Aprovar geometria' : 'Complete todos os itens da validação'}
+            title={allChecksComplete ? 'Aprovar geometria' : 'Complete todos os itens da validacao'}
           >
-            <span role="img" aria-label="Aprovar">✅</span> Aprovar Geometria
+            Aprovar Geometria
           </button>
         </aside>
       </div>

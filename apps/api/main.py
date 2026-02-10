@@ -12,6 +12,8 @@ from routers.contracts import router as contracts_router
 from routers.ai import router as ai_router
 from routers.documents import router as documents_router
 from routers.intake import router as intake_router
+from routers.sigef import router as sigef_router
+from routers.import_export import router as import_export_router
 
 load_dotenv()
 
@@ -965,6 +967,8 @@ app.include_router(contracts_router)
 app.include_router(ai_router)
 app.include_router(documents_router)
 app.include_router(intake_router)
+app.include_router(sigef_router)
+app.include_router(import_export_router)
 
 
 if __name__ == "__main__":

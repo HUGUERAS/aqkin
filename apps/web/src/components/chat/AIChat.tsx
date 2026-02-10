@@ -84,7 +84,7 @@ export default function AIChat({ userRole }: AIChatProps) {
         timestamp: formatTime(),
       };
 
-      // Use a ref to capture the current messages state synchronously
+      // Use a local variable to capture the current messages state synchronously
       let currentMessages: Message[] = [];
       setMessages((prev) => {
         currentMessages = prev;

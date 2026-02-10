@@ -1,0 +1,26 @@
+Daemon process terminated and closed the connection
+
+Messages from the log:
+[NX v22.4.5 Daemon Server] - 2026-02-10T06:49:05.351Z - Serializing response for HASH_GLOB message in json mode
+[NX v22.4.5 Daemon Server] - 2026-02-10T06:49:05.351Z - Responding to HASH_GLOB message
+[NX v22.4.5 Daemon Server] - 2026-02-10T06:49:05.352Z - [REQUEST]: Responding to the client. handleHashMultiGlob
+Time for 'GLOB round trip' 6.601800000062212
+Time for 'deserialize daemon response - GLOB' 0.049700000090524554
+Time for 'daemon-message-serialization-HASH_MULTI_GLOB' 0.03179999999701977
+[NX v22.4.5 Daemon Server] - 2026-02-10T06:49:05.352Z - Done responding to the client handleHashMultiGlob
+[NX v22.4.5 Daemon Server] - 2026-02-10T06:49:05.352Z - Handled json message HASH_GLOB. Handling time: 1. Response time: 3.
+[NX v22.4.5 Daemon Client] - 2026-02-10T06:49:05.352Z - [Messenger] Received message, length: 92
+[NX v22.4.5 Daemon Server] - 2026-02-10T06:49:05.353Z - Done responding to the client handleHashMultiGlob
+[NX v22.4.5 Daemon Server] - 2026-02-10T06:49:05.353Z - Handled json message HASH_GLOB. Handling time: 2. Response time: 2.
+Time for 'HASH_MULTI_GLOB round trip' 5.698500000173226
+Time for 'deserialize daemon response - HASH_MULTI_GLOB' 0.023200000170618296
+Time for 'HASH_MULTI_GLOB round trip' 5.049899999983609
+Time for 'deserialize daemon response - HASH_MULTI_GLOB' 0.039400000125169754
+Time for '@nx/vite/plugin:createNodes' 64.26980000012554
+Time for '@nx/eslint/plugin:createNodes' 78.3817000000272
+Time for '@nx/vitest:createNodes' 86.94850000017323
+Creating project graph nodes with 8 plugins
+
+
+
+More information: c:\Users\User\aqkin\aqkin.worktrees\copilot-worktree-2026-02-03T03-18-17\.nx\workspace-data\d\daemon.log

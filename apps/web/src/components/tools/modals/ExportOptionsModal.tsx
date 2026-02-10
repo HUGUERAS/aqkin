@@ -23,10 +23,23 @@ export default function ExportOptionsModal({ isOpen, onClose, onExport, exportin
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content tool-modal" onClick={(e) => e.stopPropagation()}>
+      <div 
+        className="modal-content tool-modal" 
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="export-modal-title"
+      >
         <div className="modal-header">
-          <h3>Exportar Geometria</h3>
-          <button className="modal-close" onClick={onClose}>X</button>
+          <h3 id="export-modal-title">Exportar Geometria</h3>
+          <button 
+            type="button"
+            className="modal-close" 
+            onClick={onClose}
+            aria-label="Fechar modal"
+          >
+            X
+          </button>
         </div>
         <div className="modal-body">
           <div className="export-formats">

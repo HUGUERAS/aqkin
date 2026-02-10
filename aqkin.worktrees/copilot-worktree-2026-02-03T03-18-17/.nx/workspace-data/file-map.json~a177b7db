@@ -1,0 +1,1752 @@
+{
+  "version": "6.0",
+  "nxVersion": "22.4.5",
+  "pathMappings": {},
+  "nxJsonPlugins": [
+    {
+      "name": "@nx/js/typescript",
+      "options": {
+        "typecheck": {
+          "targetName": "typecheck"
+        },
+        "build": {
+          "targetName": "build",
+          "configName": "tsconfig.lib.json",
+          "buildDepsName": "build-deps",
+          "watchDepsName": "watch-deps"
+        }
+      }
+    },
+    {
+      "name": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    },
+    {
+      "name": "@nx/vite/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "testTargetName": "test",
+        "serveTargetName": "serve",
+        "devTargetName": "dev",
+        "previewTargetName": "preview",
+        "serveStaticTargetName": "serve-static",
+        "typecheckTargetName": "typecheck",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
+      }
+    },
+    {
+      "name": "@nx/vitest",
+      "version": "22.4.5",
+      "options": {
+        "testTargetName": "test",
+        "ciTargetName": "test-ci",
+        "testMode": "watch"
+      }
+    },
+    {
+      "name": "@nx/playwright/plugin",
+      "options": {
+        "targetName": "e2e"
+      }
+    }
+  ],
+  "fileMap": {
+    "nonProjectFiles": [
+      {
+        "file": "scripts/DEPLOY_TUDO_FIX.ps1",
+        "hash": "13420235305390782978"
+      },
+      {
+        "file": "docker-compose.prod.yml",
+        "hash": "9467865465306493917"
+      },
+      {
+        "file": "docker-compose.yml",
+        "hash": "13173304496058543032"
+      },
+      {
+        "file": "scripts/GERAR_SSH_KEY.ps1",
+        "hash": "4105015618044952749"
+      },
+      {
+        "file": "README.md",
+        "hash": "11682211075914865888"
+      },
+      {
+        "file": "DEPLOY_PRODUCTION.md",
+        "hash": "1949569176031195967"
+      },
+      {
+        "file": ".vscode/settings.json",
+        "hash": "6782489682507050457"
+      },
+      {
+        "file": "STATUS_DEPLOY.md",
+        "hash": "821147608052321627"
+      },
+      {
+        "file": "GERENCIAMENTO_PR.md",
+        "hash": "14715816941331114995"
+      },
+      {
+        "file": "GUIA_TESTE_INTEGRAÇÃO.md",
+        "hash": "16874150263517297522"
+      },
+      {
+        "file": "DEPLOY_FIRST_TIME.md",
+        "hash": "4348459909629754119"
+      },
+      {
+        "file": "TESTE_INTEGRAÇÃO.md",
+        "hash": "10593604500465089369"
+      },
+      {
+        "file": ".vscode/extensions.json",
+        "hash": "8064630813597198584"
+      },
+      {
+        "file": "DataAnalysisExpert/00_RESUMO_EXECUTIVO.md",
+        "hash": "5434858853460106817"
+      },
+      {
+        "file": "DEPLOY_PLAN_VPS.md",
+        "hash": "15848760085366185120"
+      },
+      {
+        "file": "DEPLOY_SEM_BLOCO_NOTAS.md",
+        "hash": "17406949301426236666"
+      },
+      {
+        "file": "VERIFICACAO_PROTECAO_ROTAS.md",
+        "hash": "7224568273282598596"
+      },
+      {
+        "file": "DataAnalysisExpert/04_FALHAS_CRITICAS.md",
+        "hash": "12536929697949915665"
+      },
+      {
+        "file": "tsconfig.json",
+        "hash": "1009647674408430790"
+      },
+      {
+        "file": "SendGrid1/function.json",
+        "hash": "2594966880345992164"
+      },
+      {
+        "file": "SUPABASE_SETUP.md",
+        "hash": "246116799769419976"
+      },
+      {
+        "file": "scripts/DEPLOY_AUTOMATICO.ps1",
+        "hash": "16660591465281847334"
+      },
+      {
+        "file": "RESUMO_TESTE_INTEGRAÇÃO.md",
+        "hash": "2598532578236690853"
+      },
+      {
+        "file": "scripts/deploy-frontend-vps.sh",
+        "hash": "9794079645137530698"
+      },
+      {
+        "file": "SOLUTION_SUMMARY.md",
+        "hash": "6910639407626283801"
+      },
+      {
+        "file": "DataAnalysisExpert/05_RECOMENDACOES_FIX.md",
+        "hash": "6274582400640515461"
+      },
+      {
+        "file": "render.yaml",
+        "hash": "1506013820174124553"
+      },
+      {
+        "file": "RabbitMQTrigger1/function.json",
+        "hash": "3153887926045784102"
+      },
+      {
+        "file": "scripts/deploy-completo-fix.sh",
+        "hash": "17543879162142234869"
+      },
+      {
+        "file": "DEPLOY_CONFIGURADO.md",
+        "hash": "7893822872171303405"
+      },
+      {
+        "file": "database/init/03_multitenant_rbac.sql",
+        "hash": "3817117229801892116"
+      },
+      {
+        "file": "scripts/DEPLOY-VPS.ps1",
+        "hash": "5465238825065464384"
+      },
+      {
+        "file": "DEPLOY_SIMPLES.md",
+        "hash": "11872028191841647706"
+      },
+      {
+        "file": "CONTRACT_IMPLEMENTATION.md",
+        "hash": "16780735451606215328"
+      },
+      {
+        "file": "scripts/quick-check.ps1",
+        "hash": "1743709839390751029"
+      },
+      {
+        "file": ".vscode/tasks.json",
+        "hash": "16341308688169308323"
+      },
+      {
+        "file": "MAPA_LAYERS_CONFERENCIA.md",
+        "hash": "11379465760824263277"
+      },
+      {
+        "file": "scripts/ENV_VARS_VPS.sh",
+        "hash": "14371393059821196045"
+      },
+      {
+        "file": "supabase_migrate.py",
+        "hash": "753660049063847482"
+      },
+      {
+        "file": "DEPLOY_FUNCIONA.md",
+        "hash": "18357064944140099860"
+      },
+      {
+        "file": "scripts/test-integration-complete.ps1",
+        "hash": "4791032816692577823"
+      },
+      {
+        "file": "DataAnalysisExpert/01_AUDIT_ENDPOINTS_BACKEND.md",
+        "hash": "4558981566077162896"
+      },
+      {
+        "file": "USABILITY_CHECKLIST.md",
+        "hash": "10531674199217438893"
+      },
+      {
+        "file": "scripts/nginx-bemreal-frontend.conf",
+        "hash": "8999316267812754686"
+      },
+      {
+        "file": "MÓDULO_FINANCEIRO.md",
+        "hash": "17924055010681765036"
+      },
+      {
+        "file": "DEPLOY_VERCEL_RENDER.md",
+        "hash": "5709230627504607020"
+      },
+      {
+        "file": "scripts/DEPLOY_TUDO.ps1",
+        "hash": "4751541155538297635"
+      },
+      {
+        "file": "host.json",
+        "hash": "7493395780017685850"
+      },
+      {
+        "file": ".funcignore",
+        "hash": "14465484311836440529"
+      },
+      {
+        "file": "FLUXO_LAYER_CONTROL.md",
+        "hash": "8510824305989155985"
+      },
+      {
+        "file": "DEPLOY_BEMREAL_AGORA.md",
+        "hash": "11307171307839941271"
+      },
+      {
+        "file": "DataAnalysisExpert/02_CHAMADAS_FRONTEND.md",
+        "hash": "1021938863505942381"
+      },
+      {
+        "file": "scripts/run-migration.js",
+        "hash": "9530612878381334497"
+      },
+      {
+        "file": "scripts/VARIAVEIS_DEPLOY.txt",
+        "hash": "3354908067913225887"
+      },
+      {
+        "file": "DEPLOY_3_PASSOS.md",
+        "hash": "2491784863526537598"
+      },
+      {
+        "file": "STATUS_MAPA_INTEGRADO.md",
+        "hash": "7084545886465722773"
+      },
+      {
+        "file": "scripts/check-financeiro-migrations.sql",
+        "hash": "14816036240341657715"
+      },
+      {
+        "file": "scripts/PREPARAR_TUDO.ps1",
+        "hash": "543550558213705129"
+      },
+      {
+        "file": "DEPLOY_DOCKER_CHECKLIST.md",
+        "hash": "14500717965055327692"
+      },
+      {
+        "file": "scripts/UPLOAD_WINSCP.md",
+        "hash": "3705215459674906426"
+      },
+      {
+        "file": "ter.txt",
+        "hash": "9627183646774523816"
+      },
+      {
+        "file": "scripts/PREPARAR_UPLOAD.ps1",
+        "hash": "7153566985971212632"
+      },
+      {
+        "file": "DEPLOY_COM_SSH_KEY.md",
+        "hash": "16329121736929474612"
+      },
+      {
+        "file": "DEPLOY_QUICK.md",
+        "hash": "13162956028120041607"
+      },
+      {
+        "file": "SETUP_MVP.md",
+        "hash": "12745123763728198086"
+      },
+      {
+        "file": "scripts/CONFIGURAR_SSH.ps1",
+        "hash": "13768167956956970688"
+      },
+      {
+        "file": "DataAnalysisExpert/INDEX.md",
+        "hash": "10192427821721333791"
+      },
+      {
+        "file": "RESUMO_IMPLEMENTAÇÃO.md",
+        "hash": "14293135669328878238"
+      },
+      {
+        "file": "DataAnalysisExpert/03_MATRIZ_COMPATIBILIDADE.md",
+        "hash": "17107725283529269781"
+      },
+      {
+        "file": "RESUMO_AUTOMATIZACAO.md",
+        "hash": "12309912120130014967"
+      },
+      {
+        "file": "scripts/deploy-completo.sh",
+        "hash": "17543879162142234869"
+      },
+      {
+        "file": "TESTES_BLOCO_4.md",
+        "hash": "6934782749464937088"
+      },
+      {
+        "file": "scripts/CONFIGURAR_SSH_KEY.ps1",
+        "hash": "10299405806303968693"
+      },
+      {
+        "file": "DEPLOY_AGORA.md",
+        "hash": "13915801874827551125"
+      },
+      {
+        "file": "DEPLOY_VERCEL_HOSTINGER.md",
+        "hash": "14309906345861274994"
+      },
+      {
+        "file": "nx.json",
+        "hash": "15925552488094423696"
+      },
+      {
+        "file": "scripts/test-financeiro-integration.py",
+        "hash": "2684080697396817726"
+      },
+      {
+        "file": "migrations.json",
+        "hash": "5556107577607783900"
+      },
+      {
+        "file": "scripts/setup-vps.sh",
+        "hash": "14287878460988377548"
+      },
+      {
+        "file": "SETUP_AZURE.md",
+        "hash": "6678078217290192944"
+      },
+      {
+        "file": "scripts/deploy-hostinger.sh",
+        "hash": "372631459938076239"
+      },
+      {
+        "file": "vercel.json",
+        "hash": "4163814087460035880"
+      },
+      {
+        "file": "vitest.workspace.ts",
+        "hash": "382902831997169314"
+      },
+      {
+        "file": "QUICK_START_BACKEND.md",
+        "hash": "13434620545085648162"
+      },
+      {
+        "file": "scripts/quick-check.sh",
+        "hash": "4263304622213221226"
+      },
+      {
+        "file": "DEPLOY_VPS_RAPIDO.md",
+        "hash": "2747999932045462163"
+      },
+      {
+        "file": "package.json",
+        "hash": "3629150935322978037"
+      },
+      {
+        "file": "PULL_REQUEST_MANAGEMENT.md",
+        "hash": "6107297568162615294"
+      },
+      {
+        "file": "eslint.config.mjs",
+        "hash": "9999921487017093387"
+      },
+      {
+        "file": "scripts/deploy-docker-vps.ps1",
+        "hash": "3892612791291801417"
+      },
+      {
+        "file": "RESUMO_BLOCO_4.md",
+        "hash": "15310922916145877586"
+      },
+      {
+        "file": "DEPLOY_STATUS.md",
+        "hash": "11384736839379295332"
+      },
+      {
+        "file": "database/init/01_schema.sql",
+        "hash": "885307013211218252"
+      },
+      {
+        "file": "scripts/upload-to-vps.ps1",
+        "hash": "9537990838939069306"
+      },
+      {
+        "file": "DEPLOY_BACKEND.md",
+        "hash": "707554830683526240"
+      },
+      {
+        "file": "scripts/SETUP_SSH_KEY_VPS.sh",
+        "hash": "3222425215251050443"
+      },
+      {
+        "file": "scripts/copiar-chave-vps-manual.md",
+        "hash": "9063745430161285976"
+      },
+      {
+        "file": "duplicate_blocks_report.txt",
+        "hash": "13926175012901468498"
+      },
+      {
+        "file": "SECURITY.md",
+        "hash": "1177352031700873466"
+      },
+      {
+        "file": "tsconfig.base.json",
+        "hash": "11804278444960332651"
+      },
+      {
+        "file": "scripts/test-api-financeiro.py",
+        "hash": "10954296351238985650"
+      },
+      {
+        "file": "DEPLOY_HOSTINGER.md",
+        "hash": "6749773584200215316"
+      },
+      {
+        "file": "VALIDACAO_PROTECAO_ROTAS.md",
+        "hash": "5937139737484146341"
+      },
+      {
+        "file": "O_QUE_FALTA.md",
+        "hash": "16114892692978260647"
+      },
+      {
+        "file": "DEPLOY_GUIDE.md",
+        "hash": "406008561467340826"
+      },
+      {
+        "file": "FRONTEND_DESIGN_UPGRADE.md",
+        "hash": "8126711844710939910"
+      },
+      {
+        "file": ".gitignore",
+        "hash": "16637864887273551023"
+      },
+      {
+        "file": "EXECUTAR_TESTES.md",
+        "hash": "1525308085523966860"
+      },
+      {
+        "file": "scripts/deploy-docker-vps.sh",
+        "hash": "6898830091069068977"
+      },
+      {
+        "file": "MAPA_INTEGRACACAO_COMPLETA.md",
+        "hash": "16696539625292968096"
+      },
+      {
+        "file": "scripts/VERIFICAR_PRE_DEPLOY.ps1",
+        "hash": "3207157022319144337"
+      },
+      {
+        "file": "scripts/migrate-azure-to-supabase.py",
+        "hash": "10298975257650815853"
+      },
+      {
+        "file": "CONTRACT_FLOW.md",
+        "hash": "18369995518055039983"
+      },
+      {
+        "file": "database/init/02_extensions.sql",
+        "hash": "322221409852898323"
+      },
+      {
+        "file": "scripts/COPIAR_CHAVE_VPS.ps1",
+        "hash": "2585431219516064401"
+      },
+      {
+        "file": "DEPLOY_FINAL.md",
+        "hash": "18385224527331810729"
+      },
+      {
+        "file": "scripts/check-migrations.sql",
+        "hash": "2512751392790890047"
+      },
+      {
+        "file": "package-lock.json",
+        "hash": "6827739800982213477"
+      },
+      {
+        "file": "database/init/04_financeiro.sql",
+        "hash": "654885321145375119"
+      }
+    ],
+    "projectFileMap": {
+      "@ativo-real-monorepo/source": [
+        {
+          "file": "aqkin-fresh/# Chat Customization Diagnostics.md",
+          "hash": "887685197449703527"
+        },
+        {
+          "file": "aqkin-fresh/.circleci/config.yml",
+          "hash": "18353554783139083429"
+        },
+        {
+          "file": "aqkin-fresh/.cursor/ativo_real/frontend/styles.css",
+          "hash": "17374596383393381926"
+        },
+        {
+          "file": "aqkin-fresh/.devcontainer/devcontainer.json",
+          "hash": "6565240327046739684"
+        },
+        {
+          "file": "aqkin-fresh/.devcontainer/docker-compose.yml",
+          "hash": "9114326218673122777"
+        },
+        {
+          "file": "aqkin-fresh/.editorconfig",
+          "hash": "11532813898455409296"
+        },
+        {
+          "file": "aqkin-fresh/.env.example",
+          "hash": "13513284559567249403"
+        },
+        {
+          "file": "aqkin-fresh/.env.production.example",
+          "hash": "623892866991453944"
+        },
+        {
+          "file": "aqkin-fresh/.env.supabase",
+          "hash": "1703921311140778572"
+        },
+        {
+          "file": "aqkin-fresh/.github/copilot-instructions.md",
+          "hash": "566350253914517316"
+        },
+        {
+          "file": "aqkin-fresh/.github/dependabot.yml",
+          "hash": "10454345304293185038"
+        },
+        {
+          "file": "aqkin-fresh/.github/instructions/backend.instructions.md",
+          "hash": "18353336874521335657"
+        },
+        {
+          "file": "aqkin-fresh/.github/instructions/frontend.instructions.md",
+          "hash": "851378468433244854"
+        },
+        {
+          "file": "aqkin-fresh/.github/instructions/testing.instructions.md",
+          "hash": "7773515307308563117"
+        },
+        {
+          "file": "aqkin-fresh/.gitignore",
+          "hash": "2484616193244087722"
+        },
+        {
+          "file": "aqkin-fresh/.prettierignore",
+          "hash": "17085498363870782104"
+        },
+        {
+          "file": "aqkin-fresh/.prettierrc",
+          "hash": "6820402234827505055"
+        },
+        {
+          "file": "aqkin-fresh/.vscode/extensions.json",
+          "hash": "6097136658375690748"
+        },
+        {
+          "file": "aqkin-fresh/.vscode/settings.json",
+          "hash": "7380346256566086181"
+        },
+        {
+          "file": "aqkin-fresh/ARQUITETURA_FINAL_MAPA.md",
+          "hash": "3438977675772712010"
+        },
+        {
+          "file": "aqkin-fresh/BACKEND_API_TESTING.md",
+          "hash": "15601465612694736246"
+        },
+        {
+          "file": "aqkin-fresh/BACKEND_IMPLEMENTATION.md",
+          "hash": "9482610800016473334"
+        },
+        {
+          "file": "aqkin-fresh/BACKEND_SUMMARY.md",
+          "hash": "9682623583063343363"
+        },
+        {
+          "file": "aqkin-fresh/CHECKLIST_FINAL.md",
+          "hash": "2660302762059663655"
+        },
+        {
+          "file": "aqkin-fresh/CONTRACT_FLOW.md",
+          "hash": "18369995518055039983"
+        },
+        {
+          "file": "aqkin-fresh/CONTRACT_IMPLEMENTATION.md",
+          "hash": "16780735451606215328"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_3_PASSOS.md",
+          "hash": "2491784863526537598"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_AGORA.md",
+          "hash": "13915801874827551125"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_BACKEND.md",
+          "hash": "707554830683526240"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_BEMREAL_AGORA.md",
+          "hash": "11307171307839941271"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_COM_SSH_KEY.md",
+          "hash": "16329121736929474612"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_CONFIGURADO.md",
+          "hash": "7893822872171303405"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_DOCKER_CHECKLIST.md",
+          "hash": "14500717965055327692"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_FINAL.md",
+          "hash": "18385224527331810729"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_FIRST_TIME.md",
+          "hash": "4348459909629754119"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_FUNCIONA.md",
+          "hash": "18357064944140099860"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_GUIDE.md",
+          "hash": "406008561467340826"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_HOSTINGER.md",
+          "hash": "6749773584200215316"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_PLAN_VPS.md",
+          "hash": "15848760085366185120"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_PRODUCTION.md",
+          "hash": "1949569176031195967"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_QUICK.md",
+          "hash": "13162956028120041607"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_SEM_BLOCO_NOTAS.md",
+          "hash": "17406949301426236666"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_SIMPLES.md",
+          "hash": "11872028191841647706"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_STATUS.md",
+          "hash": "11384736839379295332"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_VERCEL_HOSTINGER.md",
+          "hash": "14309906345861274994"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_VERCEL_RENDER.md",
+          "hash": "5709230627504607020"
+        },
+        {
+          "file": "aqkin-fresh/DEPLOY_VPS_RAPIDO.md",
+          "hash": "2747999932045462163"
+        },
+        {
+          "file": "aqkin-fresh/EXECUTAR_TESTES.md",
+          "hash": "1525308085523966860"
+        },
+        {
+          "file": "aqkin-fresh/FLUXO_LAYER_CONTROL.md",
+          "hash": "8510824305989155985"
+        },
+        {
+          "file": "aqkin-fresh/FRONTEND_DESIGN_UPGRADE.md",
+          "hash": "8126711844710939910"
+        },
+        {
+          "file": "aqkin-fresh/GERENCIAMENTO_PR.md",
+          "hash": "14715816941331114995"
+        },
+        {
+          "file": "aqkin-fresh/GUIA_TESTE_INTEGRAÇÃO.md",
+          "hash": "16874150263517297522"
+        },
+        {
+          "file": "aqkin-fresh/MAPA_INTEGRACACAO_COMPLETA.md",
+          "hash": "16696539625292968096"
+        },
+        {
+          "file": "aqkin-fresh/MAPA_LAYERS_CONFERENCIA.md",
+          "hash": "11379465760824263277"
+        },
+        {
+          "file": "aqkin-fresh/MÓDULO_FINANCEIRO.md",
+          "hash": "17924055010681765036"
+        },
+        {
+          "file": "aqkin-fresh/O_QUE_FALTA.md",
+          "hash": "16114892692978260647"
+        },
+        {
+          "file": "aqkin-fresh/PULL_REQUEST_MANAGEMENT.md",
+          "hash": "6107297568162615294"
+        },
+        {
+          "file": "aqkin-fresh/QUICK_START_BACKEND.md",
+          "hash": "13434620545085648162"
+        },
+        {
+          "file": "aqkin-fresh/README.md",
+          "hash": "1464714868657195504"
+        },
+        {
+          "file": "aqkin-fresh/RESUMO_AUTOMATIZACAO.md",
+          "hash": "12309912120130014967"
+        },
+        {
+          "file": "aqkin-fresh/RESUMO_BLOCO_4.md",
+          "hash": "15310922916145877586"
+        },
+        {
+          "file": "aqkin-fresh/RESUMO_IMPLEMENTAÇÃO.md",
+          "hash": "14293135669328878238"
+        },
+        {
+          "file": "aqkin-fresh/RESUMO_TESTE_INTEGRAÇÃO.md",
+          "hash": "2598532578236690853"
+        },
+        {
+          "file": "aqkin-fresh/SECURITY.md",
+          "hash": "1177352031700873466"
+        },
+        {
+          "file": "aqkin-fresh/SETUP_AZURE.md",
+          "hash": "6678078217290192944"
+        },
+        {
+          "file": "aqkin-fresh/SETUP_MVP.md",
+          "hash": "12745123763728198086"
+        },
+        {
+          "file": "aqkin-fresh/SOLUTION_SUMMARY.md",
+          "hash": "6910639407626283801"
+        },
+        {
+          "file": "aqkin-fresh/STATUS_DEPLOY.md",
+          "hash": "821147608052321627"
+        },
+        {
+          "file": "aqkin-fresh/STATUS_MAPA_INTEGRADO.md",
+          "hash": "7084545886465722773"
+        },
+        {
+          "file": "aqkin-fresh/SUPABASE_SETUP.md",
+          "hash": "246116799769419976"
+        },
+        {
+          "file": "aqkin-fresh/TESTES_BLOCO_4.md",
+          "hash": "6934782749464937088"
+        },
+        {
+          "file": "aqkin-fresh/TESTE_INTEGRAÇÃO.md",
+          "hash": "10593604500465089369"
+        },
+        {
+          "file": "aqkin-fresh/USABILITY_CHECKLIST.md",
+          "hash": "10531674199217438893"
+        },
+        {
+          "file": "aqkin-fresh/VALIDACAO_PROTECAO_ROTAS.md",
+          "hash": "5937139737484146341"
+        },
+        {
+          "file": "aqkin-fresh/VERIFICACAO_PROTECAO_ROTAS.md",
+          "hash": "7224568273282598596"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/.azure/config",
+          "hash": "10792903925991401402"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/.dockerignore",
+          "hash": "2910730630060627669"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/.env.example",
+          "hash": "12077205450629620263"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/DATABASE_SETUP.md",
+          "hash": "16874478630991972119"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/Dockerfile",
+          "hash": "16307977089363655463"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/README.md",
+          "hash": "1092521120043835499"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/alembic.ini",
+          "hash": "18286666417664378917"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/alembic/alembic.ini",
+          "hash": "4826575527819819534"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/alembic/env.py",
+          "hash": "4522415568405156836"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/alembic/versions/001_initial_schema.py",
+          "hash": "8396340032067486706"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/auth.py",
+          "hash": "2514980771161206026"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/config.py",
+          "hash": "5265554885932823481"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/database.py",
+          "hash": "7215218376236607250"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/db.py",
+          "hash": "9929177485614715163"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/main.py",
+          "hash": "14914199701376038352"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/main_new.py",
+          "hash": "9291143885709514087"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/models.py",
+          "hash": "13988661673005055685"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/requirements.txt",
+          "hash": "16786957054476316640"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/routers/__init__.py",
+          "hash": "17799985303732135806"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/routers/contracts.py",
+          "hash": "15323185838100920100"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/routers/parcels.py",
+          "hash": "6940278506276533868"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/schemas.py",
+          "hash": "6646207122739545293"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/services/auth.py",
+          "hash": "1693350507922202810"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/services/geo.py",
+          "hash": "2564986922255394306"
+        },
+        {
+          "file": "aqkin-fresh/apps/api/templates/contract_base_pt_BR.html",
+          "hash": "12928287949872285240"
+        },
+        {
+          "file": "aqkin-fresh/database/init/01_schema.sql",
+          "hash": "885307013211218252"
+        },
+        {
+          "file": "aqkin-fresh/database/init/02_extensions.sql",
+          "hash": "322221409852898323"
+        },
+        {
+          "file": "aqkin-fresh/database/init/03_multitenant_rbac.sql",
+          "hash": "3817117229801892116"
+        },
+        {
+          "file": "aqkin-fresh/database/init/04_financeiro.sql",
+          "hash": "654885321145375119"
+        },
+        {
+          "file": "aqkin-fresh/docker-compose.prod.yml",
+          "hash": "9467865465306493917"
+        },
+        {
+          "file": "aqkin-fresh/docker-compose.yml",
+          "hash": "13173304496058543032"
+        },
+        {
+          "file": "aqkin-fresh/duplicate_blocks_report.txt",
+          "hash": "13926175012901468498"
+        },
+        {
+          "file": "aqkin-fresh/eslint.config.mjs",
+          "hash": "9999921487017093387",
+          "deps": [
+            "npm:@nx/eslint-plugin"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/migrations.json",
+          "hash": "10326064508211400019"
+        },
+        {
+          "file": "aqkin-fresh/nx.json",
+          "hash": "15925552488094423696"
+        },
+        {
+          "file": "aqkin-fresh/package-lock.json",
+          "hash": "15883979159949842424"
+        },
+        {
+          "file": "aqkin-fresh/package.json",
+          "hash": "3629150935322978037",
+          "deps": [
+            "npm:@eslint/js",
+            "npm:@nx/devkit",
+            "npm:@nx/eslint",
+            "npm:@nx/eslint-plugin",
+            "npm:@nx/js",
+            "npm:@nx/playwright",
+            "npm:@nx/react",
+            "npm:@nx/vite",
+            "npm:@nx/vitest",
+            "npm:@nx/web",
+            "npm:@nx/workspace",
+            "npm:@playwright/test",
+            "npm:@swc-node/register",
+            "npm:@swc/cli",
+            "npm:@swc/core",
+            "npm:@swc/helpers",
+            "npm:@testing-library/dom",
+            "npm:@testing-library/react",
+            "npm:@types/node",
+            "npm:@types/react",
+            "npm:@types/react-dom",
+            "npm:@vitejs/plugin-react",
+            "npm:@vitest/coverage-v8",
+            "npm:@vitest/ui",
+            "npm:autoprefixer",
+            "npm:eslint",
+            "npm:eslint-config-prettier",
+            "npm:eslint-plugin-import",
+            "npm:eslint-plugin-jsx-a11y",
+            "npm:eslint-plugin-playwright",
+            "npm:eslint-plugin-react",
+            "npm:eslint-plugin-react-hooks",
+            "npm:jiti",
+            "npm:jsdom",
+            "npm:nx",
+            "npm:postcss",
+            "npm:prettier",
+            "npm:tailwindcss",
+            "npm:tslib",
+            "npm:typescript",
+            "npm:typescript-eslint",
+            "npm:vite",
+            "npm:vitest",
+            "npm:@supabase/supabase-js",
+            "npm:axios",
+            "npm:ol",
+            "npm:react",
+            "npm:react-dom",
+            "npm:react-router-dom"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/render.yaml",
+          "hash": "1506013820174124553"
+        },
+        {
+          "file": "aqkin-fresh/scripts/CONFIGURAR_SSH.ps1",
+          "hash": "13768167956956970688"
+        },
+        {
+          "file": "aqkin-fresh/scripts/CONFIGURAR_SSH_KEY.ps1",
+          "hash": "10299405806303968693"
+        },
+        {
+          "file": "aqkin-fresh/scripts/COPIAR_CHAVE_VPS.ps1",
+          "hash": "2585431219516064401"
+        },
+        {
+          "file": "aqkin-fresh/scripts/DEPLOY-VPS.ps1",
+          "hash": "5465238825065464384"
+        },
+        {
+          "file": "aqkin-fresh/scripts/DEPLOY_AUTOMATICO.ps1",
+          "hash": "16660591465281847334"
+        },
+        {
+          "file": "aqkin-fresh/scripts/DEPLOY_TUDO.ps1",
+          "hash": "4751541155538297635"
+        },
+        {
+          "file": "aqkin-fresh/scripts/DEPLOY_TUDO_FIX.ps1",
+          "hash": "13420235305390782978"
+        },
+        {
+          "file": "aqkin-fresh/scripts/ENV_VARS_VPS.sh",
+          "hash": "14371393059821196045"
+        },
+        {
+          "file": "aqkin-fresh/scripts/GERAR_SSH_KEY.ps1",
+          "hash": "4105015618044952749"
+        },
+        {
+          "file": "aqkin-fresh/scripts/PREPARAR_TUDO.ps1",
+          "hash": "543550558213705129"
+        },
+        {
+          "file": "aqkin-fresh/scripts/PREPARAR_UPLOAD.ps1",
+          "hash": "7153566985971212632"
+        },
+        {
+          "file": "aqkin-fresh/scripts/SETUP_SSH_KEY_VPS.sh",
+          "hash": "3222425215251050443"
+        },
+        {
+          "file": "aqkin-fresh/scripts/UPLOAD_WINSCP.md",
+          "hash": "3705215459674906426"
+        },
+        {
+          "file": "aqkin-fresh/scripts/VARIAVEIS_DEPLOY.txt",
+          "hash": "3354908067913225887"
+        },
+        {
+          "file": "aqkin-fresh/scripts/VERIFICAR_PRE_DEPLOY.ps1",
+          "hash": "3207157022319144337"
+        },
+        {
+          "file": "aqkin-fresh/scripts/check-financeiro-migrations.sql",
+          "hash": "14816036240341657715"
+        },
+        {
+          "file": "aqkin-fresh/scripts/check-migrations.sql",
+          "hash": "2512751392790890047"
+        },
+        {
+          "file": "aqkin-fresh/scripts/copiar-chave-vps-manual.md",
+          "hash": "9063745430161285976"
+        },
+        {
+          "file": "aqkin-fresh/scripts/deploy-completo.sh",
+          "hash": "17543879162142234869"
+        },
+        {
+          "file": "aqkin-fresh/scripts/deploy-docker-vps.ps1",
+          "hash": "3892612791291801417"
+        },
+        {
+          "file": "aqkin-fresh/scripts/deploy-docker-vps.sh",
+          "hash": "16593500029340987199"
+        },
+        {
+          "file": "aqkin-fresh/scripts/deploy-frontend-vps.sh",
+          "hash": "9794079645137530698"
+        },
+        {
+          "file": "aqkin-fresh/scripts/deploy-hostinger.sh",
+          "hash": "372631459938076239"
+        },
+        {
+          "file": "aqkin-fresh/scripts/migrate-azure-to-supabase.py",
+          "hash": "10298975257650815853"
+        },
+        {
+          "file": "aqkin-fresh/scripts/nginx-bemreal-frontend.conf",
+          "hash": "8999316267812754686"
+        },
+        {
+          "file": "aqkin-fresh/scripts/quick-check.ps1",
+          "hash": "1743709839390751029"
+        },
+        {
+          "file": "aqkin-fresh/scripts/quick-check.sh",
+          "hash": "4263304622213221226"
+        },
+        {
+          "file": "aqkin-fresh/scripts/run-migration.js",
+          "hash": "9530612878381334497",
+          "deps": [
+            "npm:dotenv",
+            "npm:@supabase/supabase-js"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/scripts/setup-vps.sh",
+          "hash": "14287878460988377548"
+        },
+        {
+          "file": "aqkin-fresh/scripts/test-api-financeiro.py",
+          "hash": "10954296351238985650"
+        },
+        {
+          "file": "aqkin-fresh/scripts/test-financeiro-integration.py",
+          "hash": "2684080697396817726"
+        },
+        {
+          "file": "aqkin-fresh/scripts/test-integration-complete.ps1",
+          "hash": "4791032816692577823"
+        },
+        {
+          "file": "aqkin-fresh/scripts/upload-to-vps.ps1",
+          "hash": "9537990838939069306"
+        },
+        {
+          "file": "aqkin-fresh/supabase_migrate.py",
+          "hash": "753660049063847482"
+        },
+        {
+          "file": "aqkin-fresh/test_output.txt",
+          "hash": "11963390265528758145"
+        },
+        {
+          "file": "aqkin-fresh/tsconfig.base.json",
+          "hash": "11804278444960332651"
+        },
+        {
+          "file": "aqkin-fresh/tsconfig.json",
+          "hash": "17776307692739676931"
+        },
+        {
+          "file": "aqkin-fresh/vercel.json",
+          "hash": "4163814087460035880"
+        },
+        {
+          "file": "aqkin-fresh/vitest.workspace.ts",
+          "hash": "382902831997169314"
+        }
+      ],
+      "@ativo-real-monorepo/web-e2e": [
+        {
+          "file": "aqkin-fresh/apps/web-e2e/eslint.config.mjs",
+          "hash": "16243282764819368173",
+          "deps": [
+            "npm:eslint-plugin-playwright",
+            "@ativo-real-monorepo/source"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web-e2e/package.json",
+          "hash": "10620971207258584057"
+        },
+        {
+          "file": "aqkin-fresh/apps/web-e2e/playwright.config.ts",
+          "hash": "6115672958651751767",
+          "deps": [
+            "npm:@playwright/test",
+            "npm:@nx/playwright",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web-e2e/src/example.spec.ts",
+          "hash": "1909365745453809229",
+          "deps": [
+            "npm:@playwright/test"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web-e2e/tsconfig.json",
+          "hash": "3358570522473980817"
+        }
+      ],
+      "@ativo-real-monorepo/web": [
+        {
+          "file": "aqkin-fresh/apps/web/.dockerignore",
+          "hash": "1124556320312801209"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/Dockerfile",
+          "hash": "17206191415466268166"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/eslint.config.mjs",
+          "hash": "10644780755221391759",
+          "deps": [
+            "npm:@nx/eslint-plugin",
+            "@ativo-real-monorepo/source"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/index.html",
+          "hash": "15751895285312144390"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/nginx-default.conf",
+          "hash": "1429754669955931181"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/nginx.conf",
+          "hash": "12375569724145033796"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/package.json",
+          "hash": "2540579939422829568",
+          "deps": [
+            "npm:@supabase/supabase-js",
+            "npm:ol"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/postcss.config.js",
+          "hash": "14186219912588415944"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/public/favicon.ico",
+          "hash": "9303420814833116677"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/public/icons-preview-completo.html",
+          "hash": "14669454843385632233"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/public/icons-preview.html",
+          "hash": "617925555309409879"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/App.tsx",
+          "hash": "15616981980540847763",
+          "deps": [
+            "npm:react",
+            "npm:react-router-dom"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/assets/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/components/ConfirmDeleteModal.tsx",
+          "hash": "9061095480260625690"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/components/ErrorBoundary.tsx",
+          "hash": "14616369694473036924",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/components/Icon.tsx",
+          "hash": "16695296543981435355"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/components/LayerControl.tsx",
+          "hash": "16853258745181281068",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/components/Logo.tsx",
+          "hash": "12917860309861275314"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/components/Navigation.tsx",
+          "hash": "16249855722312724828",
+          "deps": [
+            "npm:react",
+            "npm:react-router-dom"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/components/NetworkBanner.tsx",
+          "hash": "11753761313157371398"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/components/ProtectedRoute.tsx",
+          "hash": "1550357494501002780",
+          "deps": [
+            "npm:react",
+            "npm:react-router-dom"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/components/StateViews.tsx",
+          "hash": "7110615832444113529"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/components/UIComponents.tsx",
+          "hash": "3835483790805555863",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/components/ValidationModal.tsx",
+          "hash": "3158314612246353462",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/components/icons/CustomIcons.tsx",
+          "hash": "8440549656518915847",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/components/maps/DrawMap.tsx",
+          "hash": "7929063834731727949",
+          "deps": [
+            "npm:react",
+            "npm:ol"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/components/maps/DrawMapEsri.tsx",
+          "hash": "8539337846279543418",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/components/maps/DrawMapValidation.tsx",
+          "hash": "5563420344216537248",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/components/maps/ViewMap.tsx",
+          "hash": "12168334324030163599",
+          "deps": [
+            "npm:react",
+            "npm:ol"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/components/maps/ViewMapEsri.tsx",
+          "hash": "3052676947227986920",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/hooks/useNetworkStatus.ts",
+          "hash": "14942594888846299412",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/layouts/ClienteLayout.tsx",
+          "hash": "11782670242406312361",
+          "deps": [
+            "npm:react-router-dom"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/layouts/TopografoLayout.tsx",
+          "hash": "12965396326067326014",
+          "deps": [
+            "npm:react-router-dom"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/lib/basemaps.ts",
+          "hash": "9528328777907861152",
+          "deps": [
+            "npm:ol"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/lib/kml.ts",
+          "hash": "15261236607961554551",
+          "deps": [
+            "npm:ol"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/lib/supabase.ts",
+          "hash": "13625057030902597355",
+          "deps": [
+            "npm:@supabase/supabase-js"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/main.tsx",
+          "hash": "5145690931891921434",
+          "deps": [
+            "npm:react",
+            "npm:react-dom",
+            "npm:ol"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/cliente/DesenharArea.tsx",
+          "hash": "16634833764187648473",
+          "deps": [
+            "npm:react",
+            "npm:react-router-dom"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/cliente/MeusVizinhos.tsx",
+          "hash": "15652062980104514372",
+          "deps": [
+            "npm:react",
+            "npm:react-router-dom"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/cliente/UploadDocumentos.tsx",
+          "hash": "158924541051563660"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/cliente/contratos.module.css",
+          "hash": "6069993614997542985"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/cliente/contratos.spec.tsx",
+          "hash": "7058337349824512236",
+          "deps": [
+            "npm:vitest",
+            "npm:@testing-library/react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/cliente/contratos.tsx",
+          "hash": "1435360013492732771",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/cliente/desenhar-area.spec.tsx",
+          "hash": "13728662093263072790",
+          "deps": [
+            "npm:vitest",
+            "npm:@testing-library/react",
+            "npm:react-router-dom"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/common/ForgotPassword.tsx",
+          "hash": "5815355335648883214",
+          "deps": [
+            "npm:react",
+            "npm:react-router-dom"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/common/Index.tsx",
+          "hash": "10648576969270116443",
+          "deps": [
+            "npm:react",
+            "npm:react-router-dom"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/common/Login.tsx",
+          "hash": "17667363787097346187",
+          "deps": [
+            "npm:react-router-dom",
+            "npm:react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/common/NotFound.tsx",
+          "hash": "13077880435824317716"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/common/ResetPassword.tsx",
+          "hash": "12974667797032572243",
+          "deps": [
+            "npm:react",
+            "npm:react-router-dom"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/common/SignUp.tsx",
+          "hash": "7173257055661154241",
+          "deps": [
+            "npm:react",
+            "npm:react-router-dom"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/topografo/DashboardConfluencia.tsx",
+          "hash": "16556390253222605873",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/topografo/DashboardEnhanced.tsx",
+          "hash": "12473698819872118554",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/topografo/Financeiro.css",
+          "hash": "12572320473420242513"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/topografo/Financeiro.old.tsx",
+          "hash": "4499208902210732547",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/topografo/Financeiro.tsx",
+          "hash": "5217012579453202378",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/topografo/GerarPecas.tsx",
+          "hash": "10435766028409145276"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/topografo/MeusProjetos.tsx",
+          "hash": "10495592421186715467",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/topografo/Orcamentos.tsx",
+          "hash": "5124909568820425297",
+          "deps": [
+            "npm:react",
+            "npm:react-router-dom"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/topografo/ValidarDesenhos.css",
+          "hash": "9389398869716867430"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/pages/topografo/ValidarDesenhos.tsx",
+          "hash": "15702455201072166461",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/services/api.ts",
+          "hash": "6256510913117110871"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/services/schemas.ts",
+          "hash": "12897443328981430911"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/styles.css",
+          "hash": "7408865607727096283"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/styles/AIBotChat.css",
+          "hash": "8244418298738928541"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/styles/AIChat.css",
+          "hash": "15237625964962567541"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/styles/AnimatedLogo.css",
+          "hash": "11684617946686973523"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/styles/App.css",
+          "hash": "17161516403820846766"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/styles/DarkModeToggle.css",
+          "hash": "1653875713507313024"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/styles/GlobalMap.css",
+          "hash": "14705739405938346383"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/styles/HomePage.css",
+          "hash": "11238790375110525892"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/styles/ImprovedProfileCard.css",
+          "hash": "15229945147292485020"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/styles/InfinitePayModal.css",
+          "hash": "5708374199536191935"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/styles/LayerControl.css",
+          "hash": "16199975726257393615"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/styles/PortalLayout.css",
+          "hash": "5455830320075472317"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/styles/SkeletonLoader.css",
+          "hash": "408037881316602055"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/styles/TopoIcon.css",
+          "hash": "4498774100191779204"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/styles/design-system.css",
+          "hash": "11531829654128076565"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/styles/design-tokens.css",
+          "hash": "14540030655144208335"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/styles/index.css",
+          "hash": "14262288347382289123"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/src/utils/telemetry.ts",
+          "hash": "17934342034093159700"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/staticwebapp.config.json",
+          "hash": "16482194317134684388"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/tailwind.config.js",
+          "hash": "10218593435143383140"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/tsconfig.app.json",
+          "hash": "141161148517718745"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/tsconfig.json",
+          "hash": "16742621693158927094"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/tsconfig.spec.json",
+          "hash": "5146152685293475904"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/tsconfig.tsbuildinfo",
+          "hash": "9165916567911027470"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/vercel.json",
+          "hash": "8013298616109996778"
+        },
+        {
+          "file": "aqkin-fresh/apps/web/vite.config.mts",
+          "hash": "11338916440031468642",
+          "deps": [
+            "npm:vite",
+            "npm:@vitejs/plugin-react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/vitest.config.mts",
+          "hash": "11470527797034369993",
+          "deps": [
+            "npm:vitest",
+            "npm:@vitejs/plugin-react"
+          ]
+        },
+        {
+          "file": "aqkin-fresh/apps/web/vitest.setup.ts",
+          "hash": "12446347675250349392",
+          "deps": [
+            "npm:vitest",
+            "npm:@testing-library/react"
+          ]
+        }
+      ]
+    }
+  },
+  "externalNodesHash": "1621028534798760748"
+}

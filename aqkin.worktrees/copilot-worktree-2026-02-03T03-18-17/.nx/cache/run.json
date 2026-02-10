@@ -1,0 +1,21 @@
+{
+  "run": {
+    "command": "nx build web --verbose",
+    "startTime": "2026-02-10T00:51:41.807Z",
+    "endTime": "2026-02-10T00:51:59.645Z",
+    "inner": false
+  },
+  "tasks": [
+    {
+      "taskId": "@ativo-real-monorepo/web:build",
+      "target": "build",
+      "projectName": "@ativo-real-monorepo/web",
+      "hash": "5519967373512149420",
+      "startTime": "2026-02-10T00:51:41.898Z",
+      "endTime": "2026-02-10T00:51:59.598Z",
+      "params": "",
+      "cacheStatus": "cache-miss",
+      "status": 1
+    }
+  ]
+}

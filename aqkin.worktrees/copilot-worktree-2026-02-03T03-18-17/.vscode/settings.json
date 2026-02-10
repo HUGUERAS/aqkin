@@ -1,0 +1,12 @@
+{
+    "azureFunctions.templateFilter": "All",
+    "azureFunctions.deploySubpath": ".",
+    "azureFunctions.projectLanguage": "Custom",
+    "azureFunctions.projectRuntime": "~4",
+    "debug.internalConsoleOptions": "neverOpen",
+    "chat.mcp.serverSampling": {
+        "copilot-worktree-2026-02-03T03-18-17/.vscode/mcp.json: io.github.upstash/context7": {
+            "allowedModels": []
+        }
+    }
+}

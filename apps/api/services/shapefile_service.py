@@ -38,23 +38,26 @@ def parse_shapefile_to_geojson(zip_content: bytes) -> Dict[str, Any]:
             shp_name = shp_files[0]
             base_name = shp_name[:-4]  # Remove .shp extension
 
-            # Check for required files
+            # Build case-insensitive lookup for ZIP members
+            lower_name_map = {name.lower(): name for name in namelist}
+
+            # Check for required files and resolve their actual names
             required_extensions = ['.shp', '.shx', '.dbf']
+            required_files = {}
             for ext in required_extensions:
-                file_exists = any(
-                    name.lower() == (base_name + ext).lower()
-                    for name in namelist
-                )
-                if not file_exists:
+                key = (base_name + ext).lower()
+                matched_name = lower_name_map.get(key)
+                if not matched_name:
                     raise ValueError(
                         f"ZIP não contém arquivo {ext} necessário. "
                         f"Arquivos obrigatórios: .shp, .shx, .dbf"
                     )
+                required_files[ext] = matched_name
 
-            # Read shapefile
-            shp_bytes = zip_ref.read(shp_name)
-            shx_bytes = zip_ref.read(base_name + '.shx')
-            dbf_bytes = zip_ref.read(base_name + '.dbf')
+            # Read shapefile using resolved filenames (case-insensitive)
+            shp_bytes = zip_ref.read(required_files['.shp'])
+            shx_bytes = zip_ref.read(required_files['.shx'])
+            dbf_bytes = zip_ref.read(required_files['.dbf'])
 
         # Parse using pyshp
         shp_buffer = io.BytesIO(shp_bytes)

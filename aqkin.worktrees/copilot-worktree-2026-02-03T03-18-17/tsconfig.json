@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "files": [],
+  "references": [
+    {
+      "path": "./clean-project"
+    },
+    {
+      "path": "./aqkin-fresh/apps/web-e2e"
+    },
+    {
+      "path": "./aqkin-fresh/apps/web"
+    },
+    {
+      "path": "./aqkin-fresh"
+    }
+  ]
+}

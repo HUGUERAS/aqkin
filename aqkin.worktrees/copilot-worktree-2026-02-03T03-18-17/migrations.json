@@ -1,0 +1,10 @@
+{
+  "nx-console": {
+    "initialGitRef": {
+      "ref": "d7cd628098f360670df1b1ee05c22083aba8b3a2",
+      "subject": "fix(api): upgrade supabase client to fix gotrue proxy argument error"
+    },
+    "targetVersion": "latest",
+    "confirmedPackageUpdates": true
+  }
+}

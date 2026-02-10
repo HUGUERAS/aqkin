@@ -52,6 +52,12 @@ export default function AIChat({ userRole }: AIChatProps) {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const initializedRef = useRef(false);
+  const messagesRef = useRef<Message[]>([]);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   // Add welcome message on first open
   useEffect(() => {
@@ -84,15 +90,11 @@ export default function AIChat({ userRole }: AIChatProps) {
         timestamp: formatTime(),
       };
 
-      // Use a local variable to capture the current messages state synchronously
-      let currentMessages: Message[] = [];
-      setMessages((prev) => {
-        currentMessages = prev;
-        return [...prev, userMsg];
-      });
+      // Update state
+      setMessages((prev) => [...prev, userMsg]);
 
-      // Build messages array for API from current state + new message (last 20 for token control)
-      const updatedMessages = [...currentMessages, userMsg];
+      // Build history from ref which always has the latest messages + new user message
+      const updatedMessages = [...messagesRef.current, userMsg];
       const history = updatedMessages
         .filter((m) => !m.suggestedQuestions || m.role === 'user')
         .slice(-20)

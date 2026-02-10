@@ -178,12 +178,13 @@ export default function ViewMap({
   }
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative' }} className="responsive-map-container">
       <div
         ref={mapRef}
+        className="map-viewport"
         style={{
           width: '100%',
-          height: '500px',
+          height: '100%',
           borderRadius: '8px',
           overflow: 'hidden'
         }}

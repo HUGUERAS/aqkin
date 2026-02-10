@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import apiClient from '../../services/api';
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
 import { LoadingState, EmptyState, ErrorState } from '../../components/StateViews';
+import { BreadcrumbNav } from '../../components/Navigation';
 
 interface Projeto {
   id: number;
@@ -185,6 +186,14 @@ export default function MeusProjetos() {
       maxWidth: '1400px',
       margin: '0 auto',
     }}>
+      {/* Breadcrumb Navigation */}
+      <BreadcrumbNav
+        items={[
+          { label: 'Dashboard', path: '/topografo/dashboard' },
+          { label: 'Meus Projetos' },
+        ]}
+      />
+
       <div style={{
         display: 'flex',
         flexDirection: 'column',
@@ -198,12 +207,14 @@ export default function MeusProjetos() {
           alignItems: 'center',
           gap: '1rem',
         }}>
-          <h1 style={{ margin: 0, fontSize: 'clamp(1.25rem, 3vw, 1.5rem)' }}>📁 Meus Projetos</h1>
+          <h1 style={{ margin: 0, fontSize: 'clamp(1.25rem, 3vw, 1.5rem)' }}>
+            <span role="img" aria-label="Pasta">📁</span> Meus Projetos
+          </h1>
           <button
             onClick={abrirFormularioCriar}
             style={{
               padding: '0.75rem 1.5rem',
-              background: '#667eea',
+              background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
               color: 'white',
               border: 'none',
               borderRadius: '8px',
@@ -213,7 +224,7 @@ export default function MeusProjetos() {
               whiteSpace: 'nowrap' as const,
             }}
           >
-            ➕ Novo Projeto
+            <span role="img" aria-label="Adicionar">➕</span> Novo Projeto
           </button>
         </div>
       </div>
@@ -236,9 +247,9 @@ export default function MeusProjetos() {
               onClick={() => setFiltroStatus(status)}
               style={{
                 padding: '0.5rem 1rem',
-                background: isActive ? (status === 'TODOS' ? '#667eea' : style.background) : 'white',
+                background: isActive ? (status === 'TODOS' ? '#3b82f6' : style.background) : 'white',
                 color: isActive ? (status === 'TODOS' ? 'white' : style.color) : '#333',
-                border: `2px solid ${isActive ? (status === 'TODOS' ? '#667eea' : style.background) : '#ddd'}`,
+                border: `2px solid ${isActive ? (status === 'TODOS' ? '#3b82f6' : style.background) : '#ddd'}`,
                 borderRadius: '20px',
                 cursor: 'pointer',
                 fontWeight: isActive ? 'bold' : 'normal',
@@ -246,7 +257,12 @@ export default function MeusProjetos() {
                 transition: 'all 0.2s ease',
               }}
             >
-              {status === 'TODOS' ? '📋' : style.icon} {status === 'TODOS' ? 'Todos' : status.replace('_', ' ')} ({count})
+              {status === 'TODOS' ? (
+                <span role="img" aria-label="Lista">📋</span>
+              ) : (
+                style.icon
+              )}{' '}
+              {status === 'TODOS' ? 'Todos' : status.replace('_', ' ')} ({count})
             </button>
           );
         })}
@@ -363,7 +379,7 @@ export default function MeusProjetos() {
                         onClick={() => abrirFormularioEditar(projeto)}
                         style={{
                           padding: '0.5rem 1rem',
-                          background: '#667eea',
+                          background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
                           color: 'white',
                           border: 'none',
                           borderRadius: '6px',
@@ -371,7 +387,7 @@ export default function MeusProjetos() {
                           fontSize: '0.9rem',
                         }}
                       >
-                        ✏️ Editar
+                        <span role="img" aria-label="Editar">✏️</span> Editar
                       </button>
                       <button
                         onClick={() => setConfirmarExclusao(projeto.id)}
@@ -385,7 +401,7 @@ export default function MeusProjetos() {
                           fontSize: '0.9rem',
                         }}
                       >
-                        🗑️ Excluir
+                        <span role="img" aria-label="Excluir">🗑️</span> Excluir
                       </button>
                     </div>
                   </div>
@@ -523,10 +539,10 @@ export default function MeusProjetos() {
                       fontSize: '1rem',
                     }}
                   >
-                    <option value="RASCUNHO">📝 Rascunho</option>
-                    <option value="EM_ANDAMENTO">🚀 Em Andamento</option>
-                    <option value="CONCLUIDO">✅ Concluído</option>
-                    <option value="ARQUIVADO">📦 Arquivado</option>
+                    <option value="RASCUNHO">Rascunho</option>
+                    <option value="EM_ANDAMENTO">Em Andamento</option>
+                    <option value="CONCLUIDO">Concluído</option>
+                    <option value="ARQUIVADO">Arquivado</option>
                   </select>
                 </div>
               )}
@@ -551,7 +567,7 @@ export default function MeusProjetos() {
                   disabled={salvando}
                   style={{
                     padding: '0.75rem 1.5rem',
-                    background: '#667eea',
+                    background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
                     color: 'white',
                     border: 'none',
                     borderRadius: '6px',

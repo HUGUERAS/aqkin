@@ -1,0 +1,141 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "lint web",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"nx",
+				"lint",
+				"web"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "test web",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"nx",
+				"test",
+				"web"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "typecheck web",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"nx",
+				"typecheck",
+				"web"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "build web",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"nx",
+				"build",
+				"web"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "lint web (post-fix)",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"nx",
+				"lint",
+				"web"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "lint web (second pass)",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"nx",
+				"lint",
+				"web"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "lint web (third pass)",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"nx",
+				"lint",
+				"web"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "typecheck web (post-fix)",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"nx",
+				"typecheck",
+				"web"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Agente CLI: Monitor de Serviços",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"${workspaceFolder}/scripts/monitor-agente.ps1"
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			},
+			"group": "none"
+		},
+		{
+			"label": "Agente CLI: Parar Tudo",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"${workspaceFolder}/scripts/parar-servicos.ps1"
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			},
+			"group": "none"
+		}
+	]
+}

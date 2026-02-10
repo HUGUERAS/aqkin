@@ -13,11 +13,13 @@ import ResetPassword from './pages/common/ResetPassword';
 import NotFound from './pages/common/NotFound';
 
 // Pages Cliente
+import BemVindo from './pages/cliente/BemVindo';
+import DadosPessoais from './pages/cliente/DadosPessoais';
 import DesenharArea from './pages/cliente/DesenharArea';
 import MeusVizinhos from './pages/cliente/MeusVizinhos';
 import UploadDocumentos from './pages/cliente/UploadDocumentos';
 
-// Pages Topógrafo
+// Pages Topografo
 import DashboardConfluencia from './pages/topografo/DashboardConfluencia';
 import ValidarDesenhos from './pages/topografo/ValidarDesenhos';
 import GerarPecas from './pages/topografo/GerarPecas';
@@ -34,7 +36,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    if (!supabase) return; // Mock mode: supabase is null
+    supabase.auth.getSession().then((result) => {
+      const session = result.data.session;
       if (session?.access_token) apiClient.setToken(session.access_token);
     });
   }, []);
@@ -50,7 +54,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
-        {/* Cliente Routes - Portal Mobile - Protegido para Proprietário */}
+        {/* Cliente Routes - Portal Mobile - Protegido para Proprietario */}
         <Route
           path="/cliente"
           element={
@@ -60,12 +64,14 @@ function App() {
           }
         >
           <Route index element={<Navigate to="/cliente/desenhar" replace />} />
+          <Route path="bemvindo" element={<BemVindo />} />
+          <Route path="dados" element={<DadosPessoais />} />
           <Route path="desenhar" element={<DesenharArea />} />
           <Route path="vizinhos" element={<MeusVizinhos />} />
           <Route path="documentos" element={<UploadDocumentos />} />
         </Route>
 
-        {/* Topógrafo Routes - Dashboard Desktop - Protegido para Topógrafo */}
+        {/* Topografo Routes - Dashboard Desktop - Protegido para Topografo */}
         <Route
           path="/topografo"
           element={

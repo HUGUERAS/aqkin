@@ -49,7 +49,7 @@ export default function Login() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+      background: 'linear-gradient(135deg, #0b0f14 0%, #111827 100%)'
     }}>
       <div style={{
         background: 'white',
@@ -60,7 +60,7 @@ export default function Login() {
         maxWidth: '420px'
       }}>
         <h2 style={{ marginBottom: '0.5rem', textAlign: 'center', fontSize: '1.8rem', color: '#1a202c' }}>
-          🔑 Entrar
+          <span role="img" aria-label="Chave">🔑</span> Entrar
         </h2>
         <p style={{ marginBottom: '2rem', textAlign: 'center', color: '#718096', fontSize: '0.95rem' }}>
           Acesse sua área de regularização
@@ -121,7 +121,7 @@ export default function Login() {
             disabled={carregando}
             style={{
               padding: '1rem',
-              background: carregando ? '#a0aec0' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: carregando ? '#3b3b3b' : 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
               color: 'white',
               border: 'none',
               borderRadius: '8px',
@@ -132,27 +132,35 @@ export default function Login() {
               transition: 'all 0.2s ease'
             }}
           >
-            {carregando ? '⏳ Entrando...' : '🚀 Entrar'}
+            {carregando ? (
+              <>
+                <span role="img" aria-label="Carregando">⏳</span> Entrando...
+              </>
+            ) : (
+              <>
+                <span role="img" aria-label="Foguete">🚀</span> Entrar
+              </>
+            )}
           </button>
         </form>
 
         <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#fef6e7', border: '1px solid #f6d365', borderRadius: '8px', fontSize: '0.85rem', color: '#744210', textAlign: 'center' }}>
-          ⭐ <strong>Quer acesso às ferramentas profissionais?</strong><br />
+          <span role="img" aria-label="Estrela">⭐</span> <strong>Quer acesso às ferramentas profissionais?</strong><br />
           <span style={{ fontSize: '0.8rem' }}>Upgrade para Premium após login</span>
         </div>
 
         <p style={{ marginTop: '1.5rem', textAlign: 'center', color: '#718096', fontSize: '0.9rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-          <a href="/forgot-password" style={{ color: '#667eea', textDecoration: 'none' }}>
+          <a href="/forgot-password" style={{ color: '#3b82f6', textDecoration: 'none' }}>
             Esqueci a Senha
           </a>
           <span>•</span>
-          <a href="/signup" style={{ color: '#667eea', textDecoration: 'none' }}>
+          <a href="/signup" style={{ color: '#3b82f6', textDecoration: 'none' }}>
             Criar Conta
           </a>
         </p>
 
         <p style={{ marginTop: '1rem', textAlign: 'center' }}>
-          <a href="/" style={{ color: '#667eea', textDecoration: 'none', fontSize: '0.9rem' }}>
+          <a href="/" style={{ color: '#3b82f6', textDecoration: 'none', fontSize: '0.9rem' }}>
             ← Voltar para Home
           </a>
         </p>

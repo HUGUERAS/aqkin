@@ -1,0 +1,286 @@
+/* ToolButton.css - Individual tool button styling */
+
+.tool-button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border: 2px solid rgba(148, 163, 184, 0.3);
+  background: rgba(30, 41, 59, 0.7);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--titanium-100);
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(4px);
+}
+
+/* Hover State */
+.tool-button:hover:not(.disabled) {
+  border-color: var(--bronze-600);
+  background: rgba(205, 127, 50, 0.12);
+  color: var(--bronze-300);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(205, 127, 50, 0.25);
+}
+
+/* Active State */
+.tool-button.active {
+  border-color: var(--bronze-500);
+  background: linear-gradient(135deg, rgba(205, 127, 50, 0.25) 0%, rgba(205, 127, 50, 0.35) 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(205, 127, 50, 0.4),
+              inset 0 0 20px rgba(205, 127, 50, 0.15);
+  font-weight: 600;
+}
+
+.tool-button.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(205, 127, 50, 0.15) 100%);
+  pointer-events: none;
+}
+
+/* Disabled State */
+.tool-button.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+}
+
+.tool-button.disabled:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: rgba(148, 163, 184, 0.3);
+  background: rgba(30, 41, 59, 0.7);
+}
+
+/* Tool Label */
+.tool-label {
+  flex: 1;
+  font-weight: 500;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.tool-button.active .tool-label {
+  font-weight: 600;
+}
+
+/* Tool Shortcut */
+.tool-shortcut {
+  margin-left: auto;
+  padding: 0.25rem 0.5rem;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: var(--titanium-200);
+  letter-spacing: 0.05em;
+  min-width: 28px;
+  text-align: center;
+}
+
+.tool-button.active .tool-shortcut {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Icon Styling (from Icon component) */
+.tool-button svg {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.tool-button:hover:not(.disabled) svg {
+  transform: scale(1.1);
+}
+
+.tool-button.active svg {
+  filter: drop-shadow(0 0 6px rgba(205, 127, 50, 0.6));
+}
+
+/* Ripple Effect on Click */
+.tool-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(205, 127, 50, 0.4);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tool-button:active::after {
+  width: 300px;
+  height: 300px;
+  opacity: 1;
+  transition: 0s;
+}
+
+/* Focus State (Accessibility) */
+.tool-button:focus-visible {
+  outline: 3px solid var(--bronze-500);
+  outline-offset: 2px;
+}
+
+/* Category-Specific Tool Grids */
+.drawing-tools .tool-button:hover:not(.disabled) {
+  border-color: #10b981;
+}
+
+.analysis-tools .tool-button:hover:not(.disabled) {
+  border-color: #3b82f6;
+}
+
+.measurement-tools .tool-button:hover:not(.disabled) {
+  border-color: #f59e0b;
+}
+
+.topology-tools .tool-button:hover:not(.disabled) {
+  border-color: #8b5cf6;
+}
+
+.annotation-tools .tool-button:hover:not(.disabled) {
+  border-color: #ec4899;
+}
+
+.selection-tools .tool-button:hover:not(.disabled) {
+  border-color: #06b6d4;
+}
+
+.import-export-tools .tool-button:hover:not(.disabled) {
+  border-color: #f97316;
+}
+
+.coordinate-tools .tool-button:hover:not(.disabled) {
+  border-color: #14b8a6;
+}
+
+.sigef-tools .tool-button:hover:not(.disabled) {
+  border-color: #ef4444;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .tool-button {
+    padding: 0.75rem 0.875rem;
+    font-size: 0.85rem;
+    gap: 0.625rem;
+  }
+
+  .tool-shortcut {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .tool-button {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8rem;
+    gap: 0.5rem;
+  }
+
+  .tool-shortcut {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .tool-button {
+    padding: 0.75rem;
+    justify-content: center;
+  }
+
+  .tool-label {
+    font-size: 0.85rem;
+  }
+}
+
+/* Loading State (optional) */
+.tool-button.loading {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.tool-button.loading::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(205, 127, 50, 0.3), transparent);
+  animation: loading-sweep 1.5s infinite;
+}
+
+@keyframes loading-sweep {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Tooltip Enhancement (if description is provided) */
+.tool-button[title]:hover::before {
+  content: attr(title);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.5rem 0.75rem;
+  background: rgba(10, 18, 32, 0.95);
+  border: 1px solid var(--bronze-600);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  animation: tooltipFadeIn 0.2s ease;
+}
+
+.tool-button[title]:hover::after {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--bronze-600);
+  pointer-events: none;
+  animation: tooltipFadeIn 0.2s ease;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}

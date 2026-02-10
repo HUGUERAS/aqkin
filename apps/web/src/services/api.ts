@@ -425,6 +425,94 @@ class ApiClient {
     const response = await this.request<unknown[]>(`/api/pagamentos${query ? `?${query}` : ''}`, { method: 'GET' });
     return validateResponse(PagamentosSchema, response, 'getPagamentos');
   }
+
+  // ==================== AI CHAT ====================
+  async sendChatMessage(
+    messages: { role: string; content: string }[],
+    userRole: string,
+  ) {
+    return this.request<{ response: string; mood: string; suggested_questions: string[] }>(
+      '/api/chat',
+      {
+        method: 'POST',
+        body: JSON.stringify({ messages, user_role: userRole }),
+        timeoutMs: 30000,
+        retry: { retries: 1, retryOnStatuses: [502, 503] },
+      },
+    );
+  }
+
+  // ==================== DOCUMENTOS ====================
+  private async requestMultipart<T>(
+    endpoint: string,
+    formData: FormData,
+  ): Promise<ApiResponse<T>> {
+    const url = `${this.baseUrl}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+    const headers: Record<string, string> = {};
+    if (this.token) headers['Authorization'] = `Bearer ${this.token}`;
+
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 60000);
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: formData,
+        signal: controller.signal,
+      });
+      const payload = await parseJsonSafe(response);
+      if (!response.ok) {
+        return { error: extractErrorMessage(payload) };
+      }
+      return { data: payload as T };
+    } catch (error) {
+      return { error: error instanceof Error ? error.message : 'Erro de upload' };
+    } finally {
+      window.clearTimeout(timeoutId);
+    }
+  }
+
+  async uploadDocumento(loteId: number | string, tipo: string, file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('tipo', tipo);
+    return this.requestMultipart(`/api/lotes/${loteId}/documentos`, formData);
+  }
+
+  async getDocumentos(loteId: number | string) {
+    return this.request<unknown[]>(`/api/lotes/${loteId}/documentos`);
+  }
+
+  async deleteDocumento(documentoId: number | string) {
+    return this.request(`/api/documentos/${documentoId}`, { method: 'DELETE' });
+  }
+
+  // ==================== INTAKE / PROGRESSO ====================
+  async saveIntake(loteId: number | string, data: Record<string, unknown>) {
+    return this.request(`/api/lotes/${loteId}/intake`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getProgresso(loteId: number | string) {
+    return this.request<{
+      steps: { id: string; label: string; completed: boolean }[];
+      completed: number;
+      total: number;
+      percentage: number;
+    }>(`/api/lotes/${loteId}/progresso`);
+  }
+
+  async getProgressoPorToken(token: string) {
+    return this.request<{
+      steps: { id: string; label: string; completed: boolean }[];
+      completed: number;
+      total: number;
+      percentage: number;
+    }>(`/api/acesso-lote/progresso?token=${encodeURIComponent(token)}`);
+  }
 }
 
 

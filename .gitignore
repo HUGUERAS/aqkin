@@ -59,3 +59,13 @@ clean-project/
 .env.production
 scripts/ENV_VARS_VPS-fix.sh
 scripts/deploy-completo-fix.sh
+
+# Azurite (Azure Storage Emulator)
+AzuriteConfig
+__azurite_db_*.json
+
+# Claude temp files
+tmpclaude-*
+
+# Cursor IDE
+.cursor/

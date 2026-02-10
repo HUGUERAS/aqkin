@@ -10,6 +10,10 @@ import {
     LayoutDashboard,
     CheckCircle,
     CheckCircle2,
+    CheckCheck,
+    Move,
+    PencilLine,
+    Ruler,
     Zap,
     BarChart3,
     DollarSign,
@@ -52,6 +56,8 @@ interface IconProps {
     | 'file'
     | 'dashboard'
     | 'check'
+    | 'check-2'
+    | 'edit-3'
     | 'spark'
     | 'chart'
     | 'dollar'
@@ -77,6 +83,8 @@ interface IconProps {
     | 'map'
     | 'grid'
     | 'list'
+    | 'move'
+    | 'ruler'
     | 'back'
     | 'forward'
     | 'envelope'
@@ -96,6 +104,8 @@ const iconMap: Record<IconProps['name'], LucideIcon> = {
     file: FileText,
     dashboard: LayoutDashboard,
     check: CheckCircle,
+    'check-2': CheckCheck,
+    'edit-3': PencilLine,
     spark: Zap,
     chart: BarChart3,
     dollar: DollarSign,
@@ -121,6 +131,8 @@ const iconMap: Record<IconProps['name'], LucideIcon> = {
     map: Map,
     grid: Grid,
     list: List,
+    move: Move,
+    ruler: Ruler,
     back: ArrowLeft,
     forward: ChevronRight,
     envelope: Mail,

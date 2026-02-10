@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import apiClient from '../../services/api';
 import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
@@ -57,13 +57,7 @@ export default function Orcamentos() {
   const [salvando, setSalvando] = useState(false);
   const [confirmarExclusao, setConfirmarExclusao] = useState<number | null>(null);
 
-  useEffect(() => {
-    carregarProjetos();
-    carregarLotes();
-    carregarOrcamentos();
-  }, [filtroProjeto, filtroLote]);
-
-  const carregarProjetos = async () => {
+  const carregarProjetos = useCallback(async () => {
     try {
       const response = await apiClient.getProjects();
       if (response.error) {
@@ -77,9 +71,9 @@ export default function Orcamentos() {
       console.error('Erro ao carregar projetos:', error);
       setError('Erro ao carregar projetos');
     }
-  };
+  }, []);
 
-  const carregarLotes = async () => {
+  const carregarLotes = useCallback(async () => {
     try {
       if (filtroProjeto) {
         const response = await apiClient.getLotes(filtroProjeto);
@@ -97,9 +91,9 @@ export default function Orcamentos() {
       console.error('Erro ao carregar lotes:', error);
       setError('Erro ao carregar lotes');
     }
-  };
+  }, [filtroProjeto]);
 
-  const carregarOrcamentos = async () => {
+  const carregarOrcamentos = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -122,7 +116,13 @@ export default function Orcamentos() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filtroProjeto, filtroLote]);
+
+  useEffect(() => {
+    carregarProjetos();
+    carregarLotes();
+    carregarOrcamentos();
+  }, [carregarLotes, carregarOrcamentos, carregarProjetos]);
 
   const orcamentosFiltrados = orcamentos.filter((o) =>
     filtroStatus === 'TODOS' ? true : o.status === filtroStatus
@@ -299,12 +299,14 @@ export default function Orcamentos() {
   return (
     <div style={{ padding: '2rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1 style={{ margin: 0 }}>💰 Orçamentos</h1>
+        <h1 style={{ margin: 0 }}>
+          <span role="img" aria-label="Dinheiro">💰</span> Orçamentos
+        </h1>
         <button
           onClick={abrirFormularioCriar}
           style={{
             padding: '0.75rem 1.5rem',
-            background: '#667eea',
+            background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
             color: 'white',
             border: 'none',
             borderRadius: '8px',
@@ -313,7 +315,7 @@ export default function Orcamentos() {
             fontSize: '1rem',
           }}
         >
-          ➕ Novo Orçamento
+          <span role="img" aria-label="Adicionar">➕</span> Novo Orçamento
         </button>
       </div>
 
@@ -397,16 +399,20 @@ export default function Orcamentos() {
                     onClick={() => setFiltroStatus(status)}
                     style={{
                       padding: '0.5rem 1rem',
-                      background: filtroStatus === status ? '#667eea' : 'white',
+                      background: filtroStatus === status ? '#3b82f6' : 'white',
                       color: filtroStatus === status ? 'white' : '#333',
-                      border: `1px solid ${filtroStatus === status ? '#667eea' : '#ddd'}`,
+                      border: `1px solid ${filtroStatus === status ? '#3b82f6' : '#ddd'}`,
                       borderRadius: '20px',
                       cursor: 'pointer',
                       fontWeight: filtroStatus === status ? 'bold' : 'normal',
                       fontSize: '0.9rem',
                     }}
                   >
-                    {status === 'TODOS' ? '📋' : style.icon}{' '}
+                    {status === 'TODOS' ? (
+                      <span role="img" aria-label="Lista">📋</span>
+                    ) : (
+                      style.icon
+                    )}{' '}
                     {status === 'TODOS' ? 'Todos' : status.replace('_', ' ')} ({count})
                   </button>
                 );
@@ -436,7 +442,7 @@ export default function Orcamentos() {
           </div>
           <div>
             <div style={{ fontSize: '0.9rem', color: '#666', marginBottom: '0.25rem' }}>Valor Total</div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#667eea' }}>
+            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#3b82f6' }}>
               {formatarMoeda(orcamentosFiltrados.reduce((acc, o) => acc + o.valor, 0))}
             </div>
           </div>
@@ -521,7 +527,7 @@ export default function Orcamentos() {
                       onClick={() => abrirFormularioEditar(orcamento)}
                       style={{
                         padding: '0.5rem 1rem',
-                        background: '#667eea',
+                        background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
                         color: 'white',
                         border: 'none',
                         borderRadius: '6px',
@@ -529,7 +535,7 @@ export default function Orcamentos() {
                         fontSize: '0.9rem',
                       }}
                     >
-                      ✏️ Editar
+                      <span role="img" aria-label="Editar">✏️</span> Editar
                     </button>
                     <button
                       onClick={() => setConfirmarExclusao(orcamento.id)}
@@ -543,7 +549,7 @@ export default function Orcamentos() {
                         fontSize: '0.9rem',
                       }}
                     >
-                      🗑️ Excluir
+                      <span role="img" aria-label="Excluir">🗑️</span> Excluir
                     </button>
                   </div>
                 </div>
@@ -703,11 +709,11 @@ export default function Orcamentos() {
                     fontSize: '1rem',
                   }}
                 >
-                  <option value="RASCUNHO">📝 Rascunho</option>
-                  <option value="ENVIADO">📤 Enviado</option>
-                  <option value="APROVADO">✅ Aprovado</option>
-                  <option value="REJEITADO">❌ Rejeitado</option>
-                  <option value="CANCELADO">🚫 Cancelado</option>
+                  <option value="RASCUNHO">Rascunho</option>
+                  <option value="ENVIADO">Enviado</option>
+                  <option value="APROVADO">Aprovado</option>
+                  <option value="REJEITADO">Rejeitado</option>
+                  <option value="CANCELADO">Cancelado</option>
                 </select>
               </div>
 
@@ -751,7 +757,7 @@ export default function Orcamentos() {
                   disabled={salvando}
                   style={{
                     padding: '0.75rem 1.5rem',
-                    background: '#667eea',
+                    background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
                     color: 'white',
                     border: 'none',
                     borderRadius: '6px',

@@ -1,28 +1,35 @@
 export default function GerarPecas() {
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1 style={{ marginBottom: '2rem' }}>📄 Gerar Peças Técnicas</h1>
+    <div style={{ padding: '2rem', minHeight: '100vh', background: 'linear-gradient(135deg, #0b0f14 0%, #111827 100%)', color: '#e5e7eb' }}>
+      <h1 style={{ marginBottom: '2rem', color: '#f8fafc' }}>
+        <span role="img" aria-label="Documento">📄</span> Gerar Peças Técnicas
+      </h1>
 
       <div style={{
-        background: 'white',
-        borderRadius: '12px',
+        background: 'rgba(15, 23, 42, 0.92)',
+        borderRadius: '14px',
         padding: '2rem',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        marginBottom: '2rem'
+        boxShadow: '0 18px 50px rgba(0,0,0,0.35)',
+        marginBottom: '2rem',
+        border: '1px solid rgba(59, 130, 246, 0.25)'
       }}>
-        <h2 style={{ marginBottom: '1rem' }}>📋 Memorial Descritivo</h2>
-        <p style={{ color: '#666', marginBottom: '1rem' }}>
+        <h2 style={{ marginBottom: '1rem', color: '#f8fafc' }}>
+          <span role="img" aria-label="Memorial">📋</span> Memorial Descritivo
+        </h2>
+        <p style={{ color: '#94a3b8', marginBottom: '1rem' }}>
           Geração automática com base nos dados dos confrontantes e geometria validada
         </p>
 
         <div style={{
           padding: '2rem',
-          background: '#f5f5f5',
+          background: '#0b1220',
           borderRadius: '8px',
           fontFamily: 'monospace',
           fontSize: '0.9rem',
           lineHeight: '1.8',
-          marginBottom: '1rem'
+          marginBottom: '1rem',
+          border: '1px solid rgba(59, 130, 246, 0.25)',
+          color: '#e5e7eb'
         }}>
           <p><strong>MEMORIAL DESCRITIVO</strong></p>
           <p>Imóvel: #001</p>
@@ -40,51 +47,57 @@ export default function GerarPecas() {
 
         <button style={{
           padding: '0.75rem 1.5rem',
-          background: '#667eea',
+          background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
           color: 'white',
           border: 'none',
-          borderRadius: '6px',
+          borderRadius: '10px',
           fontWeight: 'bold',
           cursor: 'pointer',
-          marginRight: '1rem'
+          marginRight: '1rem',
+          boxShadow: '0 10px 24px rgba(59,130,246,0.28)'
         }}>
-          📥 Baixar Memorial (PDF)
+          <span role="img" aria-label="Download">📥</span> Baixar Memorial (PDF)
         </button>
 
         <button style={{
           padding: '0.75rem 1.5rem',
-          background: '#4caf50',
+          background: 'linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%)',
           color: 'white',
           border: 'none',
-          borderRadius: '6px',
+          borderRadius: '10px',
           fontWeight: 'bold',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          boxShadow: '0 10px 24px rgba(99,102,241,0.28)'
         }}>
-          📤 Baixar Memorial (DOCX)
+          <span role="img" aria-label="Enviar">📤</span> Baixar Memorial (DOCX)
         </button>
       </div>
 
       <div style={{
-        background: 'white',
-        borderRadius: '12px',
+        background: 'rgba(15, 23, 42, 0.92)',
+        borderRadius: '14px',
         padding: '2rem',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        marginBottom: '2rem'
+        boxShadow: '0 18px 50px rgba(0,0,0,0.35)',
+        marginBottom: '2rem',
+        border: '1px solid rgba(59, 130, 246, 0.25)'
       }}>
-        <h2 style={{ marginBottom: '1rem' }}>🗺️ Planta de Situação</h2>
+        <h2 style={{ marginBottom: '1rem', color: '#f8fafc' }}>
+          <span role="img" aria-label="Mapa">🗺️</span> Planta de Situação
+        </h2>
 
         <div style={{
           width: '100%',
           height: '400px',
-          background: '#e0e0e0',
+          background: '#0b1220',
           borderRadius: '8px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          marginBottom: '1rem'
+          marginBottom: '1rem',
+          border: '1px solid rgba(59, 130, 246, 0.25)'
         }}>
-          <div style={{ textAlign: 'center', color: '#666' }}>
-            <p style={{ fontSize: '2rem' }}>📐</p>
+          <div style={{ textAlign: 'center', color: '#94a3b8' }}>
+            <p style={{ fontSize: '2rem' }}><span role="img" aria-label="Esquadro">📐</span></p>
             <p>Preview da Planta</p>
             <p style={{ fontSize: '0.9rem' }}>Mapa com coordenadas + legenda + norte</p>
           </div>
@@ -92,49 +105,53 @@ export default function GerarPecas() {
 
         <button style={{
           padding: '0.75rem 1.5rem',
-          background: '#667eea',
+          background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
           color: 'white',
           border: 'none',
-          borderRadius: '6px',
+          borderRadius: '10px',
           fontWeight: 'bold',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          boxShadow: '0 10px 24px rgba(59,130,246,0.28)'
         }}>
-          📥 Baixar Planta (PDF A3)
+          <span role="img" aria-label="Download">📥</span> Baixar Planta (PDF A3)
         </button>
       </div>
 
       <div style={{
-        background: 'white',
-        borderRadius: '12px',
+        background: 'rgba(15, 23, 42, 0.92)',
+        borderRadius: '14px',
         padding: '2rem',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        boxShadow: '0 18px 50px rgba(0,0,0,0.35)',
+        border: '1px solid rgba(59, 130, 246, 0.25)'
       }}>
-        <h2 style={{ marginBottom: '1rem' }}>📊 Caderneta de Campo</h2>
-        <p style={{ color: '#666', marginBottom: '1rem' }}>
+        <h2 style={{ marginBottom: '1rem', color: '#f8fafc' }}>
+          <span role="img" aria-label="Grafico">📊</span> Caderneta de Campo
+        </h2>
+        <p style={{ color: '#94a3b8', marginBottom: '1rem' }}>
           Pontos levantados com coordenadas (SIRGAS 2000)
         </p>
 
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr style={{ background: '#f5f5f5' }}>
-              <th style={{ padding: '0.75rem', textAlign: 'left' }}>Ponto</th>
-              <th style={{ padding: '0.75rem', textAlign: 'left' }}>Latitude</th>
-              <th style={{ padding: '0.75rem', textAlign: 'left' }}>Longitude</th>
-              <th style={{ padding: '0.75rem', textAlign: 'left' }}>Descrição</th>
+            <tr style={{ background: '#0b1220' }}>
+              <th style={{ padding: '0.75rem', textAlign: 'left', color: '#cbd5e1' }}>Ponto</th>
+              <th style={{ padding: '0.75rem', textAlign: 'left', color: '#cbd5e1' }}>Latitude</th>
+              <th style={{ padding: '0.75rem', textAlign: 'left', color: '#cbd5e1' }}>Longitude</th>
+              <th style={{ padding: '0.75rem', textAlign: 'left', color: '#cbd5e1' }}>Descrição</th>
             </tr>
           </thead>
           <tbody>
-            <tr style={{ borderBottom: '1px solid #eee' }}>
-              <td style={{ padding: '0.75rem' }}>P1</td>
-              <td style={{ padding: '0.75rem' }}>-15.7942</td>
-              <td style={{ padding: '0.75rem' }}>-47.8822</td>
-              <td style={{ padding: '0.75rem' }}>Vértice Nordeste</td>
+            <tr style={{ borderBottom: '1px solid rgba(59, 130, 246, 0.25)' }}>
+              <td style={{ padding: '0.75rem', color: '#e5e7eb' }}>P1</td>
+              <td style={{ padding: '0.75rem', color: '#e5e7eb' }}>-15.7942</td>
+              <td style={{ padding: '0.75rem', color: '#e5e7eb' }}>-47.8822</td>
+              <td style={{ padding: '0.75rem', color: '#e5e7eb' }}>Vértice Nordeste</td>
             </tr>
-            <tr style={{ borderBottom: '1px solid #eee' }}>
-              <td style={{ padding: '0.75rem' }}>P2</td>
-              <td style={{ padding: '0.75rem' }}>-15.7950</td>
-              <td style={{ padding: '0.75rem' }}>-47.8822</td>
-              <td style={{ padding: '0.75rem' }}>Vértice Sudeste</td>
+            <tr style={{ borderBottom: '1px solid rgba(59, 130, 246, 0.25)' }}>
+              <td style={{ padding: '0.75rem', color: '#e5e7eb' }}>P2</td>
+              <td style={{ padding: '0.75rem', color: '#e5e7eb' }}>-15.7950</td>
+              <td style={{ padding: '0.75rem', color: '#e5e7eb' }}>-47.8822</td>
+              <td style={{ padding: '0.75rem', color: '#e5e7eb' }}>Vértice Sudeste</td>
             </tr>
           </tbody>
         </table>
@@ -142,14 +159,15 @@ export default function GerarPecas() {
         <button style={{
           marginTop: '1rem',
           padding: '0.75rem 1.5rem',
-          background: '#667eea',
+          background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
           color: 'white',
           border: 'none',
-          borderRadius: '6px',
+          borderRadius: '10px',
           fontWeight: 'bold',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          boxShadow: '0 10px 24px rgba(59,130,246,0.28)'
         }}>
-          📥 Baixar Caderneta (XLSX)
+          <span role="img" aria-label="Download">📥</span> Baixar Caderneta (XLSX)
         </button>
       </div>
     </div>

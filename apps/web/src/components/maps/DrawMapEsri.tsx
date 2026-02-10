@@ -109,7 +109,7 @@ export default function DrawMapEsri({
           boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
         }}
       >
-        <strong>📍 Como usar:</strong> Use as ferramentas à direita para desenhar o polígono
+        <strong><span role="img" aria-label="Localização">📍</span> Como usar:</strong> Use as ferramentas à direita para desenhar o polígono
       </div>
     </div>
   );

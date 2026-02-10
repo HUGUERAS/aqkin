@@ -2,7 +2,7 @@
 
 .validar-desenhos-container {
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   background: #f5f5f5;
@@ -12,10 +12,10 @@
 
 /* Header */
 .page-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--bronze-600) 0%, var(--bronze-700) 100%);
   color: white;
   padding: 2rem;
-  box-shadow: 0 2px 12px rgba(102, 126, 234, 0.2);
+  box-shadow: 0 2px 12px rgba(205, 127, 50, 0.2);
 }
 
 .page-header h1 {
@@ -105,16 +105,16 @@
 }
 
 .tool-btn:hover {
-  border-color: #667eea;
-  color: #667eea;
-  background: #f9f9ff;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--bronze-50);
 }
 
 .tool-btn.active {
-  border-color: #667eea;
-  background: #667eea;
+  border-color: var(--color-primary);
+  background: var(--color-primary);
   color: white;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 2px 8px var(--shadow-bronze);
 }
 
 .tool-btn span {
@@ -128,15 +128,15 @@
   gap: 0.75rem;
   margin-left: auto;
   padding: 0.6rem 1rem;
-  background: #f0f4ff;
-  border-left: 3px solid #667eea;
+  background: var(--bronze-50);
+  border-left: 3px solid var(--color-primary);
   border-radius: 4px;
   font-size: 0.9rem;
   color: #333;
 }
 
 .active-tool-info strong {
-  color: #667eea;
+  color: var(--color-primary);
 }
 
 /* Map Container */
@@ -166,7 +166,7 @@
   padding: 0.75rem 1rem;
   background: white;
   border-radius: 6px;
-  border-left: 3px solid #667eea;
+  border-left: 3px solid var(--color-primary);
   flex: 1;
   min-width: 250px;
 }
@@ -180,7 +180,7 @@
 .measurement-value {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #667eea;
+  color: var(--color-primary);
   margin-left: auto;
 }
 
@@ -254,7 +254,7 @@
   margin-top: 2px;
   flex-shrink: 0;
   cursor: pointer;
-  accent-color: #667eea;
+  accent-color: var(--color-primary);
 }
 
 .check-item span {
@@ -266,7 +266,7 @@
 }
 
 .check-item span.completed {
-  color: #4caf50;
+  color: var(--color-success);
   text-decoration: line-through;
 }
 
@@ -285,12 +285,12 @@
 
 .validation-status.complete {
   background: #f0f8f5;
-  border-color: #4caf50;
+  border-color: var(--color-success);
 }
 
 .validation-status.incomplete {
   background: #fffaf5;
-  border-color: #ff9800;
+  border-color: var(--color-warning);
 }
 
 .status-icon {
@@ -307,11 +307,11 @@
 }
 
 .validation-status.complete .status-text {
-  color: #4caf50;
+  color: var(--color-success);
 }
 
 .validation-status.incomplete .status-text {
-  color: #ff9800;
+  color: var(--color-warning);
 }
 
 /* Approve Button */
@@ -327,14 +327,14 @@
 }
 
 .approve-button.enabled {
-  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  background: linear-gradient(135deg, var(--color-success) 0%, var(--success-dark) 100%);
   color: white;
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  box-shadow: 0 4px 12px rgba(95, 176, 99, 0.3);
 }
 
 .approve-button.enabled:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+  box-shadow: 0 6px 16px rgba(95, 176, 99, 0.4);
 }
 
 .approve-button.enabled:active {
@@ -362,6 +362,33 @@
 
   .layer-panel {
     padding-right: 0;
+  }
+}
+
+/* Tablet: 2 colunas (layer + map, validation abaixo) */
+@media (max-width: 1199px) and (min-width: 768px) {
+  .validar-layout {
+    grid-template-columns: 300px 1fr;
+    grid-template-rows: auto auto;
+    gap: 1rem;
+  }
+
+  .layer-panel {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    max-height: calc(100vh - 200px);
+  }
+
+  .map-section {
+    grid-column: 2;
+    grid-row: 1;
+    min-height: 400px;
+  }
+
+  .validation-panel {
+    grid-column: 2;
+    grid-row: 2;
+    max-height: 350px;
   }
 }
 
@@ -407,10 +434,6 @@
 }
 
 @media (max-width: 768px) {
-  .validar-desenhos-container {
-    height: auto;
-  }
-
   .page-header {
     padding: 1.5rem;
   }

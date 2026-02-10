@@ -14,7 +14,7 @@ import clsx from 'clsx';
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
     size?: 'sm' | 'md' | 'lg';
-    icon?: string;
+    icon?: React.ComponentProps<typeof Icon>['name'];
     isLoading?: boolean;
     children: ReactNode;
 }
@@ -41,7 +41,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 disabled={disabled || isLoading}
                 {...props}
             >
-                {isLoading ? <Icon name="spark" size="sm" /> : icon && <Icon name={icon as any} size="sm" />}
+                {isLoading ? <Icon name="spark" size="sm" /> : icon && <Icon name={icon} size="sm" />}
                 {children}
             </button>
         );
@@ -78,7 +78,7 @@ Card.displayName = 'Card';
    ============================================ */
 
 export const CardHeader: React.FC<{ children: ReactNode; className?: string }> = ({ children, className }) => (
-    <div className={clsx('mb-4 pb-4 border-b border-gray-200', className)}>{children}</div>
+    <div className={clsx('mb-4 pb-4 border-b border-titanium-200', className)}>{children}</div>
 );
 
 export const CardBody: React.FC<{ children: ReactNode; className?: string }> = ({ children, className }) => (
@@ -86,7 +86,7 @@ export const CardBody: React.FC<{ children: ReactNode; className?: string }> = (
 );
 
 export const CardFooter: React.FC<{ children: ReactNode; className?: string }> = ({ children, className }) => (
-    <div className={clsx('mt-4 pt-4 border-t border-gray-200 flex items-center gap-2', className)}>{children}</div>
+    <div className={clsx('mt-4 pt-4 border-t border-titanium-200 flex items-center gap-2', className)}>{children}</div>
 );
 
 /* ============================================
@@ -96,7 +96,7 @@ export const CardFooter: React.FC<{ children: ReactNode; className?: string }> =
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     label?: string;
     error?: string;
-    icon?: string;
+    icon?: React.ComponentProps<typeof Icon>['name'];
     helperText?: string;
 }
 
@@ -104,30 +104,30 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     ({ label, error, icon, helperText, className, ...props }, ref) => (
         <div className="mb-4">
             {label && (
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-titanium-700 mb-2">
                     {label}
                 </label>
             )}
             <div className="relative">
                 {icon && (
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                        <Icon name={icon as any} size="sm" />
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-titanium-400">
+                        <Icon name={icon} size="sm" />
                     </div>
                 )}
                 <input
                     ref={ref}
                     className={clsx(
-                        'w-full px-4 py-2 border border-gray-300 rounded-lg font-base transition-all',
-                        'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-                        error && 'border-red-500 focus:ring-red-500',
+                        'w-full px-4 py-2 border border-titanium-300 rounded-lg font-base transition-all',
+                        'focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
+                        error && 'border-error focus:ring-error',
                         icon && 'pl-10',
                         className
                     )}
                     {...props}
                 />
             </div>
-            {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
-            {helperText && !error && <p className="text-gray-500 text-sm mt-1">{helperText}</p>}
+            {error && <p className="text-error text-sm mt-1">{error}</p>}
+            {helperText && !error && <p className="text-titanium-500 text-sm mt-1">{helperText}</p>}
         </div>
     )
 );
@@ -148,22 +148,22 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     ({ label, error, helperText, className, ...props }, ref) => (
         <div className="mb-4">
             {label && (
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-titanium-700 mb-2">
                     {label}
                 </label>
             )}
             <textarea
                 ref={ref}
                 className={clsx(
-                    'w-full px-4 py-2 border border-gray-300 rounded-lg font-base transition-all',
-                    'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-                    error && 'border-red-500 focus:ring-red-500',
+                    'w-full px-4 py-2 border border-titanium-300 rounded-lg font-base transition-all',
+                    'focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
+                    error && 'border-error focus:ring-error',
                     className
                 )}
                 {...props}
             />
-            {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
-            {helperText && !error && <p className="text-gray-500 text-sm mt-1">{helperText}</p>}
+            {error && <p className="text-error text-sm mt-1">{error}</p>}
+            {helperText && !error && <p className="text-titanium-500 text-sm mt-1">{helperText}</p>}
         </div>
     )
 );
@@ -186,16 +186,16 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     ({ label, error, options, placeholder, helperText, className, ...props }, ref) => (
         <div className="mb-4">
             {label && (
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-titanium-700 mb-2">
                     {label}
                 </label>
             )}
             <select
                 ref={ref}
                 className={clsx(
-                    'w-full px-4 py-2 border border-gray-300 rounded-lg font-base transition-all',
-                    'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-                    error && 'border-red-500 focus:ring-red-500',
+                    'w-full px-4 py-2 border border-titanium-300 rounded-lg font-base transition-all',
+                    'focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
+                    error && 'border-error focus:ring-error',
                     className
                 )}
                 {...props}
@@ -207,8 +207,8 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                     </option>
                 ))}
             </select>
-            {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
-            {helperText && !error && <p className="text-gray-500 text-sm mt-1">{helperText}</p>}
+            {error && <p className="text-error text-sm mt-1">{error}</p>}
+            {helperText && !error && <p className="text-titanium-500 text-sm mt-1">{helperText}</p>}
         </div>
     )
 );
@@ -227,11 +227,11 @@ interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 
 export const Badge: React.FC<BadgeProps> = ({ variant = 'default', size = 'md', className, children, ...props }) => {
     const variantClass = {
-        default: 'bg-gray-200 text-gray-800',
-        success: 'bg-green-100 text-green-800',
-        warning: 'bg-yellow-100 text-yellow-800',
-        error: 'bg-red-100 text-red-800',
-        info: 'bg-blue-100 text-blue-800',
+        default: 'bg-titanium-200 text-titanium-900',
+        success: 'badge-success',
+        warning: 'badge-warning',
+        error: 'badge-error',
+        info: 'bg-info/20 text-info',
     }[variant];
 
     const sizeClass = {
@@ -268,10 +268,10 @@ export const Alert: React.FC<AlertProps> = ({
     ...props
 }) => {
     const colorMap = {
-        info: 'bg-blue-50 border-blue-200 text-blue-800',
-        success: 'bg-green-50 border-green-200 text-green-800',
-        warning: 'bg-yellow-50 border-yellow-200 text-yellow-800',
-        error: 'bg-red-50 border-red-200 text-red-800',
+        info: 'bg-info/10 border-info/30 text-info',
+        success: 'bg-success/10 border-success/30 text-success',
+        warning: 'bg-warning/10 border-warning/30 text-warning',
+        error: 'bg-error/10 border-error/30 text-error',
     };
 
     const iconMap = {
@@ -315,7 +315,7 @@ interface SkeletonProps extends HTMLAttributes<HTMLDivElement> {
 export const Skeleton: React.FC<SkeletonProps> = ({ width = 'w-full', height = 'h-4', count = 1, className, ...props }) => (
     <>
         {Array.from({ length: count }).map((_, i) => (
-            <div key={i} className={clsx('bg-gray-200 rounded animate-pulse mb-2', width, height, className)} {...props} />
+            <div key={i} className={clsx('bg-titanium-200 rounded animate-pulse mb-2', width, height, className)} {...props} />
         ))}
     </>
 );
@@ -338,17 +338,17 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
                     ref={ref}
                     type="checkbox"
                     className={clsx(
-                        'w-4 h-4 rounded border-gray-300 text-blue-600 transition-colors',
-                        'focus:ring-2 focus:ring-blue-500 focus:ring-offset-0',
-                        error && 'border-red-500',
+                        'w-4 h-4 rounded border-titanium-300 text-primary transition-colors',
+                        'focus:ring-2 focus:ring-primary focus:ring-offset-0',
+                        error && 'border-error',
                         className
                     )}
                     {...props}
                 />
-                {label && <span className="text-sm text-gray-700">{label}</span>}
+                {label && <span className="text-sm text-titanium-700">{label}</span>}
             </label>
-            {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
-            {helperText && !error && <p className="text-gray-500 text-sm mt-1">{helperText}</p>}
+            {error && <p className="text-error text-sm mt-1">{error}</p>}
+            {helperText && !error && <p className="text-titanium-500 text-sm mt-1">{helperText}</p>}
         </div>
     )
 );

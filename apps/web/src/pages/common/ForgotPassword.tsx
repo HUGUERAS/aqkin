@@ -39,22 +39,32 @@ export default function ForgotPassword() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
-            <div className="w-full max-w-md">
-                {/* Logo */}
+        <div
+            className="min-h-screen flex items-center justify-center p-6"
+            style={{
+                background: 'linear-gradient(135deg, #0b0f14 0%, #111827 100%)',
+            }}
+        >
+            <div className="w-full max-w-xl">
                 <div className="flex justify-center mb-8">
                     <Logo size="lg" variant="icon" />
                 </div>
 
-                {/* Card */}
-                <div className="bg-white rounded-2xl shadow-xl p-8">
+                <div
+                    className="rounded-2xl p-10 shadow-2xl border"
+                    style={{
+                        background: 'rgba(15, 23, 42, 0.92)',
+                        borderColor: 'rgba(59, 130, 246, 0.25)',
+                        boxShadow: '0 24px 70px rgba(0,0,0,0.35)',
+                    }}
+                >
                     {!sent ? (
                         <>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-2 text-center">
+                            <h1 className="text-3xl font-bold text-slate-50 mb-2 text-center">
                                 Recuperar Senha
                             </h1>
-                            <p className="text-gray-600 text-center mb-6">
-                                Digite seu email para receber um link de recuperação
+                            <p className="text-slate-300 text-center mb-6">
+                                Enviaremos um link seguro para você redefinir sua senha
                             </p>
 
                             {error && (
@@ -78,7 +88,14 @@ export default function ForgotPassword() {
                                     type="submit"
                                     variant="primary"
                                     size="lg"
-                                    className="w-full"
+                                    className="w-full text-white font-semibold"
+                                    style={{
+                                        background:
+                                            loading
+                                                ? '#1f2937'
+                                                : 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
+                                        border: 'none',
+                                    }}
                                     disabled={loading}
                                     isLoading={loading}
                                 >
@@ -86,10 +103,11 @@ export default function ForgotPassword() {
                                 </Button>
                             </form>
 
-                            <div className="mt-6 flex gap-2">
+                            <div className="mt-6 flex gap-3">
                                 <button
                                     onClick={() => navigate('/login')}
-                                    className="flex-1 flex items-center justify-center gap-2 text-blue-600 hover:text-blue-800 font-semibold transition-colors"
+                                    className="flex-1 flex items-center justify-center gap-2 font-semibold transition-colors"
+                                    style={{ color: '#60a5fa' }}
                                 >
                                     <Icon name="back" size="sm" />
                                     Voltar ao Login
@@ -98,41 +116,44 @@ export default function ForgotPassword() {
                         </>
                     ) : (
                         <div className="text-center">
-                                <div className="mb-4 flex justify-center">
-                                    <div className="rounded-full bg-green-100 p-4">
-                                        <Icon name="check" size="xl" color="success" />
-                                    </div>
+                            <div className="mb-4 flex justify-center">
+                                <div className="rounded-full bg-emerald-900/60 border border-emerald-500/40 p-4">
+                                    <Icon name="check" size="xl" color="success" />
                                 </div>
-                                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                                    Email Enviado com Sucesso!
-                                </h2>
-                                <p className="text-gray-600 mb-4">
-                                    Clique no link enviado para <strong>{email}</strong> para redefinir sua senha
-                                </p>
-                                <p className="text-gray-500 text-sm mb-6">
-                                    Verifique também a pasta de spam se não encontrar o email
-                                </p>
-
-                                <button
-                                    onClick={() => navigate('/login')}
-                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-                                >
-                                    <Icon name="back" size="sm" />
-                                    Voltar ao Login
-                                </button>
                             </div>
+                            <h2 className="text-2xl font-bold text-slate-50 mb-2">
+                                Email Enviado com Sucesso!
+                            </h2>
+                            <p className="text-slate-300 mb-4">
+                                Clique no link enviado para <strong>{email}</strong> para redefinir sua senha
+                            </p>
+                            <p className="text-slate-400 text-sm mb-6">
+                                Verifique também a pasta de spam se não encontrar o email
+                            </p>
+
+                            <button
+                                onClick={() => navigate('/login')}
+                                className="w-full font-bold py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2"
+                                style={{
+                                    background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
+                                    color: 'white',
+                                }}
+                            >
+                                <Icon name="back" size="sm" />
+                                Voltar ao Login
+                            </button>
+                        </div>
                     )}
                 </div>
 
-                {/* Help Text */}
-                <p className="text-center text-gray-600 text-sm mt-6">
+                <p className="text-center text-slate-300 text-sm mt-6">
                     Não consegue acessar seu email?{' '}
                     <button
                         onClick={() => {
-                            // TODO: Open support chat or contact form
                             alert('Entre em contato com o suporte: suporte@ativoreal.com');
                         }}
-                        className="text-blue-600 hover:text-blue-800 font-semibold transition-colors"
+                        className="font-semibold transition-colors"
+                        style={{ color: '#60a5fa' }}
                     >
                         Contate o Suporte
                     </button>

@@ -1,3 +1,5 @@
+import Icon from './Icon';
+
 interface StateViewProps {
   title: string;
   description?: string;
@@ -7,31 +9,24 @@ interface StateViewProps {
 
 export function LoadingState({ title, description }: StateViewProps) {
   return (
-    <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
-      <p style={{ fontSize: '1.25rem', margin: 0 }}>{title}</p>
-      {description && <p style={{ marginTop: '0.5rem' }}>{description}</p>}
+    <div className="text-center p-12 text-titanium-600 animate-pulse">
+      <Icon name="spark" size="xl" className="text-primary mx-auto mb-4" />
+      <p className="text-xl m-0 font-semibold">{title}</p>
+      {description && <p className="mt-2">{description}</p>}
     </div>
   );
 }
 
 export function EmptyState({ title, description, actionLabel, onAction }: StateViewProps) {
   return (
-    <div style={{ textAlign: 'center', padding: '3rem', color: '#666', background: 'white', borderRadius: '12px' }}>
-      <p style={{ fontSize: '1.25rem', margin: 0 }}>{title}</p>
-      {description && <p style={{ marginTop: '0.5rem' }}>{description}</p>}
+    <div className="text-center p-12 text-titanium-600 bg-white rounded-lg animate-fade-in">
+      <Icon name="search" size="xl" className="text-titanium-400 mx-auto mb-4" />
+      <p className="text-xl m-0 font-semibold">{title}</p>
+      {description && <p className="mt-2">{description}</p>}
       {actionLabel && onAction && (
         <button
           onClick={onAction}
-          style={{
-            marginTop: '1rem',
-            padding: '0.5rem 1rem',
-            background: '#667eea',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontSize: '0.9rem',
-          }}
+          className="mt-6 px-6 py-3 bg-primary text-white border-none rounded-lg cursor-pointer text-base font-semibold hover:bg-primary-hover transition-all hover:shadow-bronze"
         >
           {actionLabel}
         </button>
@@ -42,22 +37,14 @@ export function EmptyState({ title, description, actionLabel, onAction }: StateV
 
 export function ErrorState({ title, description, actionLabel, onAction }: StateViewProps) {
   return (
-    <div style={{ textAlign: 'center', padding: '3rem', color: '#7f1d1d', background: '#fef2f2', borderRadius: '12px' }}>
-      <p style={{ fontSize: '1.1rem', margin: 0 }}>{title}</p>
-      {description && <p style={{ marginTop: '0.5rem', color: '#991b1b' }}>{description}</p>}
+    <div className="text-center p-12 text-error bg-error/10 rounded-lg border border-error/20 animate-fade-in">
+      <Icon name="alert" size="xl" className="text-error mx-auto mb-4" />
+      <p className="text-lg m-0 font-bold">{title}</p>
+      {description && <p className="mt-2 text-error/80">{description}</p>}
       {actionLabel && onAction && (
         <button
           onClick={onAction}
-          style={{
-            marginTop: '1rem',
-            padding: '0.5rem 1rem',
-            background: '#991b1b',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontSize: '0.9rem',
-          }}
+          className="mt-6 px-6 py-3 bg-error text-white border-none rounded-lg cursor-pointer text-base font-semibold hover:opacity-90 transition-all"
         >
           {actionLabel}
         </button>

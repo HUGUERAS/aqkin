@@ -1,6 +1,5 @@
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
-import rehypeRaw from 'rehype-raw';
 
 interface ChatMessageProps {
   role: 'user' | 'assistant';
@@ -39,7 +38,7 @@ export default function ChatMessage({
         {role === 'user' ? (
           <p>{content}</p>
         ) : (
-          <ReactMarkdown rehypePlugins={[rehypeHighlight, rehypeRaw]}>
+          <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
             {content}
           </ReactMarkdown>
         )}

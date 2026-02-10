@@ -84,21 +84,23 @@ export default function AIChat({ userRole }: AIChatProps) {
         timestamp: formatTime(),
       };
 
-      // Compute the updated messages array once
-      let updatedMessages: Message[] = [];
+      // Use a ref to capture the current messages state synchronously
+      let currentMessages: Message[] = [];
       setMessages((prev) => {
-        updatedMessages = [...prev, userMsg];
-        return updatedMessages;
+        currentMessages = prev;
+        return [...prev, userMsg];
       });
+
+      // Build messages array for API from current state + new message (last 20 for token control)
+      const updatedMessages = [...currentMessages, userMsg];
+      const history = updatedMessages
+        .filter((m) => !m.suggestedQuestions || m.role === 'user')
+        .slice(-20)
+        .map((m) => ({ role: m.role, content: m.content }));
+
       setIsLoading(true);
 
       try {
-        // Build messages array for API from the updated messages (last 20 for token control)
-        const history = updatedMessages
-          .filter((m) => !m.suggestedQuestions || m.role === 'user')
-          .slice(-20)
-          .map((m) => ({ role: m.role, content: m.content }));
-
         const response = await apiClient.sendChatMessage(history, userRole);
 
         if (response.error) {

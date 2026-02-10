@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Dict, List, Optional
 
-from apps.api.services.memorial_service import (
+from services.memorial_service import (
     generate_memorial_descritivo,
     generate_coordinates_table,
     calculate_perimeter,
@@ -107,10 +107,18 @@ async def validar_sigef(request: SIGEFValidationRequest):
         area_ha = area_m2 / 10000
 
         # Check if calculated area is close to provided area (within 5% tolerance)
-        if abs(area_ha - request.area_hectares) / request.area_hectares > 0.05:
-            avisos.append(
-                f"Área calculada ({area_ha:.4f}ha) difere da área fornecida ({request.area_hectares:.4f}ha) em mais de 5%"
-            )
+        # Guard against division by zero
+        if request.area_hectares > 0:
+            if abs(area_ha - request.area_hectares) / request.area_hectares > 0.05:
+                avisos.append(
+                    f"Área calculada ({area_ha:.4f}ha) difere da área fornecida ({request.area_hectares:.4f}ha) em mais de 5%"
+                )
+        else:
+            # When provided area is zero or non-positive, use absolute tolerance
+            if abs(area_ha - request.area_hectares) > 1e-4:
+                avisos.append(
+                    f"Área calculada ({area_ha:.4f}ha) difere da área fornecida ({request.area_hectares:.4f}ha)"
+                )
 
     return SIGEFValidationResponse(
         valido=len(erros) == 0,

@@ -10,6 +10,12 @@ from pydantic import BaseModel
 
 from auth import get_perfil
 
+# Import anthropic at module scope to avoid NameError in exception handling
+try:
+    import anthropic
+except ImportError:
+    anthropic = None
+
 router = APIRouter(tags=["AI"])
 
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
@@ -160,9 +166,14 @@ async def chat(request: ChatRequest, perfil: dict = Depends(get_perfil)):
         SYSTEM_PROMPT_TOPOGRAFO if role == "topografo" else SYSTEM_PROMPT_PROPRIETARIO
     )
 
-    try:
-        import anthropic
+    # Check if anthropic is available
+    if anthropic is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Pacote anthropic não instalado no servidor.",
+        )
 
+    try:
         client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
         # Filter and validate messages
@@ -190,10 +201,5 @@ async def chat(request: ChatRequest, perfil: dict = Depends(get_perfil)):
 
     except anthropic.APIError as e:
         raise HTTPException(status_code=502, detail=f"Erro na API de AI: {str(e)}")
-    except ImportError:
-        raise HTTPException(
-            status_code=503,
-            detail="Pacote anthropic não instalado no servidor.",
-        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")

@@ -52,6 +52,14 @@ export default function AIChat({ userRole }: AIChatProps) {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const initializedRef = useRef(false);
+  
+  // Use a ref to track the latest messages and avoid stale closure
+  const messagesRef = useRef<Message[]>([]);
+
+  // Sync ref with state
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   // Add welcome message on first open
   useEffect(() => {
@@ -88,8 +96,9 @@ export default function AIChat({ userRole }: AIChatProps) {
       setIsLoading(true);
 
       try {
-        // Build messages array for API (last 20 messages for token control)
-        const history = [...messages, userMsg]
+        // Build messages array for API using ref to avoid stale closure
+        // (last 20 messages for token control)
+        const history = [...messagesRef.current, userMsg]
           .filter((m) => !m.suggestedQuestions || m.role === 'user')
           .slice(-20)
           .map((m) => ({ role: m.role, content: m.content }));
@@ -112,9 +121,9 @@ export default function AIChat({ userRole }: AIChatProps) {
             {
               id: generateId(),
               role: 'assistant',
-              content: response.data.response,
+              content: response.data?.response || '',
               timestamp: formatTime(),
-              suggestedQuestions: response.data.suggested_questions,
+              suggestedQuestions: response.data?.suggested_questions,
             },
           ]);
         }
@@ -132,7 +141,7 @@ export default function AIChat({ userRole }: AIChatProps) {
         setIsLoading(false);
       }
     },
-    [messages, userRole],
+    [userRole],
   );
 
   const handleSuggestionClick = useCallback(

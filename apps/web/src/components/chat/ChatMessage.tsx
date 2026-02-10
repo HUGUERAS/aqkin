@@ -9,14 +9,15 @@ const sanitizeSchema = {
   // Allow only safe attributes and strip out dangerous ones
   attributes: {
     ...defaultSchema.attributes,
-    // Remove potentially dangerous attributes like onclick, onerror, etc.
-    '*': ['className', 'id'],
-    a: ['href', 'title', 'target', 'rel'],
+    // Only allow className for styling, no id to prevent DOM clobbering
+    '*': ['className'],
+    // For links, only allow href and title - no target to prevent security risks
+    a: ['href', 'title'],
     code: ['className'], // For syntax highlighting
     pre: ['className'],
     span: ['className'], // For syntax highlighting
   },
-  // Ensure links are safe
+  // Ensure links are safe - only allow http, https, and mailto protocols
   protocols: {
     href: ['http', 'https', 'mailto'],
   },

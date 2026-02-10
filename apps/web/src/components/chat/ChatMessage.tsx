@@ -10,19 +10,13 @@ const sanitizeSchema = {
   ...defaultSchema,
   attributes: {
     ...defaultSchema.attributes,
-    // Allow code highlighting classes but prevent other attributes that could be exploited
-    code: ['className'],
-    span: ['className'],
-    // Prevent javascript: and data: URLs in links and add security attributes
-    a: ['href', 'rel', 'target'],
+    // Extend anchor attributes to allow rel and target for external link security
+    a: [
+      ...(defaultSchema.attributes?.a || []),
+      'rel',
+      'target',
+    ],
   },
-  protocols: {
-    href: ['http', 'https', 'mailto'],
-  },
-  // Ensure dangerous elements are explicitly excluded
-  tagNames: (defaultSchema.tagNames || []).filter(
-    (tag) => !['script', 'style', 'iframe', 'object', 'embed'].includes(tag)
-  ),
 };
 
 interface ChatMessageProps {

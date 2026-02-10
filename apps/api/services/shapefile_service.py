@@ -146,19 +146,58 @@ def shape_to_geojson_geometry(shape) -> Dict[str, Any]:
                 "coordinates": [[[p[0], p[1]] for p in shape.points]]
             }
         else:
-            # MultiPolygon or Polygon with holes
+            # Multiple parts: could be MultiPolygon or Polygon with holes
+            # Classify rings by orientation (clockwise vs counter-clockwise)
             rings = []
             parts = list(shape.parts) + [len(shape.points)]
             for i in range(len(parts) - 1):
                 start = parts[i]
                 end = parts[i + 1]
-                rings.append([[p[0], p[1]] for p in shape.points[start:end]])
-
-            # Simple case: treat as single polygon with holes
-            return {
-                "type": "Polygon",
-                "coordinates": rings
-            }
+                ring = [[p[0], p[1]] for p in shape.points[start:end]]
+                rings.append(ring)
+            
+            # Calculate signed area to determine ring orientation
+            # Positive area = counter-clockwise (outer ring)
+            # Negative area = clockwise (inner ring/hole)
+            def signed_area(ring):
+                """Calculate signed area using shoelace formula."""
+                area = 0.0
+                n = len(ring)
+                for i in range(n - 1):
+                    area += ring[i][0] * ring[i + 1][1]
+                    area -= ring[i + 1][0] * ring[i][1]
+                return area / 2.0
+            
+            # Classify rings as outer (positive area) or holes (negative area)
+            outer_rings = []
+            holes = []
+            for ring in rings:
+                if signed_area(ring) > 0:
+                    outer_rings.append(ring)
+                else:
+                    holes.append(ring)
+            
+            # If only one outer ring, return Polygon with holes
+            if len(outer_rings) == 1:
+                return {
+                    "type": "Polygon",
+                    "coordinates": [outer_rings[0]] + holes
+                }
+            # Multiple outer rings means MultiPolygon
+            elif len(outer_rings) > 1:
+                # Group holes with their containing outer rings
+                # For simplicity, create separate polygons without hole assignment
+                polygons = [[outer] for outer in outer_rings]
+                return {
+                    "type": "MultiPolygon",
+                    "coordinates": polygons
+                }
+            else:
+                # All rings are holes (invalid), treat as single polygon
+                return {
+                    "type": "Polygon",
+                    "coordinates": rings
+                }
 
     # MultiPoint (8)
     elif shape_type == 8:

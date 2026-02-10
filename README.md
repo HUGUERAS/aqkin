@@ -18,21 +18,27 @@ These instructions help ensure consistent code quality and adherence to project 
 
 ## 📚 Documentation
 
+### 🎯 Start Here
+- **[GUIA_RAPIDO.md](GUIA_RAPIDO.md)** - Guia rápido em português para começar
+- **[REFERENCES.md](REFERENCES.md)** - Comprehensive reference guide with all project details
+
+### Specialized Guides
 - **[SUPABASE_SETUP.md](SUPABASE_SETUP.md)** - Database setup and configuration
+- **[BACKEND_IMPLEMENTATION.md](BACKEND_IMPLEMENTATION.md)** - Backend architecture and API details
 - **[DEPLOY_GUIDE.md](DEPLOY_GUIDE.md)** - General deployment instructions
-- **[DEPLOY_BACKEND.md](DEPLOY_BACKEND.md)** - Backend deployment specifics
-- **[SETUP_AZURE.md](SETUP_AZURE.md)** - Azure deployment guide
 - **[SECURITY.md](SECURITY.md)** - Security policies and reporting
 
 ## ❓ O que eu tenho que fazer aqui?
 
 Se você está começando e não sabe por onde seguir, use este roteiro rápido:
 
-1. **Instale as dependências** (`npm install` e `cd apps/api && pip install -r requirements.txt`)
-2. **Configure o ambiente** copiando os arquivos `.env.example`
-3. **Inicie o desenvolvimento** (`npx nx serve web` e `npx nx serve api`)
-4. **Revise a base de dados** em [SUPABASE_SETUP.md](SUPABASE_SETUP.md)
-5. **Veja o que ainda falta** em [O_QUE_FALTA.md](O_QUE_FALTA.md)
+1. **📖 Leia as referências**: Comece com [GUIA_RAPIDO.md](GUIA_RAPIDO.md) para comandos essenciais
+2. **📚 Documentação completa**: Veja [REFERENCES.md](REFERENCES.md) para referências detalhadas
+3. **⚙️ Instale as dependências**: `npm install` e `cd apps/api && pip install -r requirements.txt`
+4. **🔧 Configure o ambiente**: Copie os arquivos `.env.example` para `.env`
+5. **🚀 Inicie o desenvolvimento**: `npx nx serve web` (frontend) e `npx nx serve api` (backend)
+6. **🗄️ Revise a base de dados**: Em [SUPABASE_SETUP.md](SUPABASE_SETUP.md)
+7. **💻 Detalhes da API**: Em [BACKEND_IMPLEMENTATION.md](BACKEND_IMPLEMENTATION.md)
 
 ## 🚀 Quick Start
 

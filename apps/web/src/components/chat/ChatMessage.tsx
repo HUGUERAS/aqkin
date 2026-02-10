@@ -62,7 +62,7 @@ export default function ChatMessage({
         {role === 'user' ? (
           <p>{content}</p>
         ) : (
-          <ReactMarkdown rehypePlugins={[rehypeHighlight, rehypeRaw, [rehypeSanitize, sanitizeSchema]]}>
+          <ReactMarkdown rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema], rehypeHighlight]}>
             {content}
           </ReactMarkdown>
         )}

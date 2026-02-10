@@ -158,7 +158,7 @@ Criar utilitários em `apps/web/src/lib/geometry/`:
 
 ## Compatibilidade
 
-- React 18+
+- React 19 (testado com 19.0.0)
 - TypeScript (strict mode)
 - ArcGIS Maps SDK for JavaScript 4.34.8
 - Lucide-react (ícones)

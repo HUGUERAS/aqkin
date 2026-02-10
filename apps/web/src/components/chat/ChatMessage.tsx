@@ -1,6 +1,30 @@
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+
+// Create a strict sanitization schema to prevent XSS attacks from AI-generated content
+const sanitizeSchema = {
+  ...defaultSchema,
+  // Allow only safe attributes and strip out dangerous ones
+  attributes: {
+    ...defaultSchema.attributes,
+    // Remove potentially dangerous attributes like onclick, onerror, etc.
+    '*': ['className', 'id'],
+    a: ['href', 'title', 'target', 'rel'],
+    code: ['className'], // For syntax highlighting
+    pre: ['className'],
+    span: ['className'], // For syntax highlighting
+  },
+  // Ensure links are safe
+  protocols: {
+    href: ['http', 'https', 'mailto'],
+  },
+  // Strip script and style tags
+  tagNames: defaultSchema.tagNames?.filter(
+    (tag) => tag !== 'script' && tag !== 'style'
+  ),
+};
 
 interface ChatMessageProps {
   role: 'user' | 'assistant';
@@ -39,7 +63,13 @@ export default function ChatMessage({
         {role === 'user' ? (
           <p>{content}</p>
         ) : (
-          <ReactMarkdown rehypePlugins={[rehypeHighlight, rehypeRaw]}>
+          <ReactMarkdown
+            rehypePlugins={[
+              rehypeRaw,
+              [rehypeSanitize, sanitizeSchema],
+              rehypeHighlight,
+            ]}
+          >
             {content}
           </ReactMarkdown>
         )}

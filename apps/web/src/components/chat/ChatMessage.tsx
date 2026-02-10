@@ -13,16 +13,16 @@ const sanitizeSchema = {
     // Allow code highlighting classes but prevent other attributes that could be exploited
     code: ['className'],
     span: ['className'],
-    // Prevent javascript: and data: URLs in links
-    a: ['href'],
+    // Prevent javascript: and data: URLs in links and add security attributes
+    a: ['href', 'rel', 'target'],
   },
   protocols: {
     href: ['http', 'https', 'mailto'],
   },
-  // Remove potentially dangerous elements
-  tagNames: [
-    ...(defaultSchema.tagNames || []),
-  ].filter((tag) => !['script', 'style', 'iframe', 'object', 'embed'].includes(tag)),
+  // Ensure dangerous elements are explicitly excluded
+  tagNames: (defaultSchema.tagNames || []).filter(
+    (tag) => !['script', 'style', 'iframe', 'object', 'embed'].includes(tag)
+  ),
 };
 
 interface ChatMessageProps {

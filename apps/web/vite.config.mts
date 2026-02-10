@@ -76,9 +76,23 @@ export default defineConfig(() => ({
     }),
   ],
   resolve: {
-    alias: {
-      '@': path.resolve(import.meta.dirname, 'src'),
-    },
+    alias: [
+      {
+        find: /^@amcharts\/amcharts5$/,
+        replacement: path.resolve(import.meta.dirname, 'src/vendor/amcharts5-empty.ts'),
+      },
+      {
+        find: /^@amcharts\/amcharts5\/(.*)$/,
+        replacement: path.resolve(import.meta.dirname, 'src/vendor/amcharts5-empty.ts'),
+      },
+      {
+        find: /^@\//,
+        replacement: path.resolve(import.meta.dirname, 'src') + '/',
+      },
+    ],
+  },
+  optimizeDeps: {
+    exclude: ['@arcgis/core', '@amcharts/amcharts5'],
   },
   // Uncomment this if you are using workers.
   // worker: {

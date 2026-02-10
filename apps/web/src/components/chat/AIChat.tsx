@@ -84,12 +84,17 @@ export default function AIChat({ userRole }: AIChatProps) {
         timestamp: formatTime(),
       };
 
-      setMessages((prev) => [...prev, userMsg]);
+      // Compute the updated messages array once
+      let updatedMessages: Message[] = [];
+      setMessages((prev) => {
+        updatedMessages = [...prev, userMsg];
+        return updatedMessages;
+      });
       setIsLoading(true);
 
       try {
-        // Build messages array for API (last 20 messages for token control)
-        const history = [...messages, userMsg]
+        // Build messages array for API from the updated messages (last 20 for token control)
+        const history = updatedMessages
           .filter((m) => !m.suggestedQuestions || m.role === 'user')
           .slice(-20)
           .map((m) => ({ role: m.role, content: m.content }));
@@ -132,7 +137,7 @@ export default function AIChat({ userRole }: AIChatProps) {
         setIsLoading(false);
       }
     },
-    [messages, userRole],
+    [userRole],
   );
 
   const handleSuggestionClick = useCallback(

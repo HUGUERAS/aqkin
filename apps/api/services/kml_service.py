@@ -110,40 +110,56 @@ def placemark_to_geojson_feature(placemark) -> Dict[str, Any]:
         if not geometry:
             return None
 
-        # Convert shapely geometry to GeoJSON
-        geojson_geometry = {
-            "type": geometry.geom_type,
-            "coordinates": list(geometry.coords) if hasattr(geometry, 'coords') else []
-        }
-
+        # Handle different geometry types - build coordinates per type
+        # to avoid touching geometry.coords generically (fails for Polygon)
+        geom_type = geometry.geom_type
+        
         # Handle different geometry types
-        if geometry.geom_type == "Point":
-            geojson_geometry["coordinates"] = list(geometry.coords[0])
+        if geom_type == "Point":
+            geojson_geometry = {
+                "type": "Point",
+                "coordinates": list(geometry.coords[0])
+            }
 
-        elif geometry.geom_type == "LineString":
-            geojson_geometry["coordinates"] = [list(coord) for coord in geometry.coords]
+        elif geom_type == "LineString":
+            geojson_geometry = {
+                "type": "LineString",
+                "coordinates": [list(coord) for coord in geometry.coords]
+            }
 
-        elif geometry.geom_type == "Polygon":
+        elif geom_type == "Polygon":
             # Exterior ring
             exterior = [list(coord) for coord in geometry.exterior.coords]
             # Interior rings (holes)
             interiors = [[list(coord) for coord in interior.coords] for interior in geometry.interiors]
-            geojson_geometry["coordinates"] = [exterior] + interiors
+            geojson_geometry = {
+                "type": "Polygon",
+                "coordinates": [exterior] + interiors
+            }
 
-        elif geometry.geom_type == "MultiPoint":
-            geojson_geometry["coordinates"] = [[geom.x, geom.y, geom.z if hasattr(geom, 'z') else 0] for geom in geometry.geoms]
+        elif geom_type == "MultiPoint":
+            geojson_geometry = {
+                "type": "MultiPoint",
+                "coordinates": [[geom.x, geom.y, geom.z if hasattr(geom, 'z') else 0] for geom in geometry.geoms]
+            }
 
-        elif geometry.geom_type == "MultiLineString":
-            geojson_geometry["coordinates"] = [
-                [list(coord) for coord in geom.coords]
-                for geom in geometry.geoms
-            ]
+        elif geom_type == "MultiLineString":
+            geojson_geometry = {
+                "type": "MultiLineString",
+                "coordinates": [
+                    [list(coord) for coord in geom.coords]
+                    for geom in geometry.geoms
+                ]
+            }
 
-        elif geometry.geom_type == "MultiPolygon":
-            geojson_geometry["coordinates"] = [
-                [[list(coord) for coord in geom.exterior.coords]]
-                for geom in geometry.geoms
-            ]
+        elif geom_type == "MultiPolygon":
+            geojson_geometry = {
+                "type": "MultiPolygon",
+                "coordinates": [
+                    [[list(coord) for coord in geom.exterior.coords]]
+                    for geom in geometry.geoms
+                ]
+            }
 
         else:
             return None

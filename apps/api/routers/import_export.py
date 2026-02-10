@@ -5,10 +5,10 @@ from typing import Dict, List, Any
 import io
 import json
 
-from services.kml_service import parse_kml_to_geojson
-from services.shapefile_service import parse_shapefile_to_geojson
-from services.gpx_service import parse_gpx_to_geojson
-from services.dxf_service import generate_dxf
+from apps.api.services.kml_service import parse_kml_to_geojson
+from apps.api.services.shapefile_service import parse_shapefile_to_geojson
+from apps.api.services.gpx_service import parse_gpx_to_geojson
+from apps.api.services.dxf_service import generate_dxf
 
 router = APIRouter(prefix="/api/import-export", tags=["Import/Export"])
 

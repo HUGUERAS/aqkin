@@ -6,7 +6,7 @@ import time
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from auth import get_perfil
 
@@ -35,7 +35,7 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
     mood: str = "helpful"
-    suggested_questions: list[str] = []
+    suggested_questions: list[str] = Field(default_factory=list)
 
 
 SYSTEM_PROMPT_TOPOGRAFO = """Você é o assistente AI da plataforma AtivoReal, especializado em ajudar topógrafos com georreferenciamento de imóveis rurais no Brasil.

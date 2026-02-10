@@ -5,7 +5,7 @@ from typing import Optional
 from datetime import datetime
 
 from db import supabase
-from auth import get_perfil, get_perfil_optional
+from auth import get_perfil_optional
 
 router = APIRouter(tags=["intake"])
 

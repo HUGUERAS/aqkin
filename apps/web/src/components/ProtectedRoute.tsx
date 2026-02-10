@@ -20,15 +20,24 @@ export default function ProtectedRoute({ children, allowedRole }: ProtectedRoute
 
     // Se tem token de acesso (magic link), permite acesso como proprietario
     if (allowedRole === 'proprietario' && token) {
-      apiClient.getLotePorToken(token).then((r) => {
-        if (r.data && typeof r.data === 'object') {
-          setIsAuthenticated(true);
-          setUserRole('proprietario');
-        } else {
+      apiClient
+        .getLotePorToken(token)
+        .then((r) => {
+          if (r.data && typeof r.data === 'object') {
+            setIsAuthenticated(true);
+            setUserRole('proprietario');
+          } else {
+            setIsAuthenticated(false);
+          }
+        })
+        .catch((error) => {
+          // Garante que falhas de rede/servidor nao deixem a rota presa em loading
+          console.error('Erro ao buscar lote pelo token de acesso:', error);
           setIsAuthenticated(false);
-        }
-        setIsLoading(false);
-      });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
       return;
     }
 

@@ -23,6 +23,7 @@ These instructions help ensure consistent code quality and adherence to project 
 - **[REFERENCES.md](REFERENCES.md)** - Comprehensive reference guide with all project details
 
 ### Specialized Guides
+- **[API_REFERENCE.md](API_REFERENCE.md)** - API Quick Reference - Complete endpoint documentation
 - **[SUPABASE_SETUP.md](SUPABASE_SETUP.md)** - Database setup and configuration
 - **[BACKEND_IMPLEMENTATION.md](BACKEND_IMPLEMENTATION.md)** - Backend architecture and API details
 - **[DEPLOY_GUIDE.md](DEPLOY_GUIDE.md)** - General deployment instructions

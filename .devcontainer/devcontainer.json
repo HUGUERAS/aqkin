@@ -18,7 +18,7 @@
 	// connected. This is typically a file mount in .devcontainer/docker-compose.yml
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	"features": {
-		"ghcr.io/devcontainers/features/powershell:1": {}
+		"ghcr.io/devcontainers/features/powershell:2": {}
 	},
 	"customizations": {
 		"vscode": {

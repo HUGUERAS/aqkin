@@ -28,6 +28,9 @@ These instructions help ensure consistent code quality and adherence to project 
 - **[DEPLOY_GUIDE.md](DEPLOY_GUIDE.md)** - General deployment instructions
 - **[SECURITY.md](SECURITY.md)** - Security policies and reporting
 
+### Troubleshooting
+- **[NOTIFICATION_MANAGEMENT.md](.github/NOTIFICATION_MANAGEMENT.md)** - Gerenciar notificações de email do GitHub
+
 ## ❓ O que eu tenho que fazer aqui?
 
 Se você está começando e não sabe por onde seguir, use este roteiro rápido:

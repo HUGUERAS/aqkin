@@ -159,6 +159,12 @@ railway up
 
 ## 🔧 Troubleshooting Rápido
 
+### Problema: Enxurrada de Emails do GitHub (cli/cli)
+Se você está recebendo muitos emails com o assunto "cli/cli":
+1. **Solução rápida**: Use o script `./scripts/check-github-subscriptions.sh`
+2. **Ou acesse**: https://github.com/cli/cli e clique em "Unwatch" > "Ignore"
+3. **Documentação completa**: [.github/NOTIFICATION_MANAGEMENT.md](./.github/NOTIFICATION_MANAGEMENT.md)
+
 ### Problema: Dependências não instalam
 ```bash
 rm -rf node_modules package-lock.json
